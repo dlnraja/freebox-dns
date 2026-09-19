@@ -1,0 +1,25 @@
+#cloud-config
+# Freebox VM guest (Debian/Ubuntu) — dual DNS local-only
+# Create VM in Freebox OS, attach to LAN bridge, assign static IP, then apply.
+
+hostname: freebox-dns-vm
+packages:
+  - docker.io
+  - docker-compose-v2
+  - git
+  - curl
+  - ca-certificates
+  - openssl
+
+runcmd:
+  - |
+    set -e
+    cd /opt
+    git clone https://github.com/dlnraja/freebox-dns.git freebox-dns || true
+    cd freebox-dns
+    cp -n .env.example .env
+    IP=$(hostname -I | awk '{print $1}')
+    sed -i "s/^HOST_IP=.*/HOST_IP=${IP}/" .env
+    sed -i 's/^DNS_LIBRE_PORT=.*/DNS_LIBRE_PORT=53/' .env
+    bash scripts/generate-certs.sh
+    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d

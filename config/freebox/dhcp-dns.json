@@ -1,0 +1,71 @@
+{
+  "title": "Freebox OS — paramètres DNS / DHCP recommandés (local-only)",
+  "privacy": "No street address, box UID, or remote fbxos domain.",
+  "compatible": [
+    "Freebox Delta",
+    "Freebox Ultra",
+    "Freebox Server v9 (r1) / API 16+",
+    "VM Freebox (Debian/Ubuntu guest)"
+  ],
+  "host": {
+    "HOST_IP_placeholder": "192.168.1.50",
+    "note": "IP LAN fixe de la VM / Pi / PC Docker (réserver le bail dans Freebox OS)."
+  },
+  "lab_ports": {
+    "dns_libre": 5356,
+    "dns_secure": 5354,
+    "doh_libre": 8453,
+    "doh_secure": 8444,
+    "blocky_ui": 3080,
+    "note": "Sur Windows, 5353 est souvent pris (mDNS). En lab Freebox DHCP ne pousse que le port 53 — utiliser overlay prod ou forwarder."
+  },
+  "prod_recommended": {
+    "dhcp_dns_primary": "${HOST_IP}",
+    "dhcp_dns_secondary": "91.239.100.100",
+    "comment": "Primaire = dns-libre sur :53 ; secondaire = pin UncensoredDNS si la VM tombe."
+  },
+  "dual_personality_ideal": {
+    "option_a_two_ips": {
+      "dns1": "${HOST_IP_LIBRE}",
+      "dns2": "${HOST_IP_SECURE}",
+      "note": "Deux IP LAN (macvlan ou 2 VM) toutes deux sur UDP/TCP 53."
+    },
+    "option_b_single_ip": {
+      "dns1": "${HOST_IP}",
+      "dns2": "91.239.100.100",
+      "secure_via": "DoH https://${HOST_IP}:8444/dns-query or clients pointed to :5354"
+    }
+  },
+  "doh_clients": {
+    "libre": "https://${HOST_IP}:8453/dns-query",
+    "secure": "https://${HOST_IP}:8444/dns-query"
+  },
+  "freebox_os_path": [
+    "Paramètres de la Freebox",
+    "Mode avancé → DHCP",
+    "Serveurs DNS : personnalisés"
+  ],
+  "vm_guest": {
+    "suggested_os": "Debian 12 or Ubuntu 24.04",
+    "packages": ["docker.io", "docker-compose-v2", "curl", "ca-certificates"],
+    "compose_files": ["docker-compose.yml", "docker-compose.prod.yml"],
+    "images_pulled_by_compose": [
+      "mvance/unbound:latest",
+      "adguard/dnsproxy:latest",
+      "ghcr.io/0xerr0r/blocky:latest"
+    ]
+  },
+  "fallback_pins_order": [
+    "91.239.100.100",
+    "185.95.218.42",
+    "9.9.9.10",
+    "192.168.1.254"
+  ],
+  "do_not_use_as_primary": [
+    "45.90.28.0",
+    "212.27.32.5",
+    "213.228.0.168",
+    "8.8.8.8",
+    "1.1.1.1"
+  ]
+}

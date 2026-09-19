@@ -10,11 +10,21 @@ Snapshot capturé une fois depuis le LAN Freebox (DHCP Wi‑Fi). **Aucun** polli
 | FREEBOX_DNS_4 | `45.90.28.0` | **NextDNS** anycast | Entrée DHCP Freebox ; comportement selon config NextDNS si ID client. |
 | FREEBOX_DNS_5 | `192.168.1.254` | **Passerelle Freebox** | Résolveur / gateway LAN local (repli ultime sur le site). |
 
+## Verdict (voir aussi [dns-analysis.md](dns-analysis.md))
+
+| Pin | Verdict |
+| --- | --- |
+| 1–3 | ✅ Excellents en fallback / bootstrap |
+| 4 NextDNS | ⚠️ Dernier recours soft (pas amont principal) |
+| 5 Gateway | ⚠️ Repli LAN ultime seulement |
+
+**Amonts complémentaires** (meilleurs pour le projet) : Mullvad DNS, dns0.eu, Digitale Gesellschaft, UncensoredDNS — dans `config/unbound/forward-records.conf` et `config/blocky/config.yml`.
+
 ## Comment la stack les utilise
 
-1. **dns-libre** : Unbound (amonts DoT non censeurs) en premier ; pins en fallback dnsproxy.
-2. **dns-secure** : Blocky vers DoT non censeurs + listes ads/malware ; groupe `freebox_fallback` = mêmes pins.
-3. **DHCP Freebox** (prod) : DNS1 = IP de la VM/hôte Docker ; DNS2 = `FREEBOX_DNS_1` (ou autre pin) si la VM tombe.
+1. **dns-libre** : Unbound (DoT complémentaires) en premier ; pins 1–3 (+ gateway) en fallback dnsproxy.
+2. **dns-secure** : Blocky vers les mêmes DoT + listes ads/malware locales ; `freebox_fallback` sans NextDNS prioritaire.
+3. **DHCP Freebox** (prod) : DNS1 = `HOST_IP` ; DNS2 = `FREEBOX_DNS_1` si la VM tombe.
 
 ## Référence opérateur Free (non utilisée en primaire)
 

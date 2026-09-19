@@ -50,36 +50,45 @@ flowchart TB
 
 ```bash
 cp .env.example .env
-# Ajuster HOST_IP = IP LAN de la machine Docker
+# Ajuster HOST_IP = IP LAN de la machine Docker (bind local-only)
 
 # Certificats DoH auto-signés
 bash scripts/generate-certs.sh
 # Windows (PowerShell) :
 #   powershell -File scripts\generate-certs.ps1
 
+# Lab (ports 5356/5354 — Windows / WSL)
 docker compose up -d
+
+# Prod Freebox VM / Pi (DNS :53 sur HOST_IP seulement)
+# docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
 bash scripts/health-check.sh
 ```
 
-Tests manuels :
+Les ports publiés sont bindés sur **`HOST_IP` uniquement** (pas Internet).
+
+Tests manuels (lab) :
 
 ```bash
-dig @127.0.0.1 -p 5356 example.com +short          # dns-libre
-dig @127.0.0.1 -p 5354 example.com +short          # dns-secure
-curl -sk "https://127.0.0.1:8453/dns-query?name=example.com&type=A"
-curl -sk "https://127.0.0.1:8444/dns-query?name=example.com&type=A"
+dig @HOST_IP -p 5356 example.com +short          # dns-libre
+dig @HOST_IP -p 5354 example.com +short          # dns-secure
+curl -sk "https://HOST_IP:8453/dns-query?name=example.com&type=A"
+curl -sk "https://HOST_IP:8444/dns-query?name=example.com&type=A"
 ```
 
-UI Blocky : [http://127.0.0.1:3080](http://127.0.0.1:3080)
+UI Blocky : `http://HOST_IP:3080`
 
 ## Freebox DHCP
 
-1. Freebox OS → **Paramètres de la Freebox** → **DHCP** (ou Mode avancé → DHCP).
-2. DNS primaire = IP LAN de **dns-libre** (ex. `192.168.1.50` si ports 53 mappés, sinon documentez le port lab).
-3. DNS secondaire = IP LAN de **dns-secure**, ou le même hôte avec l’autre port / IP.
-4. DoH : configurez les clients capables vers `https://<IP>:8453/dns-query` (libre) ou `:8444` (secure). Le DHCP Freebox reste en DNS plain.
+1. Freebox OS → **Paramètres de la Freebox** → **DHCP**.
+2. DNS primaire = `HOST_IP` (**dns-libre** en prod `:53`).
+3. DNS secondaire = `91.239.100.100` (repli UncensoredDNS).
+4. DoH clients : `https://HOST_IP:8453/dns-query` (libre) · `:8444` (secure).
 
-Docs détaillées : [docs/freebox.md](docs/freebox.md), [docs/dns-pins.md](docs/dns-pins.md), [docs/filtering.md](docs/filtering.md), [docs/deploy-pi.md](docs/deploy-pi.md), [docs/deploy-wsl.md](docs/deploy-wsl.md).
+Confs : [`config/freebox/`](config/freebox/) · cloud-init VM/Pi : [`cloud-init/`](cloud-init/) · analyse amonts : [docs/dns-analysis.md](docs/dns-analysis.md).
+
+Docs : [docs/freebox.md](docs/freebox.md), [docs/dns-pins.md](docs/dns-pins.md), [docs/filtering.md](docs/filtering.md), [docs/deploy-pi.md](docs/deploy-pi.md), [docs/deploy-wsl.md](docs/deploy-wsl.md).
 
 ## Fallbacks Freebox épinglés
 
@@ -102,11 +111,12 @@ Détail : [docs/dns-pins.md](docs/dns-pins.md).
 
 Si vous forkez sans snapshot : laissez les placeholders et renseignez une fois (DHCP client ou Freebox OS → DNS).
 
-## CI (GitHub Actions)
+## CI (GitHub Actions uniquement)
 
-- Validation `docker compose config`
-- Contrôle santé des amonts DoT / DNS épinglés
-- Rafraîchissement périodique des métadonnées de blocklists (secure)
+- `validate-and-health.yml` — compose + confs Freebox + amonts DoT complémentaires + blocklists + **smoke Docker** (bind `127.0.0.1`)
+- `freebox-conf-sync.yml` — lint JSON/YAML Freebox, unbound, blocky, dnsproxy, cloud-init
+
+Aucun workflow ne sonde votre Freebox distante.
 
 ## Licence
 

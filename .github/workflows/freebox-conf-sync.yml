@@ -1,0 +1,71 @@
+name: freebox-conf-sync
+
+# Validates Freebox-oriented confs on every change to those paths.
+# Never polls a live Freebox — snapshot + JSON only.
+
+on:
+  push:
+    paths:
+      - "config/freebox/**"
+      - "config/freebox-dns-snapshot.json"
+      - "config/unbound/**"
+      - "config/blocky/**"
+      - "config/dnsproxy/**"
+      - "cloud-init/**"
+      - "docs/dns-analysis.md"
+      - "docs/dns-pins.md"
+      - "docs/freebox.md"
+      - ".env.example"
+      - "docker-compose*.yml"
+  pull_request:
+    paths:
+      - "config/freebox/**"
+      - "config/freebox-dns-snapshot.json"
+      - "config/unbound/**"
+      - "config/blocky/**"
+      - "config/dnsproxy/**"
+      - "cloud-init/**"
+      - "docs/**"
+      - ".env.example"
+      - "docker-compose*.yml"
+  workflow_dispatch:
+
+jobs:
+  lint-conf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: YAML / JSON parse
+        run: |
+          set -e
+          python3 - <<'PY'
+          import json, pathlib, sys
+          try:
+              import yaml
+          except ImportError:
+              import subprocess
+              subprocess.check_call([sys.executable, "-m", "pip", "install", "pyyaml", "-q"])
+              import yaml
+          root = pathlib.Path(".")
+          json.loads((root / "config/freebox/dhcp-dns.json").read_text(encoding="utf-8"))
+          json.loads((root / "config/freebox-dns-snapshot.json").read_text(encoding="utf-8"))
+          yaml.safe_load((root / "config/blocky/config.yml").read_text(encoding="utf-8"))
+          yaml.safe_load((root / "config/dnsproxy/dns-libre.yaml").read_text(encoding="utf-8"))
+          yaml.safe_load((root / "cloud-init/pi-user-data.yaml").read_text(encoding="utf-8"))
+          yaml.safe_load((root / "cloud-init/freebox-vm-user-data.yaml").read_text(encoding="utf-8"))
+          fr = (root / "config/unbound/forward-records.conf").read_text(encoding="utf-8")
+          for must in ("dns.mullvad.net", "dns0.eu", "digitale-gesellschaft", "uncensoreddns"):
+              assert must in fr, must
+          by = (root / "config/blocky/config.yml").read_text(encoding="utf-8")
+          assert "denylists" in by
+          assert "blackLists" not in by
+          assert "mullvad" in by
+          print("conf lint OK")
+          PY
+      - name: Documented DoH ports match .env.example
+        run: |
+          set -e
+          grep -q 'DOH_LIBRE_PORT=8453' .env.example
+          grep -q 'DOH_SECURE_PORT=8444' .env.example
+          grep -q '8453' docs/freebox.md
+          grep -q 'HOST_IP' docker-compose.yml

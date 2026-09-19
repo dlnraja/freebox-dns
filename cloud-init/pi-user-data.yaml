@@ -1,0 +1,42 @@
+#cloud-config
+# Raspberry Pi OS / Debian — bootstrap freebox-dns (local LAN dual DNS)
+# Flash with rpi-imager advanced options or cloud-init capable image.
+# Replace HOST_IP below with the Pi Ethernet/Wi-Fi LAN address.
+
+hostname: freebox-dns-pi
+manage_etc_hosts: true
+
+packages:
+  - docker.io
+  - docker-compose-v2
+  - git
+  - curl
+  - ca-certificates
+  - openssl
+
+write_files:
+  - path: /opt/freebox-dns/bootstrap.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      cd /opt
+      if [ ! -d freebox-dns-src ]; then
+        git clone https://github.com/dlnraja/freebox-dns.git freebox-dns-src
+      fi
+      cd freebox-dns-src
+      cp -n .env.example .env || true
+      # Set HOST_IP to this machine's primary LAN IPv4
+      IP=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')
+      if [ -n "${IP:-}" ]; then
+        sed -i "s/^HOST_IP=.*/HOST_IP=${IP}/" .env
+      fi
+      sed -i 's/^DNS_LIBRE_PORT=.*/DNS_LIBRE_PORT=53/' .env || true
+      bash scripts/generate-certs.sh
+      docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+      bash scripts/health-check.sh || true
+
+runcmd:
+  - usermod -aG docker pi || usermod -aG docker debian || true
+  - systemctl enable --now docker || service docker start
+  - /opt/freebox-dns/bootstrap.sh

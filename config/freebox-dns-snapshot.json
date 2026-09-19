@@ -56,5 +56,19 @@
     "ns1.free.fr": "213.228.0.168",
     "note": "Classic Free ISP resolvers (reference only; not used as primary pin)."
   },
+  "complementary_upstreams_dot": {
+    "mullvad": "dns.mullvad.net",
+    "dns0_eu": "dns0.eu",
+    "digitale_gesellschaft": "dns.digitale-gesellschaft.ch",
+    "uncensoreddns": "anycast.uncensoreddns.org",
+    "note": "Primary recursive path for local stack; Freebox pins are fallbacks."
+  },
+  "local_stack": {
+    "dns_libre": "uncensored (unbound + dnsproxy)",
+    "dns_secure": "ads+malware only (blocky)",
+    "bind": "HOST_IP local-only",
+    "lab_ports": { "libre": 5356, "secure": 5354, "doh_libre": 8453, "doh_secure": 8444 },
+    "prod": "docker-compose.prod.yml maps libre to :53 on HOST_IP"
+  },
   "policy": "Pinned once at project creation. Never poll Freebox remotely later. Edit this file + .env locally if your LAN DNS change."
 }

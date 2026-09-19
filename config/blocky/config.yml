@@ -1,18 +1,18 @@
-# dns-secure — anti-malware + anti-ad (NOT political censorship)
-# Blocky: UDP/TCP DNS + DoH on :443 (/dns-query) + HTTP UI :4000
+# dns-secure — local ads + malware only (Pi-hole-like), NOT political censorship
+# Upstreams = complementary uncensoring DoT (filtering happens HERE, not upstream)
 
 upstreams:
   groups:
     default:
-      - tcp-tls:dns.quad9.net
+      - tcp-tls:dns.mullvad.net
+      - tcp-tls:dns0.eu
       - tcp-tls:dns.digitale-gesellschaft.ch
       - tcp-tls:anycast.uncensoreddns.org
-    # Static Freebox/LAN pins — used by custom group / emergency (no remote poll)
     freebox_fallback:
+      # Prefer uncensoring pins; gateway last
       - 91.239.100.100
       - 185.95.218.42
       - 9.9.9.10
-      - 45.90.28.0
       - 192.168.1.254
   strategy: parallel_best
   timeout: 2s
@@ -20,7 +20,7 @@ upstreams:
 connectIPVersion: v4
 
 blocking:
-  blackLists:
+  denylists:
     ads:
       - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
       - https://adaway.org/hosts.txt
@@ -35,9 +35,11 @@ blocking:
       - malware
   blockType: nxDomain
   blockTTL: 6h
-  refreshPeriod: 12h
-  downloadTimeout: 60s
-  startStrategy: blocking
+  loading:
+    refreshPeriod: 12h
+    strategy: blocking
+    downloads:
+      timeout: 60s
 
 caching:
   minTime: 5m
