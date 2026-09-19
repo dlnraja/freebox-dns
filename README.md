@@ -79,7 +79,7 @@ UI Blocky : [http://127.0.0.1:3080](http://127.0.0.1:3080)
 3. DNS secondaire = IP LAN de **dns-secure**, ou le même hôte avec l’autre port / IP.
 4. DoH : configurez les clients capables vers `https://<IP>:8443/dns-query` (libre) ou `:8444` (secure). Le DHCP Freebox reste en DNS plain.
 
-Docs détaillées : [docs/freebox.md](docs/freebox.md), [docs/deploy-pi.md](docs/deploy-pi.md), [docs/deploy-wsl.md](docs/deploy-wsl.md).
+Docs détaillées : [docs/freebox.md](docs/freebox.md), [docs/dns-pins.md](docs/dns-pins.md), [docs/filtering.md](docs/filtering.md), [docs/deploy-pi.md](docs/deploy-pi.md), [docs/deploy-wsl.md](docs/deploy-wsl.md).
 
 ## Fallbacks Freebox épinglés
 
@@ -88,13 +88,15 @@ Sur ce dépôt, les 5 DNS ont été **capturés une fois** depuis le LAN (DHCP W
 - `config/freebox-dns-snapshot.json`
 - `.env.example` (`FREEBOX_DNS_1..5`)
 
-| Variable | Valeur épinglée |
-| --- | --- |
-| FREEBOX_DNS_1 | 91.239.100.100 |
-| FREEBOX_DNS_2 | 185.95.218.42 |
-| FREEBOX_DNS_3 | 9.9.9.10 |
-| FREEBOX_DNS_4 | 45.90.28.0 |
-| FREEBOX_DNS_5 | 192.168.1.254 |
+| Variable | Valeur | Identité |
+| --- | --- | --- |
+| FREEBOX_DNS_1 | 91.239.100.100 | UncensoredDNS (anti-censure) |
+| FREEBOX_DNS_2 | 185.95.218.42 | Digitale Gesellschaft (CH) |
+| FREEBOX_DNS_3 | 9.9.9.10 | Quad9 unblocked (+ ECS) |
+| FREEBOX_DNS_4 | 45.90.28.0 | NextDNS anycast |
+| FREEBOX_DNS_5 | 192.168.1.254 | Passerelle Freebox LAN |
+
+Détail : [docs/dns-pins.md](docs/dns-pins.md).
 
 **Politique :** ne jamais re-interroger la Freebox depuis le CI ou un service distant. Pour mettre à jour : éditez le snapshot + `.env` **en local**.
 

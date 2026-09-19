@@ -7,7 +7,7 @@ Compatible **Freebox Delta**, **Freebox Ultra**, et **VM Freebox** (Debian/Ubunt
 Sur le LAN de développement, snapshot enregistré dans `config/freebox-dns-snapshot.json` :
 
 - Modèle vu : Freebox v9 (r1) — API 16
-- DNS DHCP annoncés (Wi‑Fi) → `FREEBOX_DNS_1..5`
+- DNS DHCP annoncés (Wi‑Fi) → `FREEBOX_DNS_1..5` (identités : [dns-pins.md](dns-pins.md))
 - **Aucun** UID Freebox, domaine distant `*.fbxos.fr`, ni adresse personnelle dans le dépôt
 
 Pour un autre site : lisez les DNS du client DHCP, ou Freebox OS → réglages DNS/DHCP, puis éditez le snapshot **localement**.
