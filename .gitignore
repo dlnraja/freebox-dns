@@ -13,4 +13,7 @@ Thumbs.db
 .vscode/*.code-workspace.bak
 
 dist/
+.freebox-token.json
+.freebox*.json
+secrets/
 
