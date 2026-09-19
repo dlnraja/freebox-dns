@@ -1,0 +1,4 @@
+# Generated — include via blocky customDNS mapping merge
+customDNS:
+  mapping:
+    francais.rt.com: 185.79.236.192

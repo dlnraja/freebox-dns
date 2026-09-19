@@ -1,0 +1,12 @@
+# Local uncensor layer — BEFORE upstream forward
+# Inspired by OONI (Open Observatory of Network Interference) DNS consistency tests:
+# https://ooni.org/ — France ISP censorship is mostly lying DNS (NXDOMAIN / 127.0.0.1).
+# See docs/anti-lie-dns.md
+
+# Format: hosts(5) — A and AAAA. Queried by dns-libre BEFORE unbound.
+# Manual pins (always win). Generated file appended by scripts/ooni-like-anti-lie.py
+
+# Control / should-resolve (sanity — filled by probe if ISP lies)
+# mediapart.fr / wikipedia kept empty until probe writes consensus
+
+# Placeholder comment only — real entries live in hosts.generated

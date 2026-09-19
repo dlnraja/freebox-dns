@@ -1,0 +1,27 @@
+# Domains probed for ISP DNS lies (OONI-like consistency).
+# Prefer citizen/media/public-interest + resolver health checks.
+# Full FR measurement list: https://github.com/citizenlab/test-lists/blob/master/lists/fr.csv
+# OONI Explorer FR: https://explorer.ooni.org/
+
+# Always-should-resolve controls
+example.com
+wikipedia.org
+fr.wikipedia.org
+mediapart.fr
+www.mediapart.fr
+laquadrature.net
+www.laquadrature.net
+ooni.org
+explorer.ooni.org
+mullvad.net
+digitale-gesellschaft.ch
+
+# Often subject to FR DNS interference (OONI / Citizen Lab FR) — probe only
+# Probe writes truthful consensus to hosts.generated when ISP lies.
+francais.rt.com
+nantes.indymedia.org
+forbiddenstories.org
+www.humanite.fr
+planning-familial.org
+www.sos-homophobie.org
+le-refuge.org

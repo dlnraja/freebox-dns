@@ -1,0 +1,47 @@
+name: anti-lie-probe
+
+# OONI-inspired DNS consistency probe — detect Free/gateway lying DNS and
+# refresh local A/AAAA overrides served before upstream forward.
+# Never polls the user's Freebox remotely; uses public Free ISP resolvers + pins.
+
+on:
+  schedule:
+    - cron: "30 */6 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/ooni-like-anti-lie.py"
+      - "config/uncensor/**"
+      - ".github/workflows/anti-lie-probe.yml"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dig
+        run: sudo apt-get update -y && sudo apt-get install -y dnsutils python3
+      - name: Run OONI-like anti-lie probe
+        run: python3 scripts/ooni-like-anti-lie.py
+      - name: Show report summary
+        run: |
+          python3 - <<'PY'
+          import json
+          r=json.load(open("config/uncensor/last-probe-report.json"))
+          print("corrected", len(r["lies_corrected"]))
+          print("clean", len(r["clean"]))
+          print("unknown", len(r["unknown"]))
+          for e in r["lies_corrected"][:20]:
+              print("LIE", e["domain"], "->", e.get("control_a"), e.get("control_aaaa"))
+          PY
+          test -f config/uncensor/hosts.generated
+          test -f config/unbound/a-records.conf
+      - name: Commit generated overrides
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/uncensor/hosts.generated config/uncensor/blocky-custom-dns.yml \
+                  config/uncensor/last-probe-report.json config/unbound/a-records.conf
+          git diff --staged --quiet || git commit -m "chore: refresh anti-lie local DNS overrides (OONI-like probe)"
+          git push || true

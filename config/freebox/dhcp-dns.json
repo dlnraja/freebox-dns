@@ -93,6 +93,17 @@
     "192.168.1.254",
     "45.90.28.0"
   ],
+  "ipv6": {
+    "compose_overlay": "docker-compose.ipv6.yml",
+    "env": "HOST_IP6",
+    "note": "Publish DNS/DoH on LAN IPv6; answers include AAAA from uncensor layer + upstreams"
+  },
+  "anti_lie": {
+    "doc": "docs/anti-lie-dns.md",
+    "inspired_by": "OONI Open Observatory of Network Interference",
+    "hosts": "config/uncensor/",
+    "probe": "scripts/ooni-like-anti-lie.py"
+  },
   "upstreams_catalog": "config/upstreams/uncensoring-catalog.json",
   "vm_package": "packaging/freebox-vm/manifest.json",
   "do_not_use_as_primary": [

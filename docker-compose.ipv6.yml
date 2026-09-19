@@ -1,0 +1,37 @@
+# IPv6 LAN exposure overlay — use with base compose when HOST_IP6 is set.
+# Freebox OS DHCP v6 / clients IPv6 can point at HOST_IP6.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.ipv6.yml up -d
+#   # prod:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ipv6.yml up -d
+#
+# Requires Docker daemon ipv6 enabled and a LAN IPv6 on the host.
+
+services:
+  dns-libre:
+    ports:
+      - "${HOST_IP}:${DNS_LIBRE_PORT:-5356}:53/udp"
+      - "${HOST_IP}:${DNS_LIBRE_PORT:-5356}:53/tcp"
+      - "${HOST_IP6}:${DNS_LIBRE_PORT:-5356}:53/udp"
+      - "${HOST_IP6}:${DNS_LIBRE_PORT:-5356}:53/tcp"
+      - "${HOST_IP}:${DOH_LIBRE_PORT:-8453}:443/tcp"
+      - "${HOST_IP6}:${DOH_LIBRE_PORT:-8453}:443/tcp"
+
+  dns-secure:
+    ports:
+      - "${HOST_IP}:${DNS_SECURE_PORT:-5354}:53/udp"
+      - "${HOST_IP}:${DNS_SECURE_PORT:-5354}:53/tcp"
+      - "${HOST_IP6}:${DNS_SECURE_PORT:-5354}:53/udp"
+      - "${HOST_IP6}:${DNS_SECURE_PORT:-5354}:53/tcp"
+      - "${HOST_IP}:${DOH_SECURE_PORT:-8444}:443/tcp"
+      - "${HOST_IP6}:${DOH_SECURE_PORT:-8444}:443/tcp"
+      - "${HOST_IP}:${BLOCKY_HTTP_PORT:-3080}:4000/tcp"
+      - "${HOST_IP6}:${BLOCKY_HTTP_PORT:-3080}:4000/tcp"
+
+networks:
+  dnsnet:
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+        - subnet: fd00:fb0x:dns::/64

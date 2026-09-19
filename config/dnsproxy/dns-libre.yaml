@@ -1,8 +1,7 @@
 # dns-libre — bit: uncensoring
 # Lexicon from FREEBOX_DNS_1 UncensoredDNS + #2 Digitale Gesellschaft + #3 Quad9 Unsecured
-# Display: Libre / Uncensored — full answers, keine Sperrlisten, censurfri
+# Local anti-lie hosts BEFORE unbound forward — docs/anti-lie-dns.md (OONI-inspired)
 # Max upstreams/fallbacks — config/upstreams/uncensoring-catalog.json
-# See docs/dns-lexicon.md
 ---
 bootstrap:
   - "9.9.9.10:53"
@@ -10,7 +9,8 @@ bootstrap:
   - "185.95.218.42:53"
 
 listen-addrs:
-  - "0.0.0.0"
+  # Dual-stack inside container: "::" accepts IPv4+IPv6 on Linux; avoid listing both 0.0.0.0 and ::
+  - "::"
 
 listen-ports:
   - 53
@@ -21,9 +21,14 @@ https-port:
 tls-crt: /opt/dnsproxy/certs/server.crt
 tls-key: /opt/dnsproxy/certs/server.key
 
+# Local resolution FIRST (A + AAAA) — before any upstream
+hosts-file-enabled: true
+hosts-files:
+  - /opt/dnsproxy/uncensor/hosts.local
+  - /opt/dnsproxy/uncensor/hosts.generated
+
 upstream:
   - "172.28.0.10:53"
-  # Direct uncensoring plain (if unbound busy / warming)
   - "194.242.2.2:53"
   - "193.110.81.254:53"
   - "91.239.100.100:53"

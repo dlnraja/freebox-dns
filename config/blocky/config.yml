@@ -42,7 +42,20 @@ upstreams:
   strategy: parallel_best
   timeout: 2s
 
-connectIPVersion: v4
+# Dual-stack answers (A + AAAA)
+connectIPVersion: dual
+
+bootstrapDns:
+  - tcp+udp:9.9.9.10
+  - tcp+udp:91.239.100.100
+
+# Local truthful hosts BEFORE upstream (OONI-like anti-lie) — A/AAAA
+hostsFile:
+  sources:
+    - /app/uncensor/hosts.local
+    - /app/uncensor/hosts.generated
+  hostsTTL: 1h
+  filterLoopback: false
 
 blocking:
   denylists:

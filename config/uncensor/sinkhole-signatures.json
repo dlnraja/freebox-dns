@@ -1,0 +1,46 @@
+{
+  "title": "DNS menteur / sinkhole signatures (FR ISP style)",
+  "inspired_by": [
+    "https://ooni.org/post/2025-france-report/",
+    "Citizen Lab / OONI test-lists (fr.csv)"
+  ],
+  "lie_answers_ipv4": [
+    "127.0.0.1",
+    "0.0.0.0",
+    "127.0.0.2",
+    "::1"
+  ],
+  "lie_private_prefixes": [
+    "10.",
+    "192.168.",
+    "172.16.",
+    "172.17.",
+    "172.18.",
+    "172.19.",
+    "172.20.",
+    "172.21.",
+    "172.22.",
+    "172.23.",
+    "172.24.",
+    "172.25.",
+    "172.26.",
+    "172.27.",
+    "172.28.",
+    "172.29.",
+    "172.30.",
+    "172.31."
+  ],
+  "liar_resolvers": [
+    "192.168.1.254",
+    "212.27.32.5",
+    "213.228.0.168"
+  ],
+  "control_resolvers": [
+    "91.239.100.100",
+    "185.95.218.42",
+    "9.9.9.10",
+    "194.242.2.2",
+    "193.110.81.254"
+  ],
+  "notes": "If liar returns sinkhole/NXDOMAIN/private but controls agree on public A/AAAA → write local override."
+}

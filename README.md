@@ -9,7 +9,8 @@ Deux personnalités locales, chacune en **DNS classique (UDP/TCP)** et **DoH** (
 | **dns-libre** | `uncensored` ← UncensoredDNS + DG + Quad9 Unsecured | Aucun (*keine Sperrlisten*) |
 | **dns-secure** | `threat-local` ← toolkit NextDNS (sans cloud/parental) | Ads + malware **locaux** seulement |
 
-Lexique détaillé : [docs/dns-lexicon.md](docs/dns-lexicon.md).
+Lexique détaillé : [docs/dns-lexicon.md](docs/dns-lexicon.md).  
+Anti–DNS menteur (OONI) : [docs/anti-lie-dns.md](docs/anti-lie-dns.md) · IPv6 : `docker-compose.ipv6.yml`.
 
 Repli intelligent vers une liste **épinglée une fois** de 5 DNS Freebox/LAN (`FREEBOX_DNS_1..5`). **Aucun sondage distant ultérieur** de votre Freebox.
 
@@ -118,9 +119,10 @@ Si vous forkez sans snapshot : laissez les placeholders et renseignez une fois (
 - `validate-and-health.yml` — compose + confs Freebox + amonts DoT max + blocklists + smoke Docker
 - `freebox-conf-sync.yml` — lint JSON/YAML + catalogue uncensoring + manifeste VM
 - `package-freebox-vm.yml` — tarball sources pour guest
+- `anti-lie-probe.yml` — sonde OONI-like DNS menteur → overrides locaux A/AAAA
 - `build-freebox-os-qcow2.yml` — **QCOW2 + zip all-in-one** à importer dans Freebox OS → VM
 
-Aucun workflow ne sonde votre Freebox distante.
+Aucun workflow ne sonde votre Freebox distante (les « menteurs » testés sont les résolveurs Free publics + pin gateway documenté).
 
 ## Licence
 
