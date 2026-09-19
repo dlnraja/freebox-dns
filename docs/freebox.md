@@ -8,6 +8,17 @@ Paramètres : [`config/freebox/dhcp-dns.json`](../config/freebox/dhcp-dns.json) 
 
 Snapshot : `config/freebox-dns-snapshot.json` (Freebox v9 r1, API 16). Aucun UID / `*.fbxos.fr` / adresse perso.
 
+## VM Freebox OS — import image (all-in-one)
+
+Freebox OS importe du **`.qcow2`** (pas OVA).
+
+1. Télécharger l’artefact CI **`freebox-dns-freeboxos-allinone-*.zip`** (workflow `build-freebox-os-qcow2`).
+2. Copier `freebox-dns.qcow2` dans le dossier **`VMs`** du disque Freebox (FTP).
+3. Freebox OS → **VM** → **Ajouter** → **image de disque existante**.
+4. 2 vCPU · 2048 Mo · LAN · DHCP DNS1 = IP de la VM.
+
+Kit + notice : [`packaging/freebox-os-import/`](../packaging/freebox-os-import/) · doc : [`freebox-vm.md`](freebox-vm.md).
+
 ## Pointer le DHCP vers la stack (local-only)
 
 ```bash

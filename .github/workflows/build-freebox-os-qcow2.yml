@@ -1,0 +1,90 @@
+name: build-freebox-os-qcow2
+
+# Build freebox-dns.qcow2 + all-in-one zip for Freebox OS → VM → import disk image.
+# Never polls a live Freebox. Artifact is large (Debian cloud + packages).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - "packaging/freebox-os-import/**"
+      - "packaging/freebox-vm/**"
+      - "scripts/build-freebox-qcow2.sh"
+      - "scripts/package-freebox-os-allinone.sh"
+      - "cloud-init/freebox-vm-user-data.yaml"
+      - ".github/workflows/build-freebox-os-qcow2.yml"
+  release:
+    types: [published]
+
+jobs:
+  build-qcow2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install qemu + libguestfs
+        run: |
+          set -e
+          sudo apt-get update -y
+          sudo apt-get install -y qemu-utils libguestfs-tools curl zip ca-certificates
+          # Prefer direct backend on GHA (no nested KVM needed for customize)
+          echo "LIBGUESTFS_BACKEND=direct" >> "$GITHUB_ENV"
+
+      - name: Build qcow2 appliance
+        run: |
+          set -e
+          chmod +x scripts/build-freebox-qcow2.sh scripts/package-freebox-os-allinone.sh packaging/freebox-vm/install.sh
+          bash scripts/build-freebox-qcow2.sh
+          qemu-img info dist/freebox-dns.qcow2
+
+      - name: Package all-in-one zip
+        run: bash scripts/package-freebox-os-allinone.sh "${GITHUB_SHA::7}"
+
+      - name: Upload all-in-one artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: freebox-dns-freeboxos-allinone
+          path: |
+            dist/freebox-dns-freeboxos-allinone-*.zip
+            dist/freebox-dns.qcow2
+            dist/allinone-stage/SHA256SUMS
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+      - name: Attach to GitHub Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          gh release upload "${{ github.event.release.tag_name }}" \
+            dist/freebox-dns-freeboxos-allinone-*.zip \
+            dist/freebox-dns.qcow2 \
+            --clobber
+
+  kit-only:
+    # Lightweight kit without qcow2 (JSON + cloud-init) — always available
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Zip import kit (no disk image)
+        run: |
+          set -e
+          mkdir -p dist
+          VER="${GITHUB_SHA::7}"
+          STAGE=dist/kit-stage
+          rm -rf "$STAGE" && mkdir -p "$STAGE"
+          cp packaging/freebox-os-import/* "$STAGE/"
+          cp packaging/freebox-vm/manifest.json "$STAGE/vm-manifest.json"
+          cp packaging/freebox-vm/packages.txt "$STAGE/"
+          cp packaging/freebox-vm/install.sh "$STAGE/"
+          (cd "$STAGE" && zip -9 "../freebox-dns-freeboxos-kit-${VER}.zip" ./*)
+          ls -lh dist/freebox-dns-freeboxos-kit-*.zip
+      - name: Upload kit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: freebox-dns-freeboxos-kit
+          path: dist/freebox-dns-freeboxos-kit-*.zip

@@ -1,0 +1,67 @@
+#cloud-config
+# Freebox OS VM — all-in-one freebox-dns (injected into qcow2 + usable via enable_cloudinit)
+hostname: freebox-dns
+manage_etc_hosts: true
+package_update: true
+
+packages:
+  - docker.io
+  - docker-compose-v2
+  - git
+  - curl
+  - ca-certificates
+  - openssl
+  - bind9-dnsutils
+  - jq
+
+write_files:
+  - path: /etc/systemd/system/freebox-dns-bootstrap.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Bootstrap freebox-dns dual stack
+      After=docker.service network-online.target
+      Wants=network-online.target
+      Requires=docker.service
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/usr/local/sbin/freebox-dns-bootstrap.sh
+      TimeoutStartSec=0
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /usr/local/sbin/freebox-dns-bootstrap.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      mkdir -p /opt
+      cd /opt
+      if [ ! -d freebox-dns/.git ]; then
+        rm -rf freebox-dns
+        git clone --depth 1 https://github.com/dlnraja/freebox-dns.git freebox-dns
+      else
+        git -C freebox-dns pull --ff-only || true
+      fi
+      cd freebox-dns
+      cp -n .env.example .env || true
+      IP=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src"){print $(i+1); exit}}')
+      IP=${IP:-$(hostname -I | awk '{print $1}')}
+      sed -i "s/^HOST_IP=.*/HOST_IP=${IP}/" .env
+      sed -i 's/^DNS_LIBRE_PORT=.*/DNS_LIBRE_PORT=53/' .env
+      bash scripts/generate-certs.sh
+      docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+      docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+      bash scripts/health-check.sh || true
+      echo "OK HOST_IP=${IP}" | tee /var/log/freebox-dns-bootstrap.log
+
+runcmd:
+  - systemctl enable --now docker
+  - systemctl enable freebox-dns-bootstrap.service
+  - /usr/local/sbin/freebox-dns-bootstrap.sh || true
+
+final_message: |
+  freebox-dns VM ready. Set Freebox DHCP DNS1 to this VM LAN IP, DNS2=91.239.100.100

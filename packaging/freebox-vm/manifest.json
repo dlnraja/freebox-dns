@@ -52,6 +52,14 @@
     "dns1": "HOST_IP",
     "dns2": "91.239.100.100"
   },
+  "import_freebox_os": {
+    "format": "qcow2",
+    "kit": "packaging/freebox-os-import/",
+    "disk_image": "dist/freebox-dns.qcow2",
+    "allinone_zip": "dist/freebox-dns-freeboxos-allinone-*.zip",
+    "workflow": "build-freebox-os-qcow2.yml",
+    "ui": "Freebox OS → VM → Ajouter → image de disque existante"
+  },
   "install_script": "packaging/freebox-vm/install.sh",
-  "docs": ["docs/freebox-vm.md", "docs/freebox.md", "docs/upstreams-uncensoring.md"]
+  "docs": ["docs/freebox-vm.md", "docs/freebox.md", "docs/upstreams-uncensoring.md", "packaging/freebox-os-import/IMPORT-FREEBOX-OS.md"]
 }

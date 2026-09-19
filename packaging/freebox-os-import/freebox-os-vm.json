@@ -1,0 +1,58 @@
+{
+  "name": "freebox-dns",
+  "description": "All-in-one dual DNS (dns-libre + dns-secure) for Freebox OS VM import",
+  "freebox_os": {
+    "compatible": ["Freebox Delta", "Freebox Ultra", "Freebox Server v9+"],
+    "ui_path": ["Freebox OS", "VM", "Ajouter une VM", "Sélectionner une image de disque existante"],
+    "disk_format": "qcow2",
+    "also_accepted": ["raw"]
+  },
+  "vm": {
+    "name": "freebox-dns",
+    "vcpus": 2,
+    "memory_mb": 2048,
+    "disk_type": "qcow2",
+    "disk_filename": "freebox-dns.qcow2",
+    "suggested_disk_path_on_box": "/VMs/freebox-dns.qcow2",
+    "os": "debian",
+    "enable_screen": true,
+    "enable_cloudinit": true,
+    "cloudinit_hostname": "freebox-dns",
+    "cloudinit_userdata_file": "cloudinit-userdata.yaml",
+    "network": "LAN bridge"
+  },
+  "guest": {
+    "os_image_base": "Debian 12 cloud (amd64)",
+    "disk_gb": 16,
+    "services": ["unbound", "dns-libre", "dns-secure"],
+    "ports": {
+      "dns_libre": 53,
+      "dns_secure": 5354,
+      "doh_libre": 8453,
+      "doh_secure": 8444,
+      "blocky_ui": 3080
+    }
+  },
+  "dhcp_after_import": {
+    "dns_primary": "IP_LAN_DE_LA_VM",
+    "dns_secondary": "91.239.100.100"
+  },
+  "package_files": [
+    "freebox-dns.qcow2",
+    "freebox-os-vm.json",
+    "cloudinit-userdata.yaml",
+    "IMPORT-FREEBOX-OS.md",
+    "SHA256SUMS"
+  ],
+  "api_create_hint": {
+    "disk_type": "qcow2",
+    "disk_path": "<chemin_disque_freebox>/VMs/freebox-dns.qcow2",
+    "vcpus": "2",
+    "memory": "2048",
+    "name": "freebox-dns",
+    "os": "debian",
+    "enable_cloudinit": "true",
+    "cloudinit_hostname": "freebox-dns",
+    "enable_screen": "true"
+  }
+}
