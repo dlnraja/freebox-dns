@@ -1,9 +1,9 @@
 # dns-libre — uncensoring front-end (plain DNS + DoH /dns-query)
 # Upstream = Unbound on the compose network (complete resolutions, no ad/malware lists).
-
+---
 bootstrap:
-  - "9.9.9.10"
-  - "91.239.100.100"
+  - "9.9.9.10:53"
+  - "91.239.100.100:53"
 
 listen-addrs:
   - "0.0.0.0"
@@ -11,26 +11,28 @@ listen-addrs:
 listen-ports:
   - 53
 
-https-port: 443
+https-port:
+  - 443
+
 tls-crt: /opt/dnsproxy/certs/server.crt
 tls-key: /opt/dnsproxy/certs/server.key
 
 upstream:
   - "172.28.0.10:53"
-  # Pinned Freebox/LAN fallbacks (static — never remote-polled)
-  - "91.239.100.100"
-  - "185.95.218.42"
-  - "9.9.9.10"
-  - "45.90.28.0"
-  - "192.168.1.254"
+  - "91.239.100.100:53"
+  - "185.95.218.42:53"
+  - "9.9.9.10:53"
+  - "45.90.28.0:53"
+  - "192.168.1.254:53"
 
 fallback:
-  - "91.239.100.100"
-  - "185.95.218.42"
-  - "9.9.9.10"
+  - "91.239.100.100:53"
+  - "185.95.218.42:53"
+  - "9.9.9.10:53"
 
 cache: true
 cache-min-ttl: 30
 cache-max-ttl: 3600
 ratelimit: 0
-verbose: 1
+timeout: "10s"
+verbose: true

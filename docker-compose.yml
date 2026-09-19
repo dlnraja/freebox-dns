@@ -9,16 +9,17 @@ services:
     container_name: dns-unbound
     restart: unless-stopped
     volumes:
-      - ./config/unbound/unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
+      # mvance/unbound generates unbound.conf at start; customize upstreams only
+      - ./config/unbound/forward-records.conf:/opt/unbound/etc/unbound/forward-records.conf:ro
     networks:
       dnsnet:
         ipv4_address: 172.28.0.10
     healthcheck:
-      test: ["CMD-SHELL", "dig @127.0.0.1 -p 53 example.com +time=2 +tries=1 >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "drill -p 53 example.com @127.0.0.1 >/dev/null 2>&1 || dig @127.0.0.1 -p 53 example.com +time=2 +tries=1 >/dev/null 2>&1 || exit 1"]
       interval: 30s
       timeout: 5s
-      retries: 3
-      start_period: 15s
+      retries: 5
+      start_period: 20s
 
   dns-libre:
     image: adguard/dnsproxy:latest
@@ -34,7 +35,7 @@ services:
     volumes:
       - ./config/dnsproxy/dns-libre.yaml:/opt/dnsproxy/config.yaml:ro
       - ./certs:/opt/dnsproxy/certs:ro
-    command: ["-c", "/opt/dnsproxy/config.yaml"]
+    command: ["--config-path", "/opt/dnsproxy/config.yaml"]
     networks:
       dnsnet:
         ipv4_address: 172.28.0.20

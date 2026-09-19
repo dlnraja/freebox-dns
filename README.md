@@ -43,7 +43,7 @@ flowchart TB
 ## Prérequis
 
 - Docker Engine + Docker Compose v2 (Docker Desktop, Freebox VM, Pi OS, ou WSL2)
-- Ports libres (lab par défaut) : `5353` / `5354` (DNS), `8443` / `8444` (DoH), `3080` (UI Blocky)
+- Ports libres (lab par défaut) : `5356` / `5354` (DNS), `8453` / `8444` (DoH), `3080` (UI Blocky)
 - En prod LAN : mappez `53` et éventuellement `443` si rien d’autre ne les occupe
 
 ## Démarrage rapide
@@ -64,9 +64,9 @@ bash scripts/health-check.sh
 Tests manuels :
 
 ```bash
-dig @127.0.0.1 -p 5353 example.com +short          # dns-libre
+dig @127.0.0.1 -p 5356 example.com +short          # dns-libre
 dig @127.0.0.1 -p 5354 example.com +short          # dns-secure
-curl -sk "https://127.0.0.1:8443/dns-query?name=example.com&type=A"
+curl -sk "https://127.0.0.1:8453/dns-query?name=example.com&type=A"
 curl -sk "https://127.0.0.1:8444/dns-query?name=example.com&type=A"
 ```
 
@@ -77,7 +77,7 @@ UI Blocky : [http://127.0.0.1:3080](http://127.0.0.1:3080)
 1. Freebox OS → **Paramètres de la Freebox** → **DHCP** (ou Mode avancé → DHCP).
 2. DNS primaire = IP LAN de **dns-libre** (ex. `192.168.1.50` si ports 53 mappés, sinon documentez le port lab).
 3. DNS secondaire = IP LAN de **dns-secure**, ou le même hôte avec l’autre port / IP.
-4. DoH : configurez les clients capables vers `https://<IP>:8443/dns-query` (libre) ou `:8444` (secure). Le DHCP Freebox reste en DNS plain.
+4. DoH : configurez les clients capables vers `https://<IP>:8453/dns-query` (libre) ou `:8444` (secure). Le DHCP Freebox reste en DNS plain.
 
 Docs détaillées : [docs/freebox.md](docs/freebox.md), [docs/dns-pins.md](docs/dns-pins.md), [docs/filtering.md](docs/filtering.md), [docs/deploy-pi.md](docs/deploy-pi.md), [docs/deploy-wsl.md](docs/deploy-wsl.md).
 
