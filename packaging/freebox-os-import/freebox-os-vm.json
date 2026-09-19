@@ -39,14 +39,21 @@
   },
   "package_files": [
     "freebox-dns.qcow2",
+    "freebox-dns-cidata.iso",
     "freebox-os-vm.json",
     "cloudinit-userdata.yaml",
     "IMPORT-FREEBOX-OS.md",
     "SHA256SUMS"
   ],
+  "cdrom": {
+    "file": "freebox-dns-cidata.iso",
+    "role": "NoCloud cloud-init seed — mount as Freebox virtual CD-ROM on first boot",
+    "required_on_first_boot": true
+  },
   "api_create_hint": {
     "disk_type": "qcow2",
     "disk_path": "<chemin_disque_freebox>/VMs/freebox-dns.qcow2",
+    "cd_path": "<chemin_disque_freebox>/VMs/freebox-dns-cidata.iso",
     "vcpus": "2",
     "memory": "2048",
     "name": "freebox-dns",

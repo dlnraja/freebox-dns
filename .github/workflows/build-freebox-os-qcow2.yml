@@ -24,20 +24,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install qemu + libguestfs
+      - name: Install qemu + cloud-init tools
         run: |
           set -e
           sudo apt-get update -y
-          sudo apt-get install -y qemu-utils libguestfs-tools curl zip ca-certificates
-          # Prefer direct backend on GHA (no nested KVM needed for customize)
-          echo "LIBGUESTFS_BACKEND=direct" >> "$GITHUB_ENV"
+          sudo apt-get install -y qemu-utils cloud-image-utils genisoimage curl zip ca-certificates
 
-      - name: Build qcow2 appliance
+      - name: Build qcow2 + cidata ISO
         run: |
           set -e
           chmod +x scripts/build-freebox-qcow2.sh scripts/package-freebox-os-allinone.sh packaging/freebox-vm/install.sh
           bash scripts/build-freebox-qcow2.sh
+          test -f dist/freebox-dns.qcow2
+          test -f dist/freebox-dns-cidata.iso
           qemu-img info dist/freebox-dns.qcow2
+          ls -lh dist/freebox-dns.qcow2 dist/freebox-dns-cidata.iso
 
       - name: Package all-in-one zip
         run: bash scripts/package-freebox-os-allinone.sh "${GITHUB_SHA::7}"
@@ -49,6 +50,7 @@ jobs:
           path: |
             dist/freebox-dns-freeboxos-allinone-*.zip
             dist/freebox-dns.qcow2
+            dist/freebox-dns-cidata.iso
             dist/allinone-stage/SHA256SUMS
           if-no-files-found: error
           compression-level: 0
@@ -63,6 +65,7 @@ jobs:
           gh release upload "${{ github.event.release.tag_name }}" \
             dist/freebox-dns-freeboxos-allinone-*.zip \
             dist/freebox-dns.qcow2 \
+            dist/freebox-dns-cidata.iso \
             --clobber
 
   kit-only:

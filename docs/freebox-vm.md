@@ -22,24 +22,22 @@ Freebox OS accepte une **image disque `.qcow2`** (pas d’OVA).
 
 ### Importer dans Freebox OS
 
-1. Extraire le zip.
-2. FTP / Partages → dossier **`VMs`** sur le disque Freebox → y coller **`freebox-dns.qcow2`**.
-3. Freebox OS → **VM** → **Ajouter une VM** → **Sélectionner une image de disque existante** → `freebox-dns.qcow2`.
-4. Paramètres (voir `freebox-os-vm.json`) :
-   - **2** vCPU · **2048 Mo** RAM · réseau **LAN** · OS **debian**
-   - Cloud-init ON si proposé → coller `cloudinit-userdata.yaml`, hostname `freebox-dns`
-5. Démarrer → noter l’**IP LAN**.
-6. DHCP Freebox : DNS1 = IP VM · DNS2 = `91.239.100.100`.
+1. Extraire le zip all-in-one.
+2. FTP → dossier **`VMs/`** → copier `freebox-dns.qcow2` **et** `freebox-dns-cidata.iso`.
+3. Freebox OS → **VM** → **Ajouter** → **image de disque existante** → `freebox-dns.qcow2`.
+4. **2 vCPU** · **2048 Mo** · **LAN** · OS **debian**.
+5. Monter **`freebox-dns-cidata.iso`** en **CD-ROM virtuel** (cloud-init 1er boot).
+6. Démarrer → IP LAN → DHCP DNS1 = IP · DNS2 = `91.239.100.100`.
 
 Détail : [`packaging/freebox-os-import/IMPORT-FREEBOX-OS.md`](../packaging/freebox-os-import/IMPORT-FREEBOX-OS.md).
 
 ### Construire l’image localement
 
 ```bash
-sudo apt-get install -y qemu-utils libguestfs-tools zip curl
+sudo apt-get install -y qemu-utils cloud-image-utils genisoimage zip curl
 bash scripts/build-freebox-qcow2.sh
 bash scripts/package-freebox-os-allinone.sh
-# → dist/freebox-dns.qcow2
+# → dist/freebox-dns.qcow2 + dist/freebox-dns-cidata.iso
 # → dist/freebox-dns-freeboxos-allinone-*.zip
 ```
 

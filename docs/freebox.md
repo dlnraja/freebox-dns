@@ -12,9 +12,9 @@ Snapshot : `config/freebox-dns-snapshot.json` (Freebox v9 r1, API 16). Aucun UID
 
 Freebox OS importe du **`.qcow2`** (pas OVA).
 
-1. Télécharger l’artefact CI **`freebox-dns-freeboxos-allinone-*.zip`** (workflow `build-freebox-os-qcow2`).
-2. Copier `freebox-dns.qcow2` dans le dossier **`VMs`** du disque Freebox (FTP).
-3. Freebox OS → **VM** → **Ajouter** → **image de disque existante**.
+1. Télécharger l’artefact CI **`freebox-dns-freeboxos-allinone-*.zip`**.
+2. Copier `freebox-dns.qcow2` + `freebox-dns-cidata.iso` dans **`VMs/`** (FTP).
+3. Freebox OS → **VM** → **image de disque existante** → monter l’ISO en CD.
 4. 2 vCPU · 2048 Mo · LAN · DHCP DNS1 = IP de la VM.
 
 Kit + notice : [`packaging/freebox-os-import/`](../packaging/freebox-os-import/) · doc : [`freebox-vm.md`](freebox-vm.md).
