@@ -2,6 +2,8 @@
 
 Verdict court : **garder 1–2–3–5 comme filet de secours LAN** ; **ne plus s’appuyer sur NextDNS (4) comme amont principal** ; **le vrai « DNS du projet » = stack locale** (dns-libre + dns-secure).
 
+Lexique fin de chaque pin et dérivation locale : **[dns-lexicon.md](dns-lexicon.md)**.
+
 ## Les 5 DNS capturés sur la Freebox
 
 | # | IP | Identité | Avantages | Inconvénients | Rôle dans ce projet |

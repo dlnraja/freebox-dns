@@ -13,6 +13,7 @@ on:
       - "config/dnsproxy/**"
       - "cloud-init/**"
       - "docs/dns-analysis.md"
+      - "docs/dns-lexicon.md"
       - "docs/dns-pins.md"
       - "docs/freebox.md"
       - ".env.example"
@@ -60,11 +61,17 @@ jobs:
           assert "denylists" in by
           assert "blackLists" not in by
           assert "mullvad" in by
+          snap = json.loads((root / "config/freebox-dns-snapshot.json").read_text(encoding="utf-8"))
+          assert "local_lexicon" in snap
+          assert snap["local_lexicon"]["dns_libre"]["bit"] == "uncensored"
+          assert snap["local_lexicon"]["dns_secure"]["bit"] == "threat-local"
+          assert "uncensored" in (root / "docs/dns-lexicon.md").read_text(encoding="utf-8").lower()
           print("conf lint OK")
           PY
       - name: Documented DoH ports match .env.example
         run: |
           set -e
+          test -f docs/dns-lexicon.md
           grep -q 'DOH_LIBRE_PORT=8453' .env.example
           grep -q 'DOH_SECURE_PORT=8444' .env.example
           grep -q '8453' docs/freebox.md

@@ -1,12 +1,31 @@
 {
   "title": "Freebox OS — paramètres DNS / DHCP recommandés (local-only)",
   "privacy": "No street address, box UID, or remote fbxos domain.",
+  "lexicon_doc": "docs/dns-lexicon.md",
   "compatible": [
     "Freebox Delta",
     "Freebox Ultra",
     "Freebox Server v9 (r1) / API 16+",
     "VM Freebox (Debian/Ubuntu guest)"
   ],
+  "local_personalities": {
+    "dns_libre": {
+      "bit": "uncensored",
+      "display_name": "Libre / Uncensored",
+      "inspired_by_pins": ["FREEBOX_DNS_1", "FREEBOX_DNS_2", "FREEBOX_DNS_3"],
+      "tagline": "Full answers — UncensoredDNS + Digitale Gesellschaft + Quad9 Unsecured"
+    },
+    "dns_secure": {
+      "bit": "threat-local",
+      "display_name": "Secure / Threat-local",
+      "inspired_by_pins": ["FREEBOX_DNS_4"],
+      "tagline": "Local DNS firewall — NextDNS denylist toolkit, no cloud/parental"
+    },
+    "site": {
+      "bit": "lan-gateway",
+      "inspired_by_pins": ["FREEBOX_DNS_5"]
+    }
+  },
   "host": {
     "HOST_IP_placeholder": "192.168.1.50",
     "note": "IP LAN fixe de la VM / Pi / PC Docker (réserver le bail dans Freebox OS)."
@@ -22,13 +41,13 @@
   "prod_recommended": {
     "dhcp_dns_primary": "${HOST_IP}",
     "dhcp_dns_secondary": "91.239.100.100",
-    "comment": "Primaire = dns-libre sur :53 ; secondaire = pin UncensoredDNS si la VM tombe."
+    "comment": "Primaire = dns-libre (bit uncensoring) sur :53 ; secondaire = FREEBOX_DNS_1 UncensoredDNS."
   },
   "dual_personality_ideal": {
     "option_a_two_ips": {
       "dns1": "${HOST_IP_LIBRE}",
       "dns2": "${HOST_IP_SECURE}",
-      "note": "Deux IP LAN (macvlan ou 2 VM) toutes deux sur UDP/TCP 53."
+      "note": "Deux IP LAN (macvlan ou 2 VM) toutes deux sur UDP/TCP 53 — esprit NextDNS multi-config, en local."
     },
     "option_b_single_ip": {
       "dns1": "${HOST_IP}",

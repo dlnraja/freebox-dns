@@ -2,29 +2,39 @@
 
 Snapshot capturé une fois depuis le LAN Freebox (DHCP Wi‑Fi). **Aucun** polling distant ultérieur.
 
-| Pin | IP | Rôle / « bit » | Notes |
-| --- | --- | --- | --- |
-| FREEBOX_DNS_1 | `91.239.100.100` | **UncensoredDNS** (anycast) | Résolveur anti-censure (DK). Pas de filtre politique. |
-| FREEBOX_DNS_2 | `185.95.218.42` | **Digitale Gesellschaft** (CH) | DNS privé suisse, DoT/DoH disponibles côté amont. |
-| FREEBOX_DNS_3 | `9.9.9.10` | **Quad9 unblocked** (+ ECS) | Quad9 **sans** blocklist malware (contrairement à `9.9.9.9`). |
-| FREEBOX_DNS_4 | `45.90.28.0` | **NextDNS** anycast | Entrée DHCP Freebox ; comportement selon config NextDNS si ID client. |
-| FREEBOX_DNS_5 | `192.168.1.254` | **Passerelle Freebox** | Résolveur / gateway LAN local (repli ultime sur le site). |
+Lexique fin + dérivation des DNS locaux : **[dns-lexicon.md](dns-lexicon.md)**.
 
-## Verdict (voir aussi [dns-analysis.md](dns-analysis.md))
+| Pin | IP | Nom officiel | Bits lexicaux | Notes |
+| --- | --- | --- | --- | --- |
+| FREEBOX_DNS_1 | `91.239.100.100` | **UncensoredDNS** | uncensored, *censurfri*, anycast | Anti-censure DK — donneur principal du bit `uncensored` local |
+| FREEBOX_DNS_2 | `185.95.218.42` | **Digitale Gesellschaft** | Privatsphäre, kein Logging, keine Sperrlisten, freier Zugang | Privacy CH — transport DoT/DoH + no-log spirit |
+| FREEBOX_DNS_3 | `9.9.9.10` | **Quad9 Unsecured** (+ ECS) | Unsecured / unblocked (≠ Secured `9.9.9.9`) | Chemin réponses intactes — bootstrap rapide |
+| FREEBOX_DNS_4 | `45.90.28.0` | **NextDNS** | firewall DNS, denylist, profiles, ads/trackers | Donneur du bit `threat-local` — **pas** amont primaire |
+| FREEBOX_DNS_5 | `192.168.1.254` | **Passerelle Freebox** | gateway, LAN, last hop | Bit `lan-gateway` — bind local-only + repli ultime |
+
+## Verdict
 
 | Pin | Verdict |
 | --- | --- |
-| 1–3 | ✅ Excellents en fallback / bootstrap |
-| 4 NextDNS | ⚠️ Dernier recours soft (pas amont principal) |
-| 5 Gateway | ⚠️ Repli LAN ultime seulement |
+| 1–3 | ✅ Fallback / bootstrap + lexique de **dns-libre** |
+| 4 NextDNS | ⚠️ Lexique pour **dns-secure** seulement (pas amont principal) |
+| 5 Gateway | ⚠️ Repli LAN ultime + inspiration exposition locale |
 
-**Amonts complémentaires** (meilleurs pour le projet) : Mullvad DNS, dns0.eu, Digitale Gesellschaft, UncensoredDNS — dans `config/unbound/forward-records.conf` et `config/blocky/config.yml`.
+## Personnalités locales dérivées
+
+| Local | Bit | Inspiré de |
+| --- | --- | --- |
+| **dns-libre** | `uncensored` | #1 + #2 + #3 Unsecured |
+| **dns-secure** | `threat-local` | #4 toolkit (sans parental/cloud) |
+| Site bind | `lan-gateway` | #5 |
+
+**Amonts complémentaires** : Mullvad, dns0.eu, Digitale Gesellschaft, UncensoredDNS — dans `config/unbound/forward-records.conf` et `config/blocky/config.yml`.
 
 ## Comment la stack les utilise
 
-1. **dns-libre** : Unbound (DoT complémentaires) en premier ; pins 1–3 (+ gateway) en fallback dnsproxy.
-2. **dns-secure** : Blocky vers les mêmes DoT + listes ads/malware locales ; `freebox_fallback` sans NextDNS prioritaire.
-3. **DHCP Freebox** (prod) : DNS1 = `HOST_IP` ; DNS2 = `FREEBOX_DNS_1` si la VM tombe.
+1. **dns-libre** : Unbound (DoT complémentaires) ; fallback pins **1 → 2 → 3 → 5**.
+2. **dns-secure** : Blocky + denylists ads/malware ; mêmes DoT uncensoring (filtre local, pas Quad9 Secured).
+3. **DHCP Freebox** : DNS1 = `HOST_IP` ; DNS2 = `FREEBOX_DNS_1`.
 
 ## Référence opérateur Free (non utilisée en primaire)
 
@@ -32,8 +42,6 @@ Snapshot capturé une fois depuis le LAN Freebox (DHCP Wi‑Fi). **Aucun** polli
 | --- | --- |
 | ns0.free.fr | `212.27.32.5` |
 | ns1.free.fr | `213.228.0.168` |
-
-Conservés dans `config/freebox-dns-snapshot.json` pour comparaison — **pas** comme amonts principaux (risque DNS menteur / politique opérateur).
 
 ## Mettre à jour localement
 

@@ -1,5 +1,7 @@
-# dns-secure — local ads + malware only (Pi-hole-like), NOT political censorship
-# Upstreams = complementary uncensoring DoT (filtering happens HERE, not upstream)
+# dns-secure — bit: threat-local
+# Lexicon from FREEBOX_DNS_4 NextDNS toolkit (denylist, ads/trackers, dual profile)
+# WITHOUT NextDNS cloud / parental / SafeSearch — filtering HERE, not Quad9 Secured remote
+# Display: Secure / Threat-local — see docs/dns-lexicon.md
 
 upstreams:
   groups:

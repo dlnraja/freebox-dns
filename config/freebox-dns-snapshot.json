@@ -26,31 +26,74 @@
   "pinned_identity": {
     "FREEBOX_DNS_1": {
       "name": "UncensoredDNS",
-      "bit": "uncensoring anycast",
-      "ip": "91.239.100.100"
+      "bit": "uncensoring",
+      "ip": "91.239.100.100",
+      "lexicon": ["uncensored", "censurfri", "anycast", "no political filter", "DoT", "DoH"],
+      "official": "https://blog.uncensoreddns.org/",
+      "role": "Primary uncensoring fallback + DoT upstream"
     },
     "FREEBOX_DNS_2": {
       "name": "Digitale Gesellschaft",
-      "bit": "Swiss privacy DNS",
-      "ip": "185.95.218.42"
+      "bit": "privacy-no-sperrliste",
+      "ip": "185.95.218.42",
+      "lexicon": ["Privatsphäre", "kein Logging", "keine Sperrlisten", "freier Zugang", "DNSSEC", "best-effort", "transparency"],
+      "official": "https://www.digitale-gesellschaft.ch/dns/",
+      "role": "Privacy DoT upstream + fallback"
     },
     "FREEBOX_DNS_3": {
-      "name": "Quad9 unblocked",
-      "bit": "no malware blocklist (+ ECS)",
-      "ip": "9.9.9.10"
+      "name": "Quad9 Unsecured",
+      "bit": "unblocked-ecs",
+      "ip": "9.9.9.10",
+      "lexicon": ["Unsecured", "unblocked", "ECS", "DNSSEC", "anycast", "not Secured 9.9.9.9"],
+      "official": "https://www.quad9.net/service/service-addresses-and-features/",
+      "role": "Fast unblocked bootstrap / fallback (not Quad9 Secured)"
     },
     "FREEBOX_DNS_4": {
       "name": "NextDNS anycast",
-      "bit": "DHCP-advertised NextDNS entry",
-      "ip": "45.90.28.0"
+      "bit": "cloud-firewall-toolkit",
+      "ip": "45.90.28.0",
+      "lexicon": ["firewall for the modern Internet", "threat model", "denylist", "allowlist", "configuration/profile", "ads & trackers", "analytics", "Pi-hole in the cloud"],
+      "official": "https://nextdns.io/",
+      "role": "Lexicon donor for dns-secure ONLY — not primary upstream",
+      "take": ["denylist ads/malware", "dual profile idea", "DNS-layer firewall"],
+      "refuse": ["parental", "SafeSearch", "porn blocks", "cloud logs", "mandatory profile ID"]
     },
     "FREEBOX_DNS_5": {
       "name": "Freebox gateway",
-      "bit": "local LAN resolver / gateway",
-      "ip": "192.168.1.254"
+      "bit": "lan-gateway",
+      "ip": "192.168.1.254",
+      "lexicon": ["gateway", "LAN", "last hop", "always reachable on site"],
+      "role": "Ultimate LAN fallback + local-only bind inspiration"
     }
   },
-
+  "local_lexicon": {
+    "dns_libre": {
+      "service": "dns-libre",
+      "display_name": "Libre / Uncensored",
+      "bit": "uncensored",
+      "inspired_by": ["FREEBOX_DNS_1", "FREEBOX_DNS_2", "FREEBOX_DNS_3"],
+      "tagline_fr": "Résolution complète, sans Sperrliste ni censure politique",
+      "tagline_en": "Full answers — uncensoring path (UncensoredDNS + DG + Quad9 Unsecured)",
+      "filtering": "none"
+    },
+    "dns_secure": {
+      "service": "dns-secure",
+      "display_name": "Secure / Threat-local",
+      "bit": "threat-local",
+      "inspired_by": ["FREEBOX_DNS_4"],
+      "also_contrasts_with": "Quad9 Secured (remote) — filtering is local instead",
+      "tagline_fr": "Pare-feu DNS local : ads + malware uniquement",
+      "tagline_en": "Local DNS firewall — NextDNS toolkit without cloud/parental",
+      "filtering": "ads+malware denylists only",
+      "refuse": ["parental", "political censorship", "SafeSearch"]
+    },
+    "site": {
+      "bit": "lan-gateway",
+      "inspired_by": ["FREEBOX_DNS_5"],
+      "bind": "HOST_IP local-only"
+    },
+    "doc": "docs/dns-lexicon.md"
+  },
   "operator_dns_reference": {
     "ns0.free.fr": "212.27.32.5",
     "ns1.free.fr": "213.228.0.168",
@@ -65,7 +108,7 @@
   },
   "local_stack": {
     "dns_libre": "uncensored (unbound + dnsproxy)",
-    "dns_secure": "ads+malware only (blocky)",
+    "dns_secure": "threat-local ads+malware (blocky)",
     "bind": "HOST_IP local-only",
     "lab_ports": { "libre": 5356, "secure": 5354, "doh_libre": 8453, "doh_secure": 8444 },
     "prod": "docker-compose.prod.yml maps libre to :53 on HOST_IP"

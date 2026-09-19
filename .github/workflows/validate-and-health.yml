@@ -70,6 +70,8 @@ jobs:
           test -f cloud-init/freebox-vm-user-data.yaml
           test -f config/freebox/README.md
           test -f docs/dns-analysis.md
+          test -f docs/dns-lexicon.md
+          python3 -c "import json; s=json.load(open('config/freebox-dns-snapshot.json')); assert s['local_lexicon']['dns_libre']['bit']=='uncensored'"
 
   upstream-health:
     runs-on: ubuntu-latest

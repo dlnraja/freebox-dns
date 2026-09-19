@@ -1,4 +1,7 @@
-# dns-libre — uncensoring local front (plain DNS + DoH), local LAN only via compose bind
+# dns-libre — bit: uncensoring
+# Lexicon from FREEBOX_DNS_1 UncensoredDNS + #2 Digitale Gesellschaft + #3 Quad9 Unsecured
+# Display: Libre / Uncensored — full answers, keine Sperrlisten, censurfri
+# See docs/dns-lexicon.md
 ---
 bootstrap:
   - "9.9.9.10:53"

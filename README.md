@@ -4,10 +4,12 @@ Stack DNS open-source pour **Freebox** (Delta / Ultra / VM Freebox locale), auss
 
 Deux personnalités locales, chacune en **DNS classique (UDP/TCP)** et **DoH** (`/dns-query`) :
 
-| Service | Rôle | Filtrage |
+| Service | Bit (lexique pins) | Filtrage |
 | --- | --- | --- |
-| **dns-libre** | Résolutions complètes, amonts non censeurs | Aucun filtre « DNS menteur » / politique |
-| **dns-secure** | Même base + listes **anti-pub** et **anti-malware** | Pas de censure politique |
+| **dns-libre** | `uncensored` ← UncensoredDNS + DG + Quad9 Unsecured | Aucun (*keine Sperrlisten*) |
+| **dns-secure** | `threat-local` ← toolkit NextDNS (sans cloud/parental) | Ads + malware **locaux** seulement |
+
+Lexique détaillé : [docs/dns-lexicon.md](docs/dns-lexicon.md).
 
 Repli intelligent vers une liste **épinglée une fois** de 5 DNS Freebox/LAN (`FREEBOX_DNS_1..5`). **Aucun sondage distant ultérieur** de votre Freebox.
 
