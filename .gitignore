@@ -11,3 +11,6 @@ Thumbs.db
 *.log
 .idea/
 .vscode/*.code-workspace.bak
+
+dist/
+

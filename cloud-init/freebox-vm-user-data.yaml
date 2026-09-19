@@ -1,8 +1,13 @@
 #cloud-config
-# Freebox VM guest (Debian/Ubuntu) — dual DNS local-only
-# Create VM in Freebox OS, attach to LAN bridge, assign static IP, then apply.
+# Freebox OS → VM guest (Debian 12 / Ubuntu 24.04) — dual DNS local-only
+# Paste as user-data when creating the VM, or use packaging/freebox-vm/install.sh after first boot.
+# See docs/freebox-vm.md
 
 hostname: freebox-dns-vm
+manage_etc_hosts: true
+package_update: true
+package_upgrade: true
+
 packages:
   - docker.io
   - docker-compose-v2
@@ -10,16 +15,32 @@ packages:
   - curl
   - ca-certificates
   - openssl
+  - bind9-dnsutils
+  - jq
+
+write_files:
+  - path: /opt/freebox-dns-bootstrap.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      mkdir -p /opt
+      cd /opt
+      if [ ! -d freebox-dns ]; then
+        git clone https://github.com/dlnraja/freebox-dns.git freebox-dns
+      fi
+      cd freebox-dns
+      cp -n .env.example .env || true
+      IP=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src"){print $(i+1); exit}}')
+      IP=${IP:-$(hostname -I | awk '{print $1}')}
+      sed -i "s/^HOST_IP=.*/HOST_IP=${IP}/" .env
+      sed -i 's/^DNS_LIBRE_PORT=.*/DNS_LIBRE_PORT=53/' .env
+      bash scripts/generate-certs.sh
+      docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+      docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+      bash scripts/health-check.sh || true
+      echo "freebox-dns ready on ${IP}" | tee /var/log/freebox-dns-bootstrap.log
 
 runcmd:
-  - |
-    set -e
-    cd /opt
-    git clone https://github.com/dlnraja/freebox-dns.git freebox-dns || true
-    cd freebox-dns
-    cp -n .env.example .env
-    IP=$(hostname -I | awk '{print $1}')
-    sed -i "s/^HOST_IP=.*/HOST_IP=${IP}/" .env
-    sed -i 's/^DNS_LIBRE_PORT=.*/DNS_LIBRE_PORT=53/' .env
-    bash scripts/generate-certs.sh
-    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+  - systemctl enable --now docker
+  - /opt/freebox-dns-bootstrap.sh

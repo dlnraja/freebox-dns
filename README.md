@@ -88,7 +88,7 @@ UI Blocky : `http://HOST_IP:3080`
 3. DNS secondaire = `91.239.100.100` (repli UncensoredDNS).
 4. DoH clients : `https://HOST_IP:8453/dns-query` (libre) · `:8444` (secure).
 
-Confs : [`config/freebox/`](config/freebox/) · cloud-init VM/Pi : [`cloud-init/`](cloud-init/) · analyse amonts : [docs/dns-analysis.md](docs/dns-analysis.md).
+Confs : [`config/freebox/`](config/freebox/) · **VM Freebox OS** : [docs/freebox-vm.md](docs/freebox-vm.md) · paquet [`packaging/freebox-vm/`](packaging/freebox-vm/) · amonts max : [docs/upstreams-uncensoring.md](docs/upstreams-uncensoring.md) · lexique : [docs/dns-lexicon.md](docs/dns-lexicon.md).
 
 Docs : [docs/freebox.md](docs/freebox.md), [docs/dns-pins.md](docs/dns-pins.md), [docs/filtering.md](docs/filtering.md), [docs/deploy-pi.md](docs/deploy-pi.md), [docs/deploy-wsl.md](docs/deploy-wsl.md).
 
@@ -115,8 +115,9 @@ Si vous forkez sans snapshot : laissez les placeholders et renseignez une fois (
 
 ## CI (GitHub Actions uniquement)
 
-- `validate-and-health.yml` — compose + confs Freebox + amonts DoT complémentaires + blocklists + **smoke Docker** (bind `127.0.0.1`)
-- `freebox-conf-sync.yml` — lint JSON/YAML Freebox, unbound, blocky, dnsproxy, cloud-init
+- `validate-and-health.yml` — compose + confs Freebox + amonts DoT max + blocklists + smoke Docker
+- `freebox-conf-sync.yml` — lint JSON/YAML + catalogue uncensoring + manifeste VM
+- `package-freebox-vm.yml` — tarball artefact pour Freebox OS → VM (`packaging/freebox-vm/`)
 
 Aucun workflow ne sonde votre Freebox distante.
 

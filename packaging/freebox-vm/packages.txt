@@ -1,0 +1,12 @@
+# Freebox VM guest packages (Debian/Ubuntu)
+# Install: xargs -a packaging/freebox-vm/packages.txt apt-get install -y
+# Or via packaging/freebox-vm/install.sh
+
+docker.io
+docker-compose-v2
+git
+curl
+ca-certificates
+openssl
+bind9-dnsutils
+jq

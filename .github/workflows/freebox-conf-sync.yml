@@ -12,10 +12,14 @@ on:
       - "config/blocky/**"
       - "config/dnsproxy/**"
       - "cloud-init/**"
+      - "config/upstreams/**"
+      - "packaging/freebox-vm/**"
       - "docs/dns-analysis.md"
       - "docs/dns-lexicon.md"
       - "docs/dns-pins.md"
       - "docs/freebox.md"
+      - "docs/freebox-vm.md"
+      - "docs/upstreams-uncensoring.md"
       - ".env.example"
       - "docker-compose*.yml"
   pull_request:
@@ -55,16 +59,22 @@ jobs:
           yaml.safe_load((root / "cloud-init/pi-user-data.yaml").read_text(encoding="utf-8"))
           yaml.safe_load((root / "cloud-init/freebox-vm-user-data.yaml").read_text(encoding="utf-8"))
           fr = (root / "config/unbound/forward-records.conf").read_text(encoding="utf-8")
-          for must in ("dns.mullvad.net", "dns0.eu", "digitale-gesellschaft", "uncensoreddns"):
+          for must in ("dns.mullvad.net", "open.dns0.eu", "digitale-gesellschaft", "uncensoreddns", "applied-privacy", "libredns", "lavate", "public-rdns", "radeksprta", "controld", "adguard"):
               assert must in fr, must
           by = (root / "config/blocky/config.yml").read_text(encoding="utf-8")
           assert "denylists" in by
           assert "blackLists" not in by
           assert "mullvad" in by
+          assert "open.dns0.eu" in by
+          assert "dns-unfiltered.adguard.com" in by
           snap = json.loads((root / "config/freebox-dns-snapshot.json").read_text(encoding="utf-8"))
           assert "local_lexicon" in snap
           assert snap["local_lexicon"]["dns_libre"]["bit"] == "uncensored"
           assert snap["local_lexicon"]["dns_secure"]["bit"] == "threat-local"
+          cat = json.loads((root / "config/upstreams/uncensoring-catalog.json").read_text(encoding="utf-8"))
+          assert len(cat["dot_uncensoring"]) >= 10
+          man = json.loads((root / "packaging/freebox-vm/manifest.json").read_text(encoding="utf-8"))
+          assert len(man["docker_images"]) >= 3
           assert "uncensored" in (root / "docs/dns-lexicon.md").read_text(encoding="utf-8").lower()
           print("conf lint OK")
           PY
@@ -72,7 +82,10 @@ jobs:
         run: |
           set -e
           test -f docs/dns-lexicon.md
+          test -f docs/freebox-vm.md
+          test -f docs/upstreams-uncensoring.md
           grep -q 'DOH_LIBRE_PORT=8453' .env.example
           grep -q 'DOH_SECURE_PORT=8444' .env.example
           grep -q '8453' docs/freebox.md
           grep -q 'HOST_IP' docker-compose.yml
+          grep -q 'open.dns0.eu' config/unbound/forward-records.conf

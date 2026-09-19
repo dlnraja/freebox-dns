@@ -2,7 +2,9 @@
 
 Verdict court : **garder 1–2–3–5 comme filet de secours LAN** ; **ne plus s’appuyer sur NextDNS (4) comme amont principal** ; **le vrai « DNS du projet » = stack locale** (dns-libre + dns-secure).
 
-Lexique fin de chaque pin et dérivation locale : **[dns-lexicon.md](dns-lexicon.md)**.
+**Amonts max (libres / sans censure)** : catalogue [`config/upstreams/uncensoring-catalog.json`](../config/upstreams/uncensoring-catalog.json) — Mullvad, open.dns0.eu, DG, UncensoredDNS×2, Quad9 Unsecured, Applied Privacy, LibreDNS, LavaDNS, Public RDNS Open, RadekSprta, Control D Uncensored, AdGuard unfiltered. Doc : [upstreams-uncensoring.md](upstreams-uncensoring.md).
+
+**VM Freebox OS** : [freebox-vm.md](freebox-vm.md) + [`packaging/freebox-vm/`](../packaging/freebox-vm/).
 
 ## Les 5 DNS capturés sur la Freebox
 

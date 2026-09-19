@@ -1,0 +1,57 @@
+{
+  "name": "freebox-dns-vm",
+  "version": "1.1.0",
+  "target": "Freebox OS VM (Delta / Ultra / Server v9+)",
+  "guest_os": ["Debian 12", "Ubuntu 24.04"],
+  "resources": {
+    "vcpus": 2,
+    "ram_mb_min": 2048,
+    "ram_mb_recommended": 4096,
+    "disk_gb_min": 16,
+    "disk_gb_recommended": 32,
+    "network": "LAN bridge"
+  },
+  "system_packages": [
+    "docker.io",
+    "docker-compose-v2",
+    "git",
+    "curl",
+    "ca-certificates",
+    "openssl",
+    "bind9-dnsutils",
+    "jq"
+  ],
+  "docker_images": [
+    {
+      "image": "mvance/unbound:latest",
+      "service": "unbound",
+      "role": "DoT uncensoring recursion"
+    },
+    {
+      "image": "adguard/dnsproxy:latest",
+      "service": "dns-libre",
+      "role": "uncensored front + DoH"
+    },
+    {
+      "image": "ghcr.io/0xerr0r/blocky:latest",
+      "service": "dns-secure",
+      "role": "threat-local ads/malware + DoH"
+    }
+  ],
+  "compose_files": ["docker-compose.yml", "docker-compose.prod.yml"],
+  "cloud_init": "cloud-init/freebox-vm-user-data.yaml",
+  "upstreams_catalog": "config/upstreams/uncensoring-catalog.json",
+  "ports_prod": {
+    "dns_libre": "HOST_IP:53",
+    "dns_secure": "HOST_IP:5354",
+    "doh_libre": "HOST_IP:8453",
+    "doh_secure": "HOST_IP:8444",
+    "blocky_ui": "HOST_IP:3080"
+  },
+  "dhcp_recommended": {
+    "dns1": "HOST_IP",
+    "dns2": "91.239.100.100"
+  },
+  "install_script": "packaging/freebox-vm/install.sh",
+  "docs": ["docs/freebox-vm.md", "docs/freebox.md", "docs/upstreams-uncensoring.md"]
+}

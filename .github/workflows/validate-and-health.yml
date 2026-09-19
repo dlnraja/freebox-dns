@@ -71,7 +71,14 @@ jobs:
           test -f config/freebox/README.md
           test -f docs/dns-analysis.md
           test -f docs/dns-lexicon.md
+          test -f docs/freebox-vm.md
+          test -f docs/upstreams-uncensoring.md
+          test -f packaging/freebox-vm/manifest.json
+          test -f packaging/freebox-vm/packages.txt
+          test -f packaging/freebox-vm/install.sh
+          test -f config/upstreams/uncensoring-catalog.json
           python3 -c "import json; s=json.load(open('config/freebox-dns-snapshot.json')); assert s['local_lexicon']['dns_libre']['bit']=='uncensored'"
+          python3 -c "import json; c=json.load(open('config/upstreams/uncensoring-catalog.json')); assert len(c['dot_uncensoring'])>=10; assert len(c['plain_fallback_order'])>=12"
 
   upstream-health:
     runs-on: ubuntu-latest
@@ -93,11 +100,22 @@ jobs:
           done
           echo "DNS 45.90.28.0 (NextDNS soft)"
           dig @45.90.28.0 example.com +time=3 +tries=1 +short || true
-          for host in dns.mullvad.net dns0.eu dns.digitale-gesellschaft.ch anycast.uncensoreddns.org dns.quad9.net; do
+          for host in \
+            dns.mullvad.net open.dns0.eu dns.digitale-gesellschaft.ch \
+            anycast.uncensoreddns.org unicast.uncensoreddns.org dns10.quad9.net \
+            dot1.applied-privacy.net dot.libredns.gr eu1.dns.lavate.ch \
+            open.public-rdns.com dns.radeksprta.eu \
+            uncensored.freedns.controld.com dns-unfiltered.adguard.com
+          do
             echo "Resolve $host"
             getent hosts "$host" || fail=$((fail+1))
           done
-          if [ "$fail" -gt 3 ]; then exit 1; fi
+          # Extra plain uncensoring IPs (soft)
+          for ip in 89.233.43.71 146.255.56.98 116.202.176.26 95.217.25.217 37.27.125.213 94.140.14.140; do
+            dig @"$ip" example.com +time=2 +tries=1 +short >/dev/null 2>&1 || echo "WARN soft $ip"
+          done
+          if [ "$fail" -gt 5 ]; then exit 1; fi
+          python3 -c "import json; c=json.load(open('config/upstreams/uncensoring-catalog.json')); assert len(c['dot_uncensoring'])>=10"
 
   blocklist-refresh:
     runs-on: ubuntu-latest

@@ -2,20 +2,43 @@
 # Lexicon from FREEBOX_DNS_4 NextDNS toolkit (denylist, ads/trackers, dual profile)
 # WITHOUT NextDNS cloud / parental / SafeSearch — filtering HERE, not Quad9 Secured remote
 # Display: Secure / Threat-local — see docs/dns-lexicon.md
+# Max uncensoring DoT upstreams — catalog: config/upstreams/uncensoring-catalog.json
 
 upstreams:
   groups:
     default:
       - tcp-tls:dns.mullvad.net
-      - tcp-tls:dns0.eu
+      - tcp-tls:open.dns0.eu
       - tcp-tls:dns.digitale-gesellschaft.ch
       - tcp-tls:anycast.uncensoreddns.org
+      - tcp-tls:unicast.uncensoreddns.org
+      - tcp-tls:dns10.quad9.net
+      - tcp-tls:dot1.applied-privacy.net
+      - tcp-tls:dot.libredns.gr
+      - tcp-tls:eu1.dns.lavate.ch
+      - tcp-tls:open.public-rdns.com
+      - tcp-tls:dns.radeksprta.eu
+      - tcp-tls:uncensored.freedns.controld.com
+      - tcp-tls:dns-unfiltered.adguard.com
     freebox_fallback:
-      # Prefer uncensoring pins; gateway last
+      # Max plain fallbacks — uncensoring first, gateway last, NextDNS soft-last
       - 91.239.100.100
+      - 89.233.43.71
       - 185.95.218.42
+      - 185.95.218.43
       - 9.9.9.10
+      - 149.112.112.10
+      - 194.242.2.2
+      - 193.110.81.254
+      - 146.255.56.98
+      - 116.202.176.26
+      - 95.217.25.217
+      - 37.27.125.213
+      - 80.211.208.74
+      - 76.76.2.5
+      - 94.140.14.140
       - 192.168.1.254
+      - 45.90.28.0
   strategy: parallel_best
   timeout: 2s
 
