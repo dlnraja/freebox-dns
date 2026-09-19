@@ -48,11 +48,24 @@ jobs:
           test -x packaging/freebox-vm/install.sh || chmod +x packaging/freebox-vm/install.sh scripts/package-freebox-vm.sh
           test -f docs/freebox-vm.md
           test -f cloud-init/freebox-vm-user-data.yaml
-      - name: Build tarball
-        run: bash scripts/package-freebox-vm.sh "${GITHUB_SHA::7}"
+      - name: Zip import kit into tarball tree
+        run: |
+          set -e
+          mkdir -p packaging/freebox-os-import
+          test -f packaging/freebox-os-import/freebox-os-vm.json
+          test -f packaging/freebox-os-import/IMPORT-FREEBOX-OS.md
+          bash scripts/package-freebox-vm.sh "${GITHUB_SHA::7}"
+          # Also ship lightweight Freebox OS import kit (no qcow2)
+          STAGE=dist/kit-stage
+          rm -rf "$STAGE" && mkdir -p "$STAGE"
+          cp packaging/freebox-os-import/* "$STAGE/"
+          cp packaging/freebox-vm/manifest.json "$STAGE/vm-manifest.json"
+          (cd "$STAGE" && zip -9 "../freebox-dns-freeboxos-kit-${GITHUB_SHA::7}.zip" ./*)
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: freebox-dns-vm
-          path: dist/freebox-dns-vm-*.tar.gz
+          path: |
+            dist/freebox-dns-vm-*.tar.gz
+            dist/freebox-dns-freeboxos-kit-*.zip
           if-no-files-found: error
