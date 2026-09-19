@@ -130,10 +130,33 @@ def main() -> int:
         "# Served locally BEFORE upstream forward (dns-libre / unbound / blocky)",
         "",
     ]
-    unbound_lines = [
-        "# Generated local-data — truthful A/AAAA before DoT forward",
-        "server:",
-    ]
+    # a-records.conf is included INSIDE unbound server: — no nested server: block
+    unbound_header = (
+        ROOT / "config" / "unbound" / "a-records.conf"
+    ).read_text(encoding="utf-8")
+    # Keep resilience knobs (lines before first local-data)
+    keep = []
+    for line in unbound_header.splitlines():
+        if line.strip().startswith("local-data:"):
+            break
+        keep.append(line)
+    if not any("serve-expired-ttl:" in x for x in keep):
+        keep = [
+            "# Included INSIDE mvance unbound server: block — no nested server:",
+            "serve-expired-ttl: 259200",
+            "serve-expired-client-timeout: 1800",
+            "serve-expired-reply-ttl: 30",
+            "serve-expired-ttl-reset: yes",
+            "",
+        ]
+    unbound_lines = list(keep)
+    # Merge critical local-data if present
+    crit = ROOT / "config" / "unbound" / "a-records.critical.conf"
+    if crit.exists():
+        for line in crit.read_text(encoding="utf-8").splitlines():
+            if line.strip().startswith("local-data:"):
+                unbound_lines.append(line)
+
     blocky_map: dict[str, str] = {}
 
     for domain in load_targets():
@@ -145,7 +168,6 @@ def main() -> int:
                 liar_a = ans
                 liar_nx = False
                 break
-            # empty → try next liar; if all empty treat as NX
         lied = is_lie_answer(liar_a, liar_nx)
 
         ctrl_a = consensus(controls, domain, "A")
@@ -159,8 +181,6 @@ def main() -> int:
             report["clean"].append(
                 {"domain": domain, "liar_a": liar_a, "control_a": ctrl_a}
             )
-            # Still optional: cache control answers locally for resilience
-            # Only write overrides when a lie was detected (strict mode)
             continue
 
         entry = {
@@ -174,10 +194,10 @@ def main() -> int:
 
         for ip in ctrl_a:
             host_lines.append(f"{ip} {domain}")
-            unbound_lines.append(f'  local-data: "{domain}. IN A {ip}"')
+            unbound_lines.append(f'local-data: "{domain}. IN A {ip}"')
         for ip in ctrl_aaaa:
             host_lines.append(f"{ip} {domain}")
-            unbound_lines.append(f'  local-data: "{domain}. IN AAAA {ip}"')
+            unbound_lines.append(f'local-data: "{domain}. IN AAAA {ip}"')
         if ctrl_a:
             blocky_map[domain] = ctrl_a[0]
 

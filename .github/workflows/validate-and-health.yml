@@ -83,7 +83,11 @@ jobs:
           test -f config/uncensor/probe-targets.txt
           test -f config/uncensor/sinkhole-signatures.json
           test -f docs/anti-lie-dns.md
+          test -f docs/resilience.md
           test -f docker-compose.ipv6.yml
+          test -f scripts/warm-local-cache.py
+          grep -q 'forward-first: yes' config/unbound/forward-records.conf
+          grep -q 'hosts.critical' config/dnsproxy/dns-libre.yaml
           python3 -c "import json; s=json.load(open('config/freebox-dns-snapshot.json')); assert s['local_lexicon']['dns_libre']['bit']=='uncensored'"
           python3 -c "import json; c=json.load(open('config/upstreams/uncensoring-catalog.json')); assert len(c['dot_uncensoring'])>=10; assert len(c['plain_fallback_order'])>=12"
           python3 -c "import json; j=json.load(open('packaging/freebox-os-import/freebox-os-vm.json')); assert j['vm']['disk_type']=='qcow2'; assert j['vm']['memory_mb']==2048"

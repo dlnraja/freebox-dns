@@ -23,6 +23,8 @@ jobs:
         run: sudo apt-get update -y && sudo apt-get install -y dnsutils python3
       - name: Run OONI-like anti-lie probe
         run: python3 scripts/ooni-like-anti-lie.py
+      - name: Warm critical local seeds
+        run: python3 scripts/warm-local-cache.py
       - name: Show report summary
         run: |
           python3 - <<'PY'
@@ -35,13 +37,16 @@ jobs:
               print("LIE", e["domain"], "->", e.get("control_a"), e.get("control_aaaa"))
           PY
           test -f config/uncensor/hosts.generated
+          test -f config/uncensor/hosts.critical
           test -f config/unbound/a-records.conf
+          grep -q github.com config/uncensor/hosts.critical
       - name: Commit generated overrides
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add config/uncensor/hosts.generated config/uncensor/blocky-custom-dns.yml \
-                  config/uncensor/last-probe-report.json config/unbound/a-records.conf
-          git diff --staged --quiet || git commit -m "chore: refresh anti-lie local DNS overrides (OONI-like probe)"
+          git add config/uncensor/hosts.generated config/uncensor/hosts.critical \
+                  config/uncensor/blocky-custom-dns.yml config/uncensor/last-probe-report.json \
+                  config/unbound/a-records.conf config/unbound/a-records.critical.conf
+          git diff --staged --quiet || git commit -m "chore: refresh local-first DNS seeds + anti-lie overrides"
           git push || true

@@ -10,7 +10,7 @@ Deux personnalités locales, chacune en **DNS classique (UDP/TCP)** et **DoH** (
 | **dns-secure** | `threat-local` ← toolkit NextDNS (sans cloud/parental) | Ads + malware **locaux** seulement |
 
 Lexique détaillé : [docs/dns-lexicon.md](docs/dns-lexicon.md).  
-Anti–DNS menteur (OONI) : [docs/anti-lie-dns.md](docs/anti-lie-dns.md) · IPv6 : `docker-compose.ipv6.yml`.
+Anti–DNS menteur (OONI) : [docs/anti-lie-dns.md](docs/anti-lie-dns.md) · résilience local-first : [docs/resilience.md](docs/resilience.md) · IPv6 : `docker-compose.ipv6.yml`.
 
 Repli intelligent vers une liste **épinglée une fois** de 5 DNS Freebox/LAN (`FREEBOX_DNS_1..5`). **Aucun sondage distant ultérieur** de votre Freebox.
 

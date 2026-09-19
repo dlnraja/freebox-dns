@@ -49,12 +49,13 @@ bootstrapDns:
   - tcp+udp:9.9.9.10
   - tcp+udp:91.239.100.100
 
-# Local truthful hosts BEFORE upstream (OONI-like anti-lie) — A/AAAA
+# Local truthful hosts BEFORE upstream (OONI-like anti-lie + critical seeds)
 hostsFile:
   sources:
+    - /app/uncensor/hosts.critical
     - /app/uncensor/hosts.local
     - /app/uncensor/hosts.generated
-  hostsTTL: 1h
+  hostsTTL: 24h
   filterLoopback: false
 
 blocking:
@@ -81,8 +82,9 @@ blocking:
 
 caching:
   minTime: 5m
-  maxTime: 30m
+  maxTime: 24h
   prefetching: true
+  cacheTimeNegative: 30m
 
 ports:
   dns: 53

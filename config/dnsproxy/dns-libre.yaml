@@ -1,7 +1,9 @@
-# dns-libre — bit: uncensoring
-# Lexicon from FREEBOX_DNS_1 UncensoredDNS + #2 Digitale Gesellschaft + #3 Quad9 Unsecured
-# Local anti-lie hosts BEFORE unbound forward — docs/anti-lie-dns.md (OONI-inspired)
-# Max upstreams/fallbacks — config/upstreams/uncensoring-catalog.json
+# dns-libre — bit: uncensoring + RESILIENT (local-first)
+# Resolution order:
+#   1) hosts.critical / hosts.local / hosts.generated  (project-local)
+#   2) unbound (DoT forward-first, then ROOT recursion + serve-expired cache)
+#   3) fallback plain uncensoring catalog + Freebox pins
+# See docs/resilience.md
 ---
 bootstrap:
   - "9.9.9.10:53"
@@ -9,7 +11,6 @@ bootstrap:
   - "185.95.218.42:53"
 
 listen-addrs:
-  # Dual-stack inside container: "::" accepts IPv4+IPv6 on Linux; avoid listing both 0.0.0.0 and ::
   - "::"
 
 listen-ports:
@@ -21,30 +22,18 @@ https-port:
 tls-crt: /opt/dnsproxy/certs/server.crt
 tls-key: /opt/dnsproxy/certs/server.key
 
-# Local resolution FIRST (A + AAAA) — before any upstream
+# LOCAL FIRST — before any network DNS
 hosts-file-enabled: true
 hosts-files:
+  - /opt/dnsproxy/uncensor/hosts.critical
   - /opt/dnsproxy/uncensor/hosts.local
   - /opt/dnsproxy/uncensor/hosts.generated
 
+# Primary: resilient unbound only
 upstream:
   - "172.28.0.10:53"
-  - "194.242.2.2:53"
-  - "193.110.81.254:53"
-  - "91.239.100.100:53"
-  - "89.233.43.71:53"
-  - "185.95.218.42:53"
-  - "185.95.218.43:53"
-  - "9.9.9.10:53"
-  - "149.112.112.10:53"
-  - "146.255.56.98:53"
-  - "116.202.176.26:53"
-  - "95.217.25.217:53"
-  - "37.27.125.213:53"
-  - "80.211.208.74:53"
-  - "76.76.2.5:53"
-  - "94.140.14.140:53"
 
+# Online fallbacks if unbound itself is unreachable
 fallback:
   - "91.239.100.100:53"
   - "89.233.43.71:53"
@@ -65,8 +54,9 @@ fallback:
   - "45.90.28.0:53"
 
 cache: true
-cache-min-ttl: 30
-cache-max-ttl: 3600
+cache-min-ttl: 60
+cache-max-ttl: 86400
+cache-optimistic: true
 ratelimit: 0
-timeout: "10s"
+timeout: "8s"
 verbose: false
