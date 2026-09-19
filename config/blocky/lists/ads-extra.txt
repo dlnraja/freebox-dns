@@ -1,0 +1,5 @@
+# Extra ad/tracker domains (one per line). Keep small; CI refreshes remote lists.
+# Format: plain domain names (Blocky hostfile-compatible via local path)
+doubleclick.net
+googleadservices.com
+googlesyndication.com

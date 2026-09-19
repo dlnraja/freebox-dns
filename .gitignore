@@ -1,0 +1,13 @@
+.env
+*.pem
+*.key
+certs/*.crt
+certs/*.key
+certs/*.pfx
+!.gitkeep
+__pycache__/
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/*.code-workspace.bak

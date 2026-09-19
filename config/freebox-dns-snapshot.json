@@ -1,0 +1,32 @@
+{
+  "captured_at": "2026-09-19T21:05:00Z",
+  "source": "Windows DHCP (WiFi) + Freebox OS api_version (LAN)",
+  "gateway": "192.168.1.254",
+  "freebox": {
+    "box_model_name": "Freebox v9 (r1)",
+    "box_model": "fbxgw9-r1",
+    "device_type": "FreeboxServer9,1",
+    "api_version": "16.0",
+    "note": "No box UID / remote api_domain / location stored (privacy)."
+  },
+  "dhcp_dns_advertised": [
+    "91.239.100.100",
+    "185.95.218.42",
+    "9.9.9.10",
+    "45.90.28.0",
+    "192.168.1.254"
+  ],
+  "pinned_fallback": {
+    "FREEBOX_DNS_1": "91.239.100.100",
+    "FREEBOX_DNS_2": "185.95.218.42",
+    "FREEBOX_DNS_3": "9.9.9.10",
+    "FREEBOX_DNS_4": "45.90.28.0",
+    "FREEBOX_DNS_5": "192.168.1.254"
+  },
+  "operator_dns_reference": {
+    "ns0.free.fr": "212.27.32.5",
+    "ns1.free.fr": "213.228.0.168",
+    "note": "Classic Free ISP resolvers (reference only; not used as primary pin)."
+  },
+  "policy": "Pinned once at project creation. Never poll Freebox remotely later. Edit this file + .env locally if your LAN DNS change."
+}

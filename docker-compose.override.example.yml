@@ -1,0 +1,3 @@
+# Local extras (optional second IP / macvlan) — see docs/freebox.md
+# cp docker-compose.override.example.yml docker-compose.override.yml
+services: {}

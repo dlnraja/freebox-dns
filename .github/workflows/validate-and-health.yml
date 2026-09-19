@@ -1,0 +1,76 @@
+name: validate-and-health
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  schedule:
+    - cron: "0 */12 * * *"
+  workflow_dispatch:
+
+jobs:
+  compose-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy env
+        run: cp .env.example .env
+      - name: Validate compose
+        run: docker compose config -q
+      - name: Show services
+        run: docker compose config --services
+
+  upstream-health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check pinned Freebox/LAN DNS + DoT hosts
+        run: |
+          set -e
+          fail=0
+          for ip in 91.239.100.100 185.95.218.42 9.9.9.10 45.90.28.0; do
+            echo "DNS $ip"
+            if dig @"$ip" example.com +time=3 +tries=1 +short | grep -qE '^[0-9.]+'; then
+              echo OK
+            else
+              echo WARN "$ip"
+              fail=$((fail+1))
+            fi
+          done
+          for host in dns.quad9.net dns.digitale-gesellschaft.ch; do
+            echo "Resolve $host"
+            getent hosts "$host" || fail=$((fail+1))
+          done
+          # Soft fail: warn but don't red the whole pipeline if one anycast blips
+          if [ "$fail" -gt 2 ]; then exit 1; fi
+
+  blocklist-refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe blocklist URLs
+        run: |
+          set -e
+          urls=(
+            "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+            "https://adaway.org/hosts.txt"
+            "https://urlhaus.abuse.ch/downloads/hostfile/"
+          )
+          for u in "${urls[@]}"; do
+            code=$(curl -sL -o /tmp/bl -w "%{http_code}" --max-time 60 "$u" || true)
+            echo "$u -> HTTP $code"
+            test "$code" = "200"
+            test -s /tmp/bl
+          done
+      - name: Write refresh stamp
+        run: |
+          mkdir -p config/blocky/lists
+          date -u +"last_ci_blocklist_probe=%Y-%m-%dT%H:%M:%SZ" > config/blocky/lists/.last-refresh
+      - name: Commit stamp if scheduled
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/blocky/lists/.last-refresh
+          git diff --staged --quiet || git commit -m "chore: blocklist probe stamp"
+          git push || true

@@ -1,0 +1,17 @@
+# Optional production overlay: map host :53 and DoH :443 for libre only.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# Requires free host ports 53 and 443; stop conflicting resolvers first.
+
+services:
+  dns-libre:
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+      - "443:443/tcp"
+
+  dns-secure:
+    ports:
+      - "5354:53/udp"
+      - "5354:53/tcp"
+      - "8444:443/tcp"
+      - "3080:4000/tcp"

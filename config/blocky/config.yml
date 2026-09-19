@@ -1,0 +1,61 @@
+# dns-secure — anti-malware + anti-ad (NOT political censorship)
+# Blocky: UDP/TCP DNS + DoH on :443 (/dns-query) + HTTP UI :4000
+
+upstreams:
+  groups:
+    default:
+      - tcp-tls:dns.quad9.net
+      - tcp-tls:dns.digitale-gesellschaft.ch
+      - tcp-tls:anycast.uncensoreddns.org
+    # Static Freebox/LAN pins — used by custom group / emergency (no remote poll)
+    freebox_fallback:
+      - 91.239.100.100
+      - 185.95.218.42
+      - 9.9.9.10
+      - 45.90.28.0
+      - 192.168.1.254
+  strategy: parallel_best
+  timeout: 2s
+
+connectIPVersion: v4
+
+blocking:
+  blackLists:
+    ads:
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+      - https://adaway.org/hosts.txt
+      - /app/lists/ads-extra.txt
+    malware:
+      - https://urlhaus.abuse.ch/downloads/hostfile/
+      - https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt
+      - /app/lists/malware-extra.txt
+  clientGroupsBlock:
+    default:
+      - ads
+      - malware
+  blockType: nxDomain
+  blockTTL: 6h
+  refreshPeriod: 12h
+  downloadTimeout: 60s
+  startStrategy: blocking
+
+caching:
+  minTime: 5m
+  maxTime: 30m
+  prefetching: true
+
+ports:
+  dns: 53
+  http: 4000
+  https: 443
+
+certFile: /app/certs/server.crt
+keyFile: /app/certs/server.key
+
+prometheus:
+  enable: false
+
+log:
+  level: info
+  format: text
+  privacy: true

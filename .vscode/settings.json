@@ -1,0 +1,14 @@
+{
+  "files.eol": "\n",
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "[yaml]": {
+    "editor.tabSize": 2
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  },
+  "docker.composeCommand": "docker compose"
+}

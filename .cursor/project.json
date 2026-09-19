@@ -1,0 +1,5 @@
+{
+  "name": "freebox-dns",
+  "root": "C:\\Users\\Dell\\Documents\\freebox-dns",
+  "description": "Dual DNS (dns-libre + dns-secure) for Freebox / Pi / WSL"
+}

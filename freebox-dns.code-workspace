@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "name": "freebox-dns",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": false
+    },
+    "editor.formatOnSave": true,
+    "files.eol": "\n"
+  }
+}
