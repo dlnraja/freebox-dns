@@ -127,6 +127,7 @@ services:
     volumes:
       - ./config/blocky/config.yml:/app/config.yml:ro
       - ./config/blocky/lists:/app/lists:ro
+      - ./config/blocky/querylog:/app/querylog
       - ./config/uncensor:/app/uncensor:ro
       - ./certs:/app/certs:ro
     networks:

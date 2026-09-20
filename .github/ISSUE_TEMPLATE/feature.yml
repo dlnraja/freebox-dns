@@ -1,0 +1,28 @@
+name: Feature request
+description: Propose an improvement (prefer Blocky/Unbound over installing Pi-hole FTL)
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      placeholder: What is hard today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      placeholder: How should it work? Which mode (uncensored/malware/antipub/secure)?
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This is not parental / porn / SafeSearch filtering
+          required: true
+        - label: I read docs/pihole-parity.md (if related to Pi-hole)
+          required: false

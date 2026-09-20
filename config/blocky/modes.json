@@ -39,7 +39,9 @@
         "ublock",
         "anti_adblock",
         "malware"
-      ]
+      ],
+      "queryLog": "csv:/app/querylog",
+      "ui": ":3080"
     }
   }
 }

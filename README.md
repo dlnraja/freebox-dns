@@ -1,86 +1,90 @@
 # Freebox Dual DNS — le résolveur est la **VM Freebox**, pas votre PC
 
-**Production canonique** : stack Docker sur la **VM Freebox OS** (ARM64).  
-Tous les clients Wi‑Fi / Ethernet du LAN résolvent via le **DHCP Freebox** → IP de cette VM.  
-Votre PC Windows / WSL / Docker Desktop = **lab / développement uniquement** — jamais le DNS système du salon.
+**Production** : Docker sur la **VM Freebox OS** (ARM64). Wi‑Fi / Ethernet → DHCP Freebox → IP de cette VM.  
+PC Windows / WSL = **lab uniquement**.
 
-**Guides** : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) · **Crédits** : [docs/CREDITS.md](docs/CREDITS.md)
+| | |
+| --- | --- |
+| **Guides** | [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) |
+| **Crédits** | [docs/CREDITS.md](docs/CREDITS.md) |
+| **Changelog** | [CHANGELOG.md](CHANGELOG.md) |
+| **Features** | [FEATURES.md](FEATURES.md) |
+| **Pi-hole-like** | [docs/pihole-parity.md](docs/pihole-parity.md) |
 
-## Qui résout le DNS ?
+## Modes (smart spit)
 
-| Rôle | Qui | IP typique |
-| --- | --- | --- |
-| **Résolveur LAN (prod)** | VM `freebox-dns` sur Freebox OS | ex. `192.168.1.71` |
-| Filet SOS (si VM down) | Quad9 Unsecured | `9.9.9.10` |
-| PC Windows | Client DHCP / Wi‑Fi | ex. `192.168.1.15` — **pas** un serveur DNS |
+Hosts locaux → filtre → Unbound (local-data / cache → DoT → root).
 
-DHCP Freebox recommandé : **DNS1 = `9.9.9.10`**, **DNS2 = IP_VM**.  
-Détail Wi‑Fi : [docs/wifi-lan.md](docs/wifi-lan.md) · DHCP sûr : [docs/safe-freebox-deploy.md](docs/safe-freebox-deploy.md).
-
-## Modes (sur la VM)
-
-Smart spit : **hosts locaux → filtre mode → Unbound (local-data / cache → DoT → root)**.
-
-| Mode | Service | Port prod | DoH | Filtrage |
+| Mode | Service | Prod | DoH | Rôle |
 | --- | --- | --- | --- | --- |
-| **uncensored** | `dns-libre` | `:53` | `:8453` | Aucun denylist |
-| **malware** | `dns-malware` | `:5357` | `:8445` | Menaces |
-| **antipub** | `dns-antipub` | `:5358` | `:8446` | Pubs + trackers |
-| **secure** | `dns-secure` | `:5354` | `:8444` | antipub + malware |
+| **uncensored** | dns-libre | `:53` | `:8453` | Aucun denylist |
+| **malware** | dns-malware | `:5357` | `:8445` | Menaces |
+| **antipub** | dns-antipub | `:5358` | `:8446` | Pubs + uBlock DNS + anti-adblock |
+| **secure** | dns-secure | `:5354` | `:8444` | Full Pi-hole-like + UI `:3080` + query log CSV |
 
-Docs : [modes](docs/modes.md) · [résilience](docs/resilience.md) · [DoH/DoT](docs/encrypted-dns.md) · [anti-lie](docs/anti-lie-dns.md).
+## Pi-hole / uBlock (via Blocky)
+
+Pas de Pi-hole FTL : **Blocky** fournit gravity multi-listes, whitelist, groupes, NXDOMAIN, refresh 12h, UI et journal CSV local sur `secure`.  
+Détail : [docs/filtering.md](docs/filtering.md) · [docs/pihole-parity.md](docs/pihole-parity.md).
+
+```bash
+# Whitelist / blacklist fichiers
+# config/blocky/lists/allowlist.txt · ads-extra.txt · malware-extra.txt
+bash scripts/blocky-refresh-lists.sh   # force refresh (gravity-like)
+# UI : http://IP_VM:3080
+```
+
+## DHCP / Wi‑Fi
+
+| DNS1 | DNS2 |
+| --- | --- |
+| `9.9.9.10` (SOS Quad9) | IP_VM (ex. `192.168.1.71`) |
+
+Guide : [docs/wifi-lan.md](docs/wifi-lan.md) · Pages : [Wi‑Fi / LAN](https://dlnraja.github.io/freebox-dns/guides/wifi-lan.html)
 
 ## Architecture
 
 ```mermaid
 flowchart TB
-  wifi[Clients Wi-Fi / Ethernet]
+  wifi[Clients Wi-Fi]
   dhcp[Freebox DHCP]
   vm[VM freebox-dns]
   unbound[Unbound local-first]
-  dot[Amonts DoT]
   sos[SOS 9.9.9.10]
 
   wifi --> dhcp
-  dhcp -->|DNS2 = IP VM| vm
-  dhcp -->|DNS1 = SOS| sos
-  vm -->|hosts puis Unbound| unbound
-  unbound -->|si besoin| dot
+  dhcp -->|DNS2| vm
+  dhcp -->|DNS1| sos
+  vm --> unbound
 ```
 
-## Prod — Freebox VM (recommandé)
+## Prod — Freebox VM
 
-1. Importer le QCOW2 ARM64 + cloud-init : [packaging/freebox-os-import/](packaging/freebox-os-import/) · [docs/freebox-vm.md](docs/freebox-vm.md)
-2. Attendre health : `dig @IP_VM example.com`
-3. Freebox OS → DHCP : DNS1=`9.9.9.10`, DNS2=`IP_VM`
-4. Renouveler le bail Wi‑Fi des clients (ou redémarrer Wi‑Fi)
+1. QCOW2 ARM64 + cloud-init — [packaging/freebox-os-import/](packaging/freebox-os-import/)
+2. `dig @IP_VM example.com`
+3. Freebox DHCP : DNS1=`9.9.9.10`, DNS2=`IP_VM`
+4. Warm : `python3 scripts/warm-local-cache.py` · `bash scripts/warm-unbound-runtime.sh`
 
-Guides Pages : [Déployer Freebox](https://dlnraja.github.io/freebox-dns/guides/deploy-freebox.html) · [DHCP sûr](https://dlnraja.github.io/freebox-dns/guides/dhcp-safe.html) · [Wi‑Fi / LAN](https://dlnraja.github.io/freebox-dns/guides/wifi-lan.html)
-
-## Lab — PC / WSL (ne pas pousser en DHCP Freebox)
+## Lab — PC / WSL (pas en DHCP Freebox)
 
 ```bash
 cp .env.example .env
-# HOST_IP = IP LAN du lab seulement — PAS pour DHCP Freebox
 bash scripts/generate-certs.sh
-docker compose up -d          # ports 5356/5354
+docker compose up -d
 bash scripts/health-check.sh
 ```
 
-Pi : [docs/deploy-pi.md](docs/deploy-pi.md) · WSL lab : [docs/deploy-wsl.md](docs/deploy-wsl.md)
+## Docs utiles
 
-## Fallbacks SOS épinglés
-
-| Pin | IP | Rôle |
-| --- | --- | --- |
-| FREEBOX_DNS_1 | `9.9.9.10` | Quad9 Unsecured — DHCP SOS |
-| FREEBOX_DNS_2 | `194.242.2.2` | Mullvad Unfiltered |
-| FREEBOX_DNS_3 | `94.140.14.140` | AdGuard Non-filtering |
-| FREEBOX_DNS_4 | `45.90.28.0` | NextDNS — lexique secure only |
-| FREEBOX_DNS_5 | `192.168.1.254` | Passerelle Freebox |
-
-UncensoredDNS / Digitale Gesellschaft = **DoT Unbound** (UDP/53 souvent filtré sur Free).
+| Doc | Sujet |
+| --- | --- |
+| [docs/README.md](docs/README.md) | Index |
+| [docs/resilience.md](docs/resilience.md) | Local-first Unbound |
+| [docs/anti-lie-dns.md](docs/anti-lie-dns.md) | Anti–DNS menteur |
+| [docs/encrypted-dns.md](docs/encrypted-dns.md) | DoH / DoT / DoQ |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribuer |
+| [SECURITY.md](SECURITY.md) | Sécurité |
 
 ## Licence
 
-MIT — voir [LICENSE](LICENSE).
+MIT — [LICENSE](LICENSE).

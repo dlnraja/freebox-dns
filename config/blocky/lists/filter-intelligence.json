@@ -17,8 +17,13 @@
     "group_management": "clientGroupsBlock.default → pihole|ublock|anti_adblock|malware",
     "block_mode_nxdomain": "blockType: nxDomain",
     "list_update": "loading.refreshPeriod 12h",
-    "web_ui_query_stats": "Blocky HTTP :4000 (privacy: true — no verbose query log)",
-    "not_mapped": ["pihole_dhcp", "local_dns_records_ui", "gravity_teleporter"]
+    "web_ui_query_stats": "Blocky HTTP :3080 (secure) + CSV queryLog 7d in /app/querylog",
+    "not_mapped": [
+      "pihole_dhcp",
+      "local_dns_records_ui",
+      "gravity_teleporter"
+    ],
+    "list_force_refresh": "scripts/blocky-refresh-lists.sh"
   },
   "ublock_origin_features_mapped": {
     "easylist_easyprivacy": "HaGeZi wildcard/multi + Firebog Easyprivacy + AdguardDNS + OISD small",

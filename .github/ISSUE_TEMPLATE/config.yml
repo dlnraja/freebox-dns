@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation (GitHub Pages)
+    url: https://dlnraja.github.io/freebox-dns/
+    about: Illustrated guides — install, DHCP, Wi‑Fi, Freebox VM
+  - name: Pi-hole parity (Blocky)
+    url: https://github.com/dlnraja/freebox-dns/blob/main/docs/pihole-parity.md
+    about: What is mapped from Pi-hole / uBlock — and what is not

@@ -1,0 +1,39 @@
+name: Bug report
+description: Something broken on Freebox VM, DHCP, or a DNS mode
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks — please say whether the **resolver is the Freebox VM** (prod) or a PC lab stack.
+  - type: dropdown
+    id: role
+    attributes:
+      label: Where does DNS run?
+      options:
+        - Freebox OS VM (production)
+        - Raspberry Pi
+        - Windows / WSL lab
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      placeholder: Expected vs actual; dig @IP_VM example.com output
+    validations:
+      required: true
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: git commit, Freebox model, compose files used
+  - type: checkboxes
+    id: secrets
+    attributes:
+      label: Confirm
+      options:
+        - label: I did not paste Freebox tokens, passwords, or box UID
+          required: true

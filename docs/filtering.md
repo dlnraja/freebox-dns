@@ -28,7 +28,7 @@ antipub **+** malware, sans cloud NextDNS ni contrôle parental.
 
 | Source | Au DNS (Blocky) | Hors scope DNS |
 | --- | --- | --- |
-| **Pi-hole** | Gravity multi-listes, blacklist exacte, whitelist, groupes, NXDOMAIN, refresh 12h, UI `:3080` | DHCP Freebox, teleporter |
+| **Pi-hole** | Gravity multi-listes, blacklist exacte, whitelist, groupes, NXDOMAIN, refresh 12h, UI `:3080`, query log CSV local (`secure`) | DHCP Freebox, teleporter, regex UI |
 | **uBlock Origin** | HaGeZi `wildcard/multi` + `popupads`, EasyPrivacy/AdGuardDNS (Firebog), OISD small, malware | Filtres cosmétiques, scriptlets navigateur |
 | **Anti–anti-adblock** | Firebog **Admiral** + `anti-adblock.txt` (Funding Choices, AdSafe…) | Masquage DOM — garder uBO dans le navigateur |
 
@@ -39,7 +39,11 @@ antipub **+** malware, sans cloud NextDNS ni contrôle parental.
 3. **`anti_adblock`** — Admiral + `lists/anti-adblock.txt`
 4. **`malware`** — URLhaus, Spam404, KADhosts, DandelionSprout, HaGeZi TIF medium
 
-Allowlist commune : `config/blocky/lists/allowlist.txt` (GitHub, Freebox, mirrors…).
+Allowlist commune : `config/blocky/lists/allowlist.txt` (GitHub, Freebox, mirrors…).  
+Refresh forcé : `bash scripts/blocky-refresh-lists.sh`.  
+UI + query log CSV (7 j) : mode **secure** → `http://HOST_IP:3080` · fichiers dans `config/blocky/querylog/`.
+
+Parité détaillée : [pihole-parity.md](pihole-parity.md).
 
 **Exclu volontairement** : parental, porn, SafeSearch, listes StevenBlack *gambling/social/porn*, censure nationale, logs cloud.
 

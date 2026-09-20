@@ -125,6 +125,15 @@ log:
   level: info
   format: text
   privacy: true
+{querylog}
+"""
+
+QUERYLOG_SECURE = """
+# Pi-hole-like local query log (CSV on VM disk only — not cloud)
+queryLog:
+  type: csv
+  target: /app/querylog
+  logRetentionDays: 7
 """
 
 MODES = {
@@ -132,16 +141,19 @@ MODES = {
         "file": "config-malware.yml",
         "title": "malware-free (threats only, no ads filter)",
         "groups": ["malware"],
+        "querylog": "",
     },
     "antipub": {
         "file": "config-antipub.yml",
         "title": "antipub intelligent (Pi-hole + uBlock DNS + anti–anti-adblock)",
         "groups": ["pihole", "ublock", "anti_adblock"],
+        "querylog": "",
     },
     "secure": {
         "file": "config.yml",
-        "title": "secure full (antipub + malware)",
+        "title": "secure full (antipub + malware) + Pi-hole-like CSV query log",
         "groups": ["pihole", "ublock", "anti_adblock", "malware"],
+        "querylog": QUERYLOG_SECURE,
     },
 }
 
@@ -153,6 +165,7 @@ def render(mode: str, meta: dict) -> str:
         title=meta["title"],
         denylists=DENYLISTS,
         groups=groups,
+        querylog=meta.get("querylog", ""),
     )
 
 
@@ -193,6 +206,8 @@ def main() -> int:
                 "service": "dns-secure",
                 "config": "config/blocky/config.yml",
                 "filter": ["pihole", "ublock", "anti_adblock", "malware"],
+                "queryLog": "csv:/app/querylog",
+                "ui": ":3080",
             },
         },
     }
