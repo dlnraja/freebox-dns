@@ -32,12 +32,22 @@
   },
   "lab_ports": {
     "dns_libre": 5356,
+    "dns_malware": 5357,
+    "dns_antipub": 5358,
     "dns_secure": 5354,
     "doh_libre": 8453,
+    "doh_malware": 8445,
+    "doh_antipub": 8446,
     "doh_secure": 8444,
     "dnscrypt_proxy": 5359,
     "dnscrypt_server": 8443,
     "blocky_ui": 3080,
+    "modes_order": {
+      "uncensored": "hosts → Unbound → (dnsproxy fallbacks)",
+      "malware": "hosts → malware denylist → Unbound",
+      "antipub": "hosts → pihole + ublock + anti_adblock → Unbound",
+      "secure": "hosts → pihole + ublock + anti_adblock + malware → Unbound"
+    },
     "note": "Sur Windows, 5353 est souvent pris (mDNS). En lab Freebox DHCP ne pousse que le port 53 — utiliser overlay prod ou forwarder. DNSCrypt :5359 = proxy→Quad9 ; :8443 = serveur LAN (profile)."
   },
   "prod_recommended": {

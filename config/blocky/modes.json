@@ -1,47 +1,76 @@
 {
+  "title": "Smart spit \u2014 4 DNS modes",
+  "doc": "docs/modes.md",
   "smart_split": [
     "1_local_hosts_uncensor",
-    "2_blocky_mode_groups",
+    "2_mode_filter",
     "3_unbound_forward_first_dot",
-    "4_root_or_serve_expired"
+    "4_root_or_serve_expired_or_dnsproxy_fallbacks"
   ],
   "modes": {
     "uncensored": {
       "engine": "dnsproxy",
       "service": "dns-libre",
+      "port_lab": 5356,
+      "port_prod": 53,
+      "doh": 8453,
+      "dot_lab": 8853,
+      "dot_prod": 853,
+      "doq_lab": 8853,
       "filter": [],
-      "note": "No denylist \u2014 local hosts then Unbound"
+      "order": "hosts \u2192 Unbound \u2192 (dnsproxy fallbacks)",
+      "note": "No denylist \u2014 local hosts then Unbound; dnsproxy fallbacks if Unbound down"
     },
     "malware": {
       "engine": "blocky",
       "service": "dns-malware",
       "config": "config/blocky/config-malware.yml",
+      "port_lab": 5357,
+      "port_prod": 5357,
+      "doh": 8445,
+      "dot_lab": 8855,
       "filter": [
         "malware"
-      ]
+      ],
+      "order": "hosts \u2192 malware denylist \u2192 Unbound"
     },
     "antipub": {
       "engine": "blocky",
       "service": "dns-antipub",
       "config": "config/blocky/config-antipub.yml",
+      "port_lab": 5358,
+      "port_prod": 5358,
+      "doh": 8446,
+      "dot_lab": 8856,
       "filter": [
         "pihole",
         "ublock",
         "anti_adblock"
-      ]
+      ],
+      "order": "hosts \u2192 pihole + ublock + anti_adblock \u2192 Unbound"
     },
     "secure": {
       "engine": "blocky",
       "service": "dns-secure",
       "config": "config/blocky/config.yml",
+      "port_lab": 5354,
+      "port_prod": 5354,
+      "doh": 8444,
+      "dot_lab": 8854,
       "filter": [
         "pihole",
         "ublock",
         "anti_adblock",
         "malware"
       ],
+      "order": "hosts \u2192 pihole + ublock + anti_adblock + malware \u2192 Unbound",
       "queryLog": "csv:/app/querylog",
       "ui": ":3080"
     }
+  },
+  "dhcp": {
+    "dns1_sos": "9.9.9.10",
+    "dns2": "HOST_IP (uncensored / dns-libre :53 prod)",
+    "note": "Other modes via DoH / alternate Do53 ports \u2014 never replace SOS with only a filtered mode"
   }
 }

@@ -36,6 +36,12 @@
       "doh_malware": 8445,
       "doh_antipub": 8446,
       "doh_secure": 8444,
+      "modes_order": {
+        "uncensored": "hosts → Unbound → (dnsproxy fallbacks)",
+        "malware": "hosts → malware denylist → Unbound",
+        "antipub": "hosts → pihole + ublock + anti_adblock → Unbound",
+        "secure": "hosts → pihole + ublock + anti_adblock + malware → Unbound"
+      },
       "blocky_ui": 3080
     },
     "modes_doc": "docs/modes.md"

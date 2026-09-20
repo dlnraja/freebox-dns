@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Modes DNS — freebox-dns</title>
+  <meta name="description" content="Smart spit : uncensored, malware, antipub, secure — ports et ordre de résolution.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/style.css">
@@ -14,42 +15,89 @@
     <nav class="site-nav"><ul>
       <li><a href="../index.html">Accueil</a></li>
       <li><a href="usage.html">Utilisation</a></li>
+      <li><a href="modes.html" aria-current="page">Modes</a></li>
+      <li><a href="filtering.html">Filtrage</a></li>
       <li><a href="../credits.html">Crédits</a></li>
     </ul></nav>
   </div></header>
   <main class="prose">
     <nav class="breadcrumb"><a href="../index.html">Accueil</a> › Guides › Modes</nav>
     <h1>Smart spit — 4 modes</h1>
-    <p>La VM héberge son DNS : <strong>listes locales d’abord</strong>, puis forward Unbound (DoT uncensoring).</p>
+    <p>La VM héberge son DNS : <strong>hosts locaux d’abord</strong>, puis le filtre du mode, puis Unbound (DoT uncensoring).</p>
+
     <pre class="mermaid">
 flowchart LR
   Q[Client] --> H[Hosts locaux anti-lie]
   H --> M{Mode}
   M -->|uncensored| U[Unbound]
   M -->|malware| B1[Blocky malware]
-  M -->|antipub| B2[Blocky ads+uBO]
+  M -->|antipub| B2[Blocky pihole+ublock+anti_adblock]
   M -->|secure| B3[Blocky full]
   B1 --> U
   B2 --> U
   B3 --> U
   U --> W[DoT / root]
+  U -.->|si down| F[dnsproxy fallbacks]
     </pre>
+
+    <h2>Matrice</h2>
     <table>
-      <thead><tr><th>Mode</th><th>Port DNS</th><th>DoH</th><th>Effet</th></tr></thead>
+      <thead>
+        <tr><th>Mode</th><th>Service</th><th>Port (lab)</th><th>Order</th></tr>
+      </thead>
       <tbody>
-        <tr><td><strong>uncensored</strong></td><td>:53</td><td>:8453</td><td>Aucune pub bloquée — anti-censure</td></tr>
-        <tr><td><strong>malware</strong></td><td>:5357</td><td>:8445</td><td>Menaces seulement</td></tr>
-        <tr><td><strong>antipub</strong></td><td>:5358</td><td>:8446</td><td>Pubs / trackers / anti-adblock</td></tr>
-        <tr><td><strong>secure</strong></td><td>:5354</td><td>:8444</td><td>antipub + malware</td></tr>
+        <tr>
+          <td><strong>uncensored</strong></td>
+          <td><code>dns-libre</code></td>
+          <td><code>5356</code> (prod <code>:53</code>)</td>
+          <td><code>hosts → Unbound → (dnsproxy fallbacks)</code></td>
+        </tr>
+        <tr>
+          <td><strong>malware</strong></td>
+          <td><code>dns-malware</code></td>
+          <td><code>5357</code></td>
+          <td><code>hosts → malware denylist → Unbound</code></td>
+        </tr>
+        <tr>
+          <td><strong>antipub</strong></td>
+          <td><code>dns-antipub</code></td>
+          <td><code>5358</code></td>
+          <td><code>hosts → pihole + ublock + anti_adblock → Unbound</code></td>
+        </tr>
+        <tr>
+          <td><strong>secure</strong></td>
+          <td><code>dns-secure</code></td>
+          <td><code>5354</code></td>
+          <td><code>hosts → pihole + ublock + anti_adblock + malware → Unbound</code></td>
+        </tr>
       </tbody>
     </table>
+
+    <h2>DoH / DoT (lab)</h2>
+    <table>
+      <thead><tr><th>Mode</th><th>DoH</th><th>DoT</th><th>Extras</th></tr></thead>
+      <tbody>
+        <tr><td>uncensored</td><td><code>:8453</code></td><td><code>:8853</code> / prod <code>:853</code></td><td>DoQ sur le même port UDP</td></tr>
+        <tr><td>malware</td><td><code>:8445</code></td><td><code>:8855</code></td><td>—</td></tr>
+        <tr><td>antipub</td><td><code>:8446</code></td><td><code>:8856</code></td><td>—</td></tr>
+        <tr><td>secure</td><td><code>:8444</code></td><td><code>:8854</code></td><td>UI <code>:3080</code> · query log CSV</td></tr>
+      </tbody>
+    </table>
+
     <div class="callout warn">
-      <strong>DHCP</strong> : DNS1 = <code>9.9.9.10</code> (SOS Quad9), DNS2 = IP VM (uncensored). Les autres modes = DoH / port manuel.
+      <strong>DHCP</strong> : DNS1 = <code>9.9.9.10</code> (SOS Quad9), DNS2 = IP VM (<strong>uncensored</strong>). Les autres modes = port Do53 / DoH / profil — jamais un filtre seul sans SOS.
     </div>
-    <p>Doc technique : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/modes.md">docs/modes.md</a></p>
+
+    <h2>Tests</h2>
+    <pre><code>dig @$HOST_IP -p 5356 example.com +short   # uncensored lab
+dig @$HOST_IP -p 5357 doubleclick.net +short  # malware (ads OK)
+dig @$HOST_IP -p 5358 doubleclick.net +short  # antipub → NXDOMAIN
+dig @$HOST_IP -p 5354 doubleclick.net +short  # secure → NXDOMAIN
+</code></pre>
+
+    <p>Doc technique : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/modes.md">docs/modes.md</a> · Filtrage : <a href="filtering.html">filtering.html</a> · Catalogue : <code>config/blocky/modes.json</code></p>
   </main>
   <footer class="site-footer"><p><a href="../credits.html">Sources tierces</a> · <a href="https://github.com/dlnraja/freebox-dns">GitHub</a></p></footer>
   <script src="../assets/site.js"></script>
 </body>
 </html>
-

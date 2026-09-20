@@ -13,14 +13,14 @@ PC Windows / WSL = **lab uniquement**.
 
 ## Modes (smart spit)
 
-Hosts locaux → filtre → Unbound (local-data / cache → DoT → root).
+| Mode | Service | Port (lab) | Order |
+| --- | --- | --- | --- |
+| **uncensored** | `dns-libre` | `5356` (prod `:53`) | hosts → Unbound → (dnsproxy fallbacks) |
+| **malware** | `dns-malware` | `5357` | hosts → malware denylist → Unbound |
+| **antipub** | `dns-antipub` | `5358` | hosts → pihole + ublock + anti_adblock → Unbound |
+| **secure** | `dns-secure` | `5354` | hosts → pihole + ublock + anti_adblock + malware → Unbound |
 
-| Mode | Service | Prod | DoH | Rôle |
-| --- | --- | --- | --- | --- |
-| **uncensored** | dns-libre | `:53` | `:8453` | Aucun denylist |
-| **malware** | dns-malware | `:5357` | `:8445` | Menaces |
-| **antipub** | dns-antipub | `:5358` | `:8446` | Pubs + uBlock DNS + anti-adblock |
-| **secure** | dns-secure | `:5354` | `:8444` | Full Pi-hole-like + UI `:3080` + query log CSV |
+DoH : `:8453` / `:8445` / `:8446` / `:8444` · UI secure `:3080` · détail [docs/modes.md](docs/modes.md).
 
 ## Pi-hole / uBlock (via Blocky)
 

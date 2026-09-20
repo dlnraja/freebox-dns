@@ -131,9 +131,11 @@ https://HOST_IP:8444/dns-query</code></pre>
           <img class="step-visual" src="../assets/checkmark-health.svg" width="64" height="64" alt="">
           <h3>dig et curl</h3>
           <pre><code># Plain DNS (lab)
-dig @HOST_IP -p 5356 example.com +short          # dns-libre
-dig @HOST_IP -p 5354 example.com +short          # dns-secure
-dig @HOST_IP -p 5354 doubleclick.net +short     # doit être bloqué/NXDOMAIN
+dig @HOST_IP -p 5356 example.com +short          # uncensored (lab)
+dig @HOST_IP -p 5357 doubleclick.net +short     # malware — ads OK
+dig @HOST_IP -p 5358 doubleclick.net +short     # antipub — NXDOMAIN
+dig @HOST_IP -p 5354 doubleclick.net +short     # secure — NXDOMAIN
+dig @HOST_IP -p 5354 example.com +short         # secure — OK
 
 # DoH
 curl -sk "https://HOST_IP:8453/dns-query?name=example.com&type=A"

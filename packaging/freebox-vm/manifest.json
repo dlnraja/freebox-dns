@@ -44,6 +44,14 @@
   "ports_prod": {
     "dns_libre": "HOST_IP:53",
     "dns_secure": "HOST_IP:5354",
+    "dns_malware": "HOST_IP:5357",
+    "dns_antipub": "HOST_IP:5358",
+    "modes": {
+      "uncensored": "hosts → Unbound → (dnsproxy fallbacks)",
+      "malware": "hosts → malware denylist → Unbound",
+      "antipub": "hosts → pihole + ublock + anti_adblock → Unbound",
+      "secure": "hosts → pihole + ublock + anti_adblock + malware → Unbound"
+    },
     "doh_libre": "HOST_IP:8453",
     "doh_secure": "HOST_IP:8444",
     "dot_libre": "HOST_IP:853 (prod) / 8853 (lab)",

@@ -139,10 +139,14 @@ flowchart TB
           <tr><th>Service</th><th>Lab</th><th>Prod (VM)</th></tr>
         </thead>
         <tbody>
-          <tr><td>dns-libre (plain)</td><td>:5356</td><td>:53</td></tr>
-          <tr><td>dns-secure (Blocky)</td><td>:5354</td><td>:5354</td></tr>
-          <tr><td>DoH libre / secure</td><td colspan="2">:8453 / :8444</td></tr>
-          <tr><td>UI Blocky</td><td colspan="2">:3080</td></tr>
+          <tr><td><strong>uncensored</strong> dns-libre</td><td>:5356</td><td>:53</td></tr>
+          <tr><td><strong>malware</strong> dns-malware</td><td>:5357</td><td>:5357</td></tr>
+          <tr><td><strong>antipub</strong> dns-antipub</td><td>:5358</td><td>:5358</td></tr>
+          <tr><td><strong>secure</strong> dns-secure</td><td>:5354</td><td>:5354</td></tr>
+          <tr><td>DoH (u / m / a / s)</td><td colspan="2">:8453 / :8445 / :8446 / :8444</td></tr>
+          <tr><td>DoT libre / secure</td><td>:8853</td><td>:853 / :8854</td></tr>
+          <tr><td>DNSCrypt proxy / server</td><td colspan="2">:5359 / :8443</td></tr>
+          <tr><td>UI Blocky (secure)</td><td colspan="2">:3080</td></tr>
         </tbody>
       </table>
       <p><code>HOST_IP</code> = IP LAN de la <strong>VM Freebox</strong> (pas l'IP de votre PC Windows).</p>

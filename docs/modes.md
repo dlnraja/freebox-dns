@@ -1,6 +1,6 @@
 ﻿# Modes DNS intelligents (smart spit)
 
-La VM **héberge son propre DNS**. Chaque mode applique le même **smart split** :
+La VM **héberge son propre DNS**. Chaque mode applique le même **smart spit** :
 
 ```text
 1. Listes / hosts LOCAUX   (anti-lie, seeds critiques)
@@ -9,58 +9,102 @@ La VM **héberge son propre DNS**. Chaque mode applique le même **smart split**
 4. Jamais de censure FR   (pas de page ANJ/DGCCRF en vérité locale)
 ```
 
-| Mode | Service | Port DNS (lab) | DoH | Filtre |
+## Matrice canonique
+
+| Mode | Service | Port (lab) | Order |
+| --- | --- | --- | --- |
+| **uncensored** | `dns-libre` | `5356` (prod `:53`) | `hosts → Unbound → (dnsproxy fallbacks)` |
+| **malware** | `dns-malware` | `5357` | `hosts → malware denylist → Unbound` |
+| **antipub** | `dns-antipub` | `5358` | `hosts → pihole + ublock + anti_adblock → Unbound` |
+| **secure** | `dns-secure` | `5354` | `hosts → pihole + ublock + anti_adblock + malware → Unbound` |
+
+Source machine : [`config/blocky/modes.json`](../config/blocky/modes.json) (régénéré par `scripts/generate-blocky-modes.py`).
+
+### Ports chiffrés (lab)
+
+| Mode | DoH | DoT | DoQ | UI |
 | --- | --- | --- | --- | --- |
-| **uncensored** | `dns-libre` | `5356` (prod `:53`) | `:8453` | Aucun denylist |
-| **malware** | `dns-malware` | `5357` | `:8445` | Menaces / phishing uniquement |
-| **antipub** | `dns-antipub` | `5358` | `:8446` | Pubs + trackers + anti–anti-adblock |
-| **secure** | `dns-secure` | `5354` | `:8444` | antipub **+** malware |
+| uncensored | `:8453` | `:8853` (prod `:853`) | `:8853/udp` (prod `:853/udp`) | — |
+| malware | `:8445` | `:8855` | — | — |
+| antipub | `:8446` | `:8856` | — | — |
+| secure | `:8444` | `:8854` | — | `:3080` + query log CSV |
 
-DHCP Freebox recommandé : DNS1 = SOS `9.9.9.10` (Quad9 No Threat Blocking, sans ECS), DNS2 = IP VM (**uncensored** `:53`).  
-Chaîne sur la VM : **hosts locaux → Unbound local-data/cache → DoT → root** (voir [resilience.md](resilience.md)).  
-UncensoredDNS / DG = DoT Unbound seulement (UDP/53 souvent bloqué sur Free).  
-Les autres modes se choisissent par **port** ou URL **DoH** (téléphone / navigateur / profil généré).
+## Détail par mode
 
-## Antipub intelligent
+### uncensored — `dns-libre` (dnsproxy)
 
-Groupes Blocky `pihole` + `ublock` + `anti_adblock` :
+- **Order** : hosts locaux → Unbound `172.28.0.10` → si Unbound down, fallbacks DoH/DoT/plain SOS (`dns-libre.yaml`)
+- **Filtre** : aucun denylist
+- **DHCP** : c’est le mode poussé en DNS2 (`:53` prod)
 
-- Gravity type Pi-hole (StevenBlack, AdAway, …)
-- Intelligence type uBlock via HaGeZi wildcard + Firebog + OISD
-- Cassage des murs anti-adblock (Admiral, Funding Choices, …)
+### malware — `dns-malware` (Blocky)
 
-Sans listes malware (réservé au mode `malware` / `secure`).
+- **Order** : hosts → groupe `malware` → Unbound
+- **Filtre** : URLhaus, Spam404, KADhosts, HaGeZi TIF, … — **pubs encore résolues**
 
-## Malware-free
+### antipub — `dns-antipub` (Blocky)
 
-Uniquement le groupe `malware` (URLhaus, Spam404, KADhosts, HaGeZi TIF, …).  
-Les pubs **passent** — utile pour un NAS / TV où l’on veut la sécurité sans casser les pubs « utiles ».
+- **Order** : hosts → `pihole` + `ublock` + `anti_adblock` → Unbound
+- **Filtre** : gravity Pi-hole + HaGeZi/Firebog/OISD + Admiral / anti-adblock
+- **Sans** listes malware
 
-## Config
+### secure — `dns-secure` (Blocky)
 
-- Générateur : `python3 scripts/generate-blocky-modes.py`
-- Catalogue : `config/blocky/modes.json`
-- YAML : `config-malware.yml`, `config-antipub.yml`, `config.yml` (secure)
-- Amont filtré : **toujours** Unbound `172.28.0.10` (plus de DoT direct depuis Blocky)
+- **Order** : hosts → `pihole` + `ublock` + `anti_adblock` + `malware` → Unbound
+- **Filtre** : antipub **+** malware
+- **Extras** : UI Blocky `:3080`, query log CSV 7 j (`config/blocky/querylog/`)
+
+## DHCP Freebox
+
+| DNS1 | DNS2 |
+| --- | --- |
+| SOS `9.9.9.10` (Quad9 No Threat Blocking) | IP VM = **uncensored** `:53` |
+
+Les modes `malware` / `antipub` / `secure` se choisissent par **port Do53**, **DoH** ou profil généré — **ne jamais** mettre un mode filtré seul en DHCP sans SOS.
+
+Chaîne Unbound : [resilience.md](resilience.md) · listes : [filtering.md](filtering.md) · transports : [encrypted-dns.md](encrypted-dns.md).
+
+## Config / génération
+
+```bash
+python3 scripts/generate-blocky-modes.py   # YAML Blocky + modes.json
+python3 scripts/generate-client-profiles.py
+bash scripts/blocky-refresh-lists.sh       # gravity refresh
+```
+
+| Fichier | Rôle |
+| --- | --- |
+| `config/blocky/modes.json` | Catalogue modes + ports + order |
+| `config/blocky/config-malware.yml` | Mode malware |
+| `config/blocky/config-antipub.yml` | Mode antipub |
+| `config/blocky/config.yml` | Mode secure |
+| `config/dnsproxy/dns-libre.yaml` | Mode uncensored |
+
+Amont filtré : **toujours** Unbound `172.28.0.10` (pas de DoT direct depuis Blocky).
 
 ## Tests rapides
 
 ```bash
-# Uncensored
-dig @$HOST_IP -p 53 example.com +short
-# Malware (ads encore résolus en général)
+# Uncensored (lab :5356 / prod :53)
+dig @$HOST_IP -p 5356 example.com +short
+
+# Malware — ads encore résolus en général
 dig @$HOST_IP -p 5357 doubleclick.net +short
-# Antipub (ads → NXDOMAIN)
+
+# Antipub — ads → NXDOMAIN
 dig @$HOST_IP -p 5358 doubleclick.net +short
+
 # Secure = antipub + malware
 dig @$HOST_IP -p 5354 doubleclick.net +short
+dig @$HOST_IP -p 5354 example.com +short
+
+bash scripts/health-check.sh
 ```
 
-Profils clients : `python3 scripts/generate-client-profiles.py` → `config/clients/generated/`.
+Profils clients : `config/clients/generated/`.
 
 ---
 
 ## Sources & crédits
 
-Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).
-
+**[CREDITS.md](CREDITS.md)** · Pages : [modes.html](https://dlnraja.github.io/freebox-dns/guides/modes.html)

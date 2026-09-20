@@ -136,7 +136,15 @@
     "dns_libre": "uncensored (unbound + dnsproxy)",
     "dns_secure": "threat-local ads+malware (blocky)",
     "bind": "HOST_IP local-only",
-    "lab_ports": { "libre": 5356, "secure": 5354, "doh_libre": 8453, "doh_secure": 8444 },
+    "lab_ports": {
+      "uncensored": 5356,
+      "malware": 5357,
+      "antipub": 5358,
+      "secure": 5354,
+      "doh_libre": 8453,
+      "doh_secure": 8444
+    },
+    "modes_doc": "docs/modes.md",
     "prod": "docker-compose.prod.yml maps libre to :53 on HOST_IP",
     "vm_package": "packaging/freebox-vm/"
   },

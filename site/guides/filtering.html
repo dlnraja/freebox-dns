@@ -52,13 +52,17 @@
       </tbody>
     </table>
 
-    <h2>Modes</h2>
-    <ul>
-      <li><strong>uncensored</strong> — aucun filtre</li>
-      <li><strong>malware</strong> — menaces seulement</li>
-      <li><strong>antipub</strong> — pubs / trackers / anti-adblock</li>
-      <li><strong>secure</strong> — tout + UI + query log</li>
-    </ul>
+    <h2>Modes — ports &amp; order</h2>
+    <table>
+      <thead><tr><th>Mode</th><th>Service</th><th>Port (lab)</th><th>Order</th></tr></thead>
+      <tbody>
+        <tr><td><strong>uncensored</strong></td><td><code>dns-libre</code></td><td><code>5356</code> (prod <code>:53</code>)</td><td>hosts → Unbound → (dnsproxy fallbacks)</td></tr>
+        <tr><td><strong>malware</strong></td><td><code>dns-malware</code></td><td><code>5357</code></td><td>hosts → malware denylist → Unbound</td></tr>
+        <tr><td><strong>antipub</strong></td><td><code>dns-antipub</code></td><td><code>5358</code></td><td>hosts → pihole + ublock + anti_adblock → Unbound</td></tr>
+        <tr><td><strong>secure</strong></td><td><code>dns-secure</code></td><td><code>5354</code></td><td>hosts → pihole + ublock + anti_adblock + malware → Unbound</td></tr>
+      </tbody>
+    </table>
+    <p><a href="modes.html">Guide modes →</a></p>
 
     <p class="doc-link">Markdown : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/pihole-parity.md">pihole-parity.md</a> · <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/filtering.md">filtering.md</a></p>
   </main>

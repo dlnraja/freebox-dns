@@ -110,6 +110,14 @@ def invariants() -> list[dict]:
     ok("dnscrypt_proxy_toml", (ROOT / "config/dnscrypt/proxy/dnscrypt-proxy.toml").is_file(), "")
     ok("dnscrypt_quad9_stamps", (ROOT / "config/dnscrypt/quad9-nofilter.stamps").is_file(), "")
     ok("catalog_dnscrypt_flag", bool((cat.get("local_server_transports") or {}).get("dnscrypt")), "")
+    modes_path = ROOT / "config/blocky/modes.json"
+    modes_doc = json.loads(modes_path.read_text(encoding="utf-8")) if modes_path.is_file() else {}
+    mode_keys = set((modes_doc.get("modes") or {}).keys())
+    ok("modes_json_four", mode_keys >= {"uncensored", "malware", "antipub", "secure"}, str(sorted(mode_keys)))
+    unc_order = ((modes_doc.get("modes") or {}).get("uncensored") or {}).get("order", "")
+    ok("modes_json_order_uncensored", "dnsproxy fallbacks" in unc_order, unc_order)
+    sec_order = ((modes_doc.get("modes") or {}).get("secure") or {}).get("order", "")
+    ok("modes_json_order_secure", "malware" in sec_order and "pihole" in sec_order, sec_order)
     ok("catalog_dot_min10", len(cat.get("dot_uncensoring", [])) >= 10, str(len(cat.get("dot_uncensoring", []))))
     ok("catalog_sos_plain", "sos_plain" in cat, "")
     ok("compose_unbound_cache", "unbound-cache" in compose, "")

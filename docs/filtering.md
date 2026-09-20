@@ -4,6 +4,15 @@ Voir le glossaire : [dns-lexicon.md](dns-lexicon.md) · **modes smart spit** : [
 
 Chaîne commune : **hosts locaux → filtre du mode → Unbound (DoT) → monde**.
 
+| Mode | Service | Port (lab) | Order |
+| --- | --- | --- | --- |
+| **uncensored** | `dns-libre` | `5356` (prod `:53`) | hosts → Unbound → (dnsproxy fallbacks) |
+| **malware** | `dns-malware` | `5357` | hosts → malware denylist → Unbound |
+| **antipub** | `dns-antipub` | `5358` | hosts → pihole + ublock + anti_adblock → Unbound |
+| **secure** | `dns-secure` | `5354` | hosts → pihole + ublock + anti_adblock + malware → Unbound |
+
+Détail modes / ports DoH : [modes.md](modes.md).
+
 ## uncensored — `dns-libre`
 
 Inspiré de **UncensoredDNS** (#1), **Digitale Gesellschaft** (#2), **Quad9 No Threat Blocking** (#3).
