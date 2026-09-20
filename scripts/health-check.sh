@@ -54,5 +54,15 @@ if command -v curl >/dev/null; then
   done
 fi
 
+# Quad9 SOS / DoH HTTP/2 (CaptainDNS + Quad9 retirement notice)
+if command -v python3 >/dev/null; then
+  echo "== Quad9 ops (SOS .10 + DoH HTTP/2) =="
+  if python3 "$(dirname "$0")/quad9-ops-check.py"; then
+    echo OK
+  else
+    echo FAIL; fail=1
+  fi
+fi
+
 exit "${fail}"
 

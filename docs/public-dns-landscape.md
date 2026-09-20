@@ -18,6 +18,19 @@ Le consensus du fil **ne change pas** notre architecture — il la **valide** :
 
 Pourquoi pas `9.9.9.9` en SOS ? Le fil le recommande pour le **blocage malware distant**. Nous voulons un SOS **uncensored** (Internet intact si la VM est down) ; le malware reste sur `dns-secure`. Détail : [quad9.md](quad9.md).
 
+## CaptainDNS (déc. 2025 / janv. 2026)
+
+Articles : [DNS Quad9 9.9.9.9](https://www.captaindns.com/fr/blog/dns-9999-quad9) · [comparatif publics](https://www.captaindns.com/fr/blog/public-dns-resolver-benchmark-comparison-guide).
+
+| Conseil CaptainDNS | Mapping freebox-dns |
+| --- | --- |
+| Forwarder local + DoT vers Quad9 | Unbound / dns-libre → `dns10.quad9.net` |
+| Ne pas mélanger `.9` et `.10` | DHCP SOS = **uniquement** `.10` |
+| `.10` = debug pour PME Secure | Chez nous `.10` = **SOS uncensor** (Secure = Blocky) |
+| Tests `proto.on.quad9.net` / `isitblocked.org` | `scripts/quad9-ops-check.py` |
+| DoH HTTP/2 depuis 2025-12-15 | Vérifié dans le script + fallback DoT |
+| Cas « geek sans filtrage » → Quad9 unfiltered | Exactement notre SOS + `dns-libre` |
+
 ## Mentions dominantes du fil (ordre approx.)
 
 Quad9 → AdGuard / NextDNS → Cloudflare `1.1.1.x` → Unbound / Pi-hole → Control D → OpenDNS (souvent dernier).
@@ -53,6 +66,9 @@ Quad9 → AdGuard / NextDNS → Cloudflare `1.1.1.x` → Unbound / Pi-hole → C
 
 | Lien | Intérêt |
 | --- | --- |
+| [CaptainDNS — Quad9](https://www.captaindns.com/fr/blog/dns-9999-quad9) | Opérations, tests, DoH HTTP/2, pièges mélange `.9`/`.10` |
+| [CaptainDNS — comparatif](https://www.captaindns.com/fr/blog/public-dns-resolver-benchmark-comparison-guide) | Cas d’usage (geek / sécurité / famille / PME) |
+| [Quad9 DoH HTTP/1.1 retirement](https://quad9.net/news/blog/doh-http-1-1-retirement/) | HTTP/2 obligatoire pour DoH Quad9 |
 | [Quad9 forwarder best practices](https://docs.quad9.net/Quad9_For_Organizations/DNS_Forwarder_Best_Practices/) | Cache, dual IP, IPv6 ; DNSSEC/QNAME si *uniquement* Quad9 en forward |
 | [Pi-hole + Unbound](https://docs.pi-hole.net/guides/dns/unbound/) | Même schéma que Blocky → Unbound |
 | [Blocky](https://github.com/0xERR0R/blocky) | Notre filtre |

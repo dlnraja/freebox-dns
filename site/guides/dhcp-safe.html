@@ -64,6 +64,20 @@
       </ul>
     </div>
 
+    <h2>Tests Quad9 (CaptainDNS)</h2>
+    <pre><code># SOS unfiltered — doit résoudre isitblocked.org
+dig @9.9.9.10 isitblocked.org +short
+
+# Secure distant — NXDOMAIN (AUTHORITY 0 = block Quad9)
+dig @9.9.9.9 isitblocked.org | findstr /i "status AUTHORITY"
+
+# Suite repo (SOS + DoH HTTP/2)
+python scripts/quad9-ops-check.py
+
+# Protocole réel si le poste utilise déjà Quad9
+dig +short txt proto.on.quad9.net.</code></pre>
+    <p>Ne mélangez jamais <code>9.9.9.9</code> et <code>9.9.9.10</code> dans le DHCP. Doc : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/quad9.md">docs/quad9.md</a> · <a href="https://www.captaindns.com/fr/blog/dns-9999-quad9">CaptainDNS</a>.</p>
+
     <h2>Pourquoi DNS1 = <code>9.9.9.10</code> (Quad9)</h2>
     <p>Adresse officielle <strong>No Threat Blocking</strong> : pas de filtre malware chez Quad9, <strong>pas d’ECS</strong> (privacy). Le filtrage pub/malware se fait en local sur <code>dns-secure</code>.</p>
     <table>

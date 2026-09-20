@@ -24,6 +24,21 @@
   ],
   "benchmarks": [
     {
+      "id": "captaindns_quad9",
+      "url": "https://www.captaindns.com/fr/blog/dns-9999-quad9",
+      "note": "Ops guide: .9 Secure default for SMB; .10 debug; DoH HTTP/2; proto.on.quad9.net; isitblocked.org; no mix .9/.10"
+    },
+    {
+      "id": "captaindns_comparison",
+      "url": "https://www.captaindns.com/fr/blog/public-dns-resolver-benchmark-comparison-guide",
+      "note": "Public resolver comparison — geek/unfiltered maps to Quad9 .10 / our SOS"
+    },
+    {
+      "id": "quad9_doh_http2",
+      "url": "https://quad9.net/news/blog/doh-http-1-1-retirement/",
+      "note": "DoH HTTP/1.1 retired 2025-12-15 — HTTP/2 required"
+    },
+    {
       "id": "nexxwave_2025",
       "url": "https://techblog.nexxwave.eu/public-dns-malware-filters-to-be-tested-in-2025/",
       "note": "ControlD malware ~99.98%, dns0.eu ~99.23%, Quad9 ~96.66%, CF Families ~95.82%, DNS4EU ~95.08%"
@@ -45,6 +60,9 @@
     }
   ],
   "thread_links": [
+    "https://www.captaindns.com/fr/blog/dns-9999-quad9",
+    "https://www.captaindns.com/fr/blog/public-dns-resolver-benchmark-comparison-guide",
+    "https://quad9.net/news/blog/doh-http-1-1-retirement/",
     "https://docs.quad9.net/Quad9_For_Organizations/DNS_Forwarder_Best_Practices/",
     "https://docs.pi-hole.net/guides/dns/unbound/",
     "https://github.com/0xERR0R/blocky",
@@ -52,8 +70,11 @@
     "https://www.dns0.eu/de/zero",
     "https://datatracker.ietf.org/doc/html/rfc7816",
     "https://github.com/trinib/AdGuard-WireGuard-Unbound-DNScrypt",
-    "https://www.grc.com/dns/benchmark.htm"
+    "https://www.grc.com/dns/benchmark.htm",
+    "https://on.quad9.net",
+    "https://isitblocked.org"
   ],
+  "ops_script": "scripts/quad9-ops-check.py",
   "variants": {
     "quad9_secure": {"ipv4": ["9.9.9.9", "149.112.112.112"], "use": "exclude_as_primary"},
     "quad9_no_threat": {"ipv4": ["9.9.9.10", "149.112.112.10"], "use": "sos_plain_1"},

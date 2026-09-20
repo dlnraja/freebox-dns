@@ -19,6 +19,7 @@ Checklist of product goals delivered since the start of the project.
 - [x] Automated CI: regen PRs, release tags, Dependabot, docs-ci, weekly qcow2
 - [x] Anti-degradation watchdog (SOS/DoT/lists/Pages/invariants → issue)
 - [x] Link-health + stale automation
+- [x] Quad9 ops check (SOS `.10`, `isitblocked`, DoH HTTP/2)
 
 ## Pi-hole-like (Blocky)
 

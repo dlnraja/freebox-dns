@@ -116,6 +116,9 @@ Scripts locaux (pas d’upload OONI) : `scripts/ooni-like-anti-lie.py`, `scripts
 
 | Source | Usage | Lien |
 | --- | --- | --- |
+| **CaptainDNS — Quad9** | Guide ops FR (tests, DoH HTTP/2, pièges) → [quad9.md](quad9.md) | [captaindns.com/fr/blog/dns-9999-quad9](https://www.captaindns.com/fr/blog/dns-9999-quad9) |
+| **CaptainDNS — comparatif** | Cas d’usage publics | [captaindns.com/…/public-dns-resolver…](https://www.captaindns.com/fr/blog/public-dns-resolver-benchmark-comparison-guide) |
+| **Quad9 DoH HTTP/1.1 retirement** | HTTP/2 obligatoire depuis 2025-12-15 | [quad9.net/news/…](https://quad9.net/news/blog/doh-http-1-1-retirement/) |
 | **r/dns** (1.1.1.1 vs 9.9.9.9 vs OpenDNS) | Synthèse communauté → [public-dns-landscape.md](public-dns-landscape.md) | [reddit.com/r/dns/…](https://www.reddit.com/r/dns/comments/1fv5f9u/what_dns_do_you_recommend_1111_vs_9999_vs_opendns/) |
 | **Nexxwave** malware DNS tests | Justification du filtrage **local** vs resolveurs « Secure » | [2025](https://techblog.nexxwave.eu/public-dns-malware-filters-to-be-tested-in-2025/) · [2024](https://techblog.nexxwave.eu/public-dns-malware-filters-tested-in-2024/) |
 | **Quad9 forwarder best practices** | Cache / dual-IP côté forwarder | [docs.quad9.net](https://docs.quad9.net/Quad9_For_Organizations/DNS_Forwarder_Best_Practices/) |

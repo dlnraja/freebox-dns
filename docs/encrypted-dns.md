@@ -35,16 +35,25 @@ La Freebox app elle-même suit le DNS DHCP ; le DoH est pour navigateurs / apps 
 
 ## Fallbacks chiffrés (amont)
 
-Si Unbound est down, dns-libre tente d’abord des amonts **DoH/DoT** (Mullvad, DG, Quad9 Unsecured, UncensoredDNS…) avant le plain — voir `config/dnsproxy/dns-libre.yaml`.
+Si Unbound est down, dns-libre tente d’abord des amonts **DoH/DoT** (Mullvad, DG, Quad9 No Threat / `dns10.quad9.net`, UncensoredDNS…) avant le plain — voir `config/dnsproxy/dns-libre.yaml`.
+
+### Quad9 amont : DoH = HTTP/2 minimum
+
+Depuis le **15/12/2025**, Quad9 refuse DoH en HTTP/1.1 ([annonce](https://quad9.net/news/blog/doh-http-1-1-retirement/)).  
+dnsproxy négocie HTTP/2+ ; en cas de doute (routeur MikroTik DoH legacy), utiliser **DoT** `tls://dns10.quad9.net`. Tests : `python3 scripts/quad9-ops-check.py` · [quad9.md](quad9.md).
 
 ## Test rapide
 
 ```bash
-# DoH
+# DoH local
 curl -sk "https://$HOST_IP:8453/dns-query?name=example.com&type=A"
 curl -sk "https://$HOST_IP:8444/dns-query?name=example.com&type=A"
-# DoT (si dig + openssl dispo)
-# dig @HOST_IP -p 8853 +tls example.com
+
+# Quad9 ops (SOS .10 + HTTP/2 DoH)
+python3 scripts/quad9-ops-check.py
+
+# Protocole réel si le poste pointe déjà vers Quad9
+dig +short txt proto.on.quad9.net.
 ```
 
 ---

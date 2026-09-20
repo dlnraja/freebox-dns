@@ -105,6 +105,8 @@ def invariants() -> list[dict]:
     ok("catalog_quad9_variants", "quad9_variants" in cat and cat["quad9_variants"].get("chosen_sos") == "9.9.9.10", "")
     ok("catalog_excludes_quad9_secured", "9.9.9.9" in (cat.get("exclude_as_primary") or []), "")
     ok("catalog_community_landscape", (ROOT / "config/upstreams/community-dns-landscape.json").is_file(), "")
+    ok("no_mix_sos_secure_in_plain_fallback", "9.9.9.9" not in (cat.get("plain_fallback_order") or []), "")
+    ok("quad9_ops_script", (ROOT / "scripts/quad9-ops-check.py").is_file(), "")
     ok("catalog_dot_min10", len(cat.get("dot_uncensoring", [])) >= 10, str(len(cat.get("dot_uncensoring", []))))
     ok("catalog_sos_plain", "sos_plain" in cat, "")
     ok("compose_unbound_cache", "unbound-cache" in compose, "")

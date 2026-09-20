@@ -138,6 +138,8 @@ jobs:
             getent hosts "$host" || fail=$((fail+1))
           done
           if [ "$fail" -gt 5 ]; then exit 1; fi
+      - name: Quad9 ops (SOS .10 + DoH HTTP/2)
+        run: python3 scripts/quad9-ops-check.py
 
   blocklist-refresh:
     runs-on: ubuntu-latest

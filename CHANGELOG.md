@@ -13,6 +13,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/).
 - CI docs (`docs/ci.md`) — automated workflows
 - Quad9 matrix (`docs/quad9.md`) — why SOS = `9.9.9.10` (No Threat Blocking, no ECS)
 - Public DNS landscape from r/dns + Nexxwave benches (`docs/public-dns-landscape.md`)
+- CaptainDNS Quad9 guide folded in: ops tests, DoH HTTP/2, `scripts/quad9-ops-check.py`
 
 ### CI / Automation
 

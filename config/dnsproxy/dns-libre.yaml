@@ -32,7 +32,9 @@ tls-port:
 quic-port:
   - 853
 
-# Prefer HTTP/3 for DoH when client supports it
+# Prefer HTTP/3 for DoH when client supports it (local LAN DoH)
+# Upstream Quad9 DoH requires HTTP/2+ since 2025-12-15 — dnsproxy negotiates this;
+# prefer tls://dns10.quad9.net if a client path is HTTP/1.1-only (see docs/quad9.md).
 http3: true
 
 doh-routes:
