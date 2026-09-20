@@ -13,7 +13,7 @@ Politique : **zéro censure politique**, **zéro parental amont**, **zéro filtr
 | digitale_gesellschaft | `dns.digitale-gesellschaft.ch` | `185.95.218.42`, `.43` | DoT-only sur FR ISP |
 | uncensoreddns_anycast | `anycast.uncensoreddns.org` | `91.239.100.100` | DoT-only sur FR ISP |
 | uncensoreddns_unicast | `unicast.uncensoreddns.org` | `89.233.43.71` | Copenhague |
-| quad9_unsecured | `dns10.quad9.net` | `9.9.9.10`, `149.112.112.10` | FREEBOX_DNS_1 — SOS UDP #1 |
+| quad9_unsecured | `dns10.quad9.net` | `9.9.9.10`, `149.112.112.10` | FREEBOX_DNS_1 — **No Threat Blocking**, no ECS — SOS UDP #1 |
 | applied_privacy | `dot1.applied-privacy.net` | `146.255.56.98` | AT non-profit |
 | libredns | `dot.libredns.gr` | `116.202.176.26` | Pas `noads` |
 | lavadns | `eu1.dns.lavate.ch` | `95.217.25.217` | No log / no ECS / no filter |
@@ -33,7 +33,9 @@ UncensoredDNS / Digitale Gesellschaft : **pas** en plain fallback (DoT Unbound s
 
 ## Exclus en primaire
 
-Google, Cloudflare, Quad9 Secured `9.9.9.9`, DNS Free, NextDNS profilé, Mullvad adblock/family, AdGuard filtré, dns0.eu non-open.
+Google, Cloudflare, Quad9 Secured `9.9.9.9`, Quad9 ECS `.11`/`.12`, DNS Free, NextDNS profilé, Mullvad adblock/family, AdGuard filtré, dns0.eu non-open.
+
+Matrice Quad9 : [quad9.md](quad9.md).
 
 ---
 

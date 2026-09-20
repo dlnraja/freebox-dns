@@ -22,7 +22,7 @@ docker compose up -d --force-recreate dns-libre dns-secure
 ## Freebox OS / app mobile
 
 1. **DHCP** (après health VM) — filet SOS :
-   - DNS1 = `9.9.9.10` (Quad9 Unsecured)
+   - DNS1 = `9.9.9.10` (Quad9 No Threat Blocking, sans ECS)
    - DNS2 = IP de la VM freebox-dns
 2. **Navigateurs / apps** qui parlent DoH : URL générée
    - Libre : `https://HOST_IP:8453/dns-query`

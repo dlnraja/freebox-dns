@@ -43,7 +43,7 @@
   "dhcp_after_import": {
     "dns_primary": "9.9.9.10",
     "dns_secondary": "IP_LAN_DE_LA_VM",
-    "note": "DNS1=SOS Quad9 Unsecured, DNS2=VM only after health OK"
+    "note": "DNS1=SOS Quad9 9.9.9.10 No Threat Blocking (no ECS), DNS2=VM only after health OK"
   },
   "package_files": [
     "freebox-dns.qcow2",

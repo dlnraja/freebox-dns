@@ -10,7 +10,7 @@ Verdict court : **garder 1–2–3–5 comme filet de secours LAN** ; **ne plus 
 
 | # | IP | Identité | Avantages | Inconvénients | Rôle dans ce projet |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `9.9.9.10` | **Quad9 Unsecured** | Anycast rapide, **sans** blocklist Quad9 | ECS peut exposer un préfixe | ✅ DHCP SOS #1 + bootstrap |
+| 1 | `9.9.9.10` | **Quad9 No Threat Blocking** | Anycast, **sans** blocklist Quad9, **sans ECS** | DNSSEC strict depuis 2026-06 (SERVFAIL si zone cassée) | ✅ DHCP SOS #1 + bootstrap |
 | 2 | `194.242.2.2` | **Mullvad Unfiltered** | Privacy, DoT/DoH, plain UDP OK sur Free | Moins d’anycast que Quad9 | ✅ DHCP SOS #2 + DoT |
 | 3 | `94.140.14.140` | **AdGuard Non-filtering** | Plain UDP OK, unfiltered | Ne pas confondre avec AdGuard filtré | ✅ DHCP SOS #3 |
 | 4 | `45.90.28.0` | **NextDNS** anycast | Souvent déjà poussé par Freebox/apps | Sans ID de profil : comportement flou | ⚠️ **Fallback dernier recours seulement** |
@@ -36,7 +36,7 @@ Objectif : **non censure + DoT + diversité géographique/juridique**, compléme
 | UncensoredDNS | `anycast.uncensoreddns.org` | DoT catalogue (UDP/53 souvent filtré sur Free) |
 | Quad9 unblocked | `dns10.quad9.net` via `9.9.9.10` | SOS #1 + bootstrap |
 
-**Exclus volontairement comme amonts primaires :** Google `8.8.8.8`, Cloudflare `1.1.1.1` (centralisation + politiques commerciales), DNS Free, NextDNS profilé, Quad9 `9.9.9.9` (filtre malware distant — on filtre **en local** sur dns-secure).
+**Exclus volontairement comme amonts primaires :** Google `8.8.8.8`, Cloudflare `1.1.1.1`, DNS Free, NextDNS profilé, Quad9 `9.9.9.9` / `.11` (filtre distant) et `.12` (ECS) — on filtre **en local** sur dns-secure ; détail variantes : [quad9.md](quad9.md).
 
 ## Architecture « ton propre DNS local »
 

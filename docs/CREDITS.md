@@ -59,7 +59,7 @@ Manifeste machine : [`config/blocky/lists/filter-intelligence.json`](../config/b
 | --- | --- | --- |
 | **UncensoredDNS** | Pin #1, DoT/DoH uncensoring | [uncensoreddns.org](https://blog.uncensoreddns.org/) |
 | **Digitale Gesellschaft** | Pin #2, DoT/DoH privacy CH | [digitale-gesellschaft.ch](https://www.digitale-gesellschaft.ch/dns/) |
-| **Quad9 Unsecured** (`9.9.9.10`) | Pin #3 bootstrap *unblocked* (≠ Secured `9.9.9.9`) | [quad9.net](https://quad9.net/) |
+| **Quad9 No Threat Blocking** (`9.9.9.10`) | SOS #1 / bootstrap *unblocked*, **sans ECS** (≠ Secured `.9`, ≠ ECS `.11`/`.12`) — [docs/quad9.md](quad9.md) | [docs.quad9.net/services](https://docs.quad9.net/services/) |
 | **Mullvad DNS** | DoT/DoH unfiltered | [mullvad.net/en/help/dns-over-https-and-dns-over-tls](https://mullvad.net/en/help/dns-over-https-and-dns-over-tls) |
 | **dns0.eu OPEN** | DoT/DoH open | [dns0.eu](https://www.dns0.eu/) |
 | **Applied Privacy** | DoT | [appliedprivacy.net](https://appliedprivacy.net/) |

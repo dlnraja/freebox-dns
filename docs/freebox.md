@@ -2,7 +2,7 @@
 
 | Rôle | Valeur |
 | --- | --- |
-| DNS1 | `9.9.9.10` (Quad9 Unsecured) |
+| DNS1 | `9.9.9.10` (Quad9 No Threat Blocking) |
 | DNS2 | IP LAN de la VM (`dns-libre` `:53`) |
 | DNS3 (optionnel) | `194.242.2.2` (Mullvad) |
 

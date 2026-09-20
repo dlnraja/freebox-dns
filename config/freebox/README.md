@@ -6,7 +6,7 @@
 
 | Champ | Valeur |
 | --- | --- |
-| DNS1 (SOS) | `9.9.9.10` (Quad9 Unsecured) |
+| DNS1 (SOS) | `9.9.9.10` (Quad9 No Threat Blocking — [quad9.md](../../docs/quad9.md)) |
 | DNS2 (résolveur) | `HOST_IP` = IP de la **VM** dns-libre `:53` |
 
 Wi‑Fi : [docs/wifi-lan.md](../../docs/wifi-lan.md) · Pages : [wifi-lan.html](https://dlnraja.github.io/freebox-dns/guides/wifi-lan.html)

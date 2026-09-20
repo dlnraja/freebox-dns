@@ -25,11 +25,20 @@
   },
   "pinned_identity": {
     "FREEBOX_DNS_1": {
-      "name": "Quad9 Unsecured",
-      "bit": "unblocked-ecs",
+      "name": "Quad9 No Threat Blocking",
+      "bit": "no-threat-blocking",
       "ip": "9.9.9.10",
-      "lexicon": ["Unsecured", "unblocked", "ECS", "DNSSEC", "anycast", "not Secured 9.9.9.9"],
-      "official": "https://www.quad9.net/service/service-addresses-and-features/",
+      "lexicon": [
+        "Unsecured",
+        "No Threat Blocking",
+        "unblocked",
+        "no ECS",
+        "DNSSEC (since 2026-06-15)",
+        "anycast",
+        "not Secured 9.9.9.9",
+        "not ECS 9.9.9.11/12"
+      ],
+      "official": "https://docs.quad9.net/services/",
       "role": "DHCP SOS #1 + plain UDP bootstrap (reachable on FR Free ISP)"
     },
     "FREEBOX_DNS_2": {

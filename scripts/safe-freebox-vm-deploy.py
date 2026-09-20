@@ -4,7 +4,7 @@ Safe Freebox OS VM deploy helper - NEVER breaks LAN DNS.
 
 Rules (hard):
   1. Do NOT change Freebox DHCP DNS primary until VM health is proven.
-  2. Always keep a plain-UDP-reachable SOS as DHCP DNS1 (Quad9 Unsecured).
+  2. Always keep a plain-UDP-reachable SOS as DHCP DNS1 (Quad9 9.9.9.10 No Threat Blocking).
      UncensoredDNS/DG stay DoT-only — UDP/53 often timed out / refused on FR ISP.
   3. Prefer adding VM as DNS2 first; DNS1=VM only after dual health checks.
   4. Store Freebox app_token only in local .freebox-token.json (gitignored).
@@ -41,7 +41,7 @@ APP_VERSION = "1.0.0"
 DEVICE = "cursor-agent"
 # Plain UDP/53 SOS only (probed from Freebox LAN). DoT-only resolvers are not listed here.
 SOS_DNS = ["9.9.9.10", "194.242.2.2", "94.140.14.140"]
-SOS_LABELS = ["Quad9 Unsecured", "Mullvad Unfiltered", "AdGuard Non-filtering"]
+SOS_LABELS = ["Quad9 No Threat Blocking", "Mullvad Unfiltered", "AdGuard Non-filtering"]
 API = "http://mafreebox.freebox.fr/api/v8"
 WS_UPLOAD = "ws://mafreebox.freebox.fr/api/v8/ws/upload"
 DISK_ROOT = "/Disque 1"
@@ -400,7 +400,7 @@ def dns_probe(host: str, qname: str, port: int = 53, timeout: float = 3.0) -> bo
 
 
 def cmd_dhcp_safe() -> int:
-    """DNS1=SOS Quad9 Unsecured, DNS2=VM IP. Requires health OK + confirmation file."""
+    """DNS1=SOS Quad9 9.9.9.10 No Threat Blocking, DNS2=VM IP. Requires health OK + confirmation file."""
     s = open_session()
     if not s:
         return 1

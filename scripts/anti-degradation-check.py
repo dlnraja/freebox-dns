@@ -99,6 +99,11 @@ def invariants() -> list[dict]:
 
     pins = snap.get("pinned_fallback") or {}
     ok("pin_sos_quad9", pins.get("FREEBOX_DNS_1") == "9.9.9.10", str(pins.get("FREEBOX_DNS_1")))
+    ident = (snap.get("pinned_identity") or {}).get("FREEBOX_DNS_1") or {}
+    lex = " ".join(ident.get("lexicon") or []).lower()
+    ok("pin_sos_no_ecs_claim", "ecs" not in lex or "no ecs" in lex, lex)
+    ok("catalog_quad9_variants", "quad9_variants" in cat and cat["quad9_variants"].get("chosen_sos") == "9.9.9.10", "")
+    ok("catalog_excludes_quad9_secured", "9.9.9.9" in (cat.get("exclude_as_primary") or []), "")
     ok("catalog_dot_min10", len(cat.get("dot_uncensoring", [])) >= 10, str(len(cat.get("dot_uncensoring", []))))
     ok("catalog_sos_plain", "sos_plain" in cat, "")
     ok("compose_unbound_cache", "unbound-cache" in compose, "")
@@ -172,7 +177,11 @@ def main() -> int:
         print(f"  FAIL {f['name']}: {f.get('detail','')}")
 
     # Soft threshold: allow up to 2 soft remote flakes unless invariants fail
-    hard = [f for f in report["failed"] if f["name"].startswith(("pin_", "catalog_", "compose_", "blocky_", "forward_", "generate_"))]
+    hard = [
+        f
+        for f in report["failed"]
+        if f["name"].startswith(("pin_", "catalog_", "compose_", "blocky_", "forward_", "generate_"))
+    ]
     soft = [f for f in report["failed"] if f not in hard]
     if hard:
         print("HARD failures:", len(hard))

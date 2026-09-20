@@ -11,6 +11,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/).
 - Pi-hole parity map (`docs/pihole-parity.md`)
 - CONTRIBUTING, SECURITY, issue templates
 - CI docs (`docs/ci.md`) — automated workflows
+- Quad9 matrix (`docs/quad9.md`) — why SOS = `9.9.9.10` (No Threat Blocking, no ECS)
 
 ### CI / Automation
 

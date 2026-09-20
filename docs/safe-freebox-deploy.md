@@ -15,7 +15,7 @@ Freebox OS → DHCP → DNS personnalisés :
 
 | Priorité | IP | Nom |
 | --- | --- | --- |
-| 1 | `9.9.9.10` | Quad9 Unsecured |
+| 1 | `9.9.9.10` | Quad9 **No Threat Blocking** (pas ECS) — [quad9.md](quad9.md) |
 | 2 | `194.242.2.2` | Mullvad Unfiltered |
 | 3 | `94.140.14.140` | AdGuard Non-filtering |
 

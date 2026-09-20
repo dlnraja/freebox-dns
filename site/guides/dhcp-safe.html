@@ -46,7 +46,7 @@
         <table>
           <thead><tr><th>Priorité</th><th>IP</th><th>Service</th></tr></thead>
           <tbody>
-            <tr><td>DNS1</td><td><code>9.9.9.10</code></td><td>Quad9 Unsecured (SOS UDP)</td></tr>
+            <tr><td>DNS1</td><td><code>9.9.9.10</code></td><td>Quad9 No Threat Blocking (SOS UDP, sans ECS)</td></tr>
             <tr><td>DNS2</td><td><code>HOST_IP</code></td><td>VM / Pi freebox-dns</td></tr>
           </tbody>
         </table>
@@ -64,12 +64,25 @@
       </ul>
     </div>
 
+    <h2>Pourquoi DNS1 = <code>9.9.9.10</code> (Quad9)</h2>
+    <p>Adresse officielle <strong>No Threat Blocking</strong> : pas de filtre malware chez Quad9, <strong>pas d’ECS</strong> (privacy). Le filtrage pub/malware se fait en local sur <code>dns-secure</code>.</p>
+    <table>
+      <thead><tr><th>IP</th><th>Service</th><th>Chez nous</th></tr></thead>
+      <tbody>
+        <tr><td><code>9.9.9.9</code></td><td>Secure (threat blocking)</td><td>Exclu — filtre distant</td></tr>
+        <tr><td><code>9.9.9.10</code></td><td>No Threat Blocking, sans ECS</td><td><strong>SOS #1</strong></td></tr>
+        <tr><td><code>9.9.9.11</code></td><td>Secure + ECS</td><td>Exclu</td></tr>
+        <tr><td><code>9.9.9.12</code></td><td>No Threat Blocking + ECS</td><td>Exclu (ECS)</td></tr>
+      </tbody>
+    </table>
+    <p>DNSSEC : depuis juin 2026, Quad9 valide sur <em>toutes</em> les variantes (y compris <code>.10</code>). Détail : doc repo <code>docs/quad9.md</code> · <a href="https://docs.quad9.net/services/">docs.quad9.net/services</a>.</p>
+
     <h2>Filet SOS étendu (dépannage)</h2>
     <p>En cas de panne DNS grave, vous pouvez basculer temporairement sur trois pins publics :</p>
     <table>
       <thead><tr><th>Priorité</th><th>IP</th><th>Nom</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td><code>9.9.9.10</code></td><td>Quad9 Unsecured</td></tr>
+        <tr><td>1</td><td><code>9.9.9.10</code></td><td>Quad9 No Threat Blocking</td></tr>
         <tr><td>2</td><td><code>194.242.2.2</code></td><td>Mullvad Unfiltered</td></tr>
         <tr><td>3</td><td><code>94.140.14.140</code></td><td>AdGuard Non-filtering</td></tr>
       </tbody>
@@ -145,7 +158,7 @@ bash scripts/health-check.sh</code></pre>
     <table>
       <thead><tr><th>Pin</th><th>IP</th><th>Rôle</th></tr></thead>
       <tbody>
-        <tr><td>FREEBOX_DNS_1</td><td><code>9.9.9.10</code></td><td>Quad9 Unsecured — SOS UDP</td></tr>
+        <tr><td>FREEBOX_DNS_1</td><td><code>9.9.9.10</code></td><td>Quad9 No Threat Blocking — SOS UDP</td></tr>
         <tr><td>FREEBOX_DNS_2</td><td><code>194.242.2.2</code></td><td>Mullvad Unfiltered</td></tr>
         <tr><td>FREEBOX_DNS_3</td><td><code>94.140.14.140</code></td><td>AdGuard Non-filtering</td></tr>
         <tr><td>FREEBOX_DNS_4</td><td><code>45.90.28.0</code></td><td>NextDNS — lexique dns-secure seulement</td></tr>
@@ -156,7 +169,7 @@ bash scripts/health-check.sh</code></pre>
     <section class="sources-section">
       <h2>Sources &amp; crédits</h2>
       <ul>
-        <li><a href="https://quad9.net/">Quad9</a> — Unsecured <code>9.9.9.10</code> (SOS #1)</li>
+        <li><a href="https://docs.quad9.net/services/">Quad9</a> — No Threat Blocking <code>9.9.9.10</code> (SOS #1, sans ECS)</li>
         <li><a href="https://mullvad.net/help/dns-over-https-and-dns-over-tls">Mullvad DNS</a> — Unfiltered</li>
         <li><a href="https://adguard-dns.io/kb/general/dns-providers/">AdGuard DNS</a> — Non-filtering</li>
         <li><a href="https://blog.uncensoreddns.org/">UncensoredDNS</a> — DoT catalogue (pas DHCP SOS)</li>

@@ -41,7 +41,7 @@
   "prod_recommended": {
     "dhcp_dns_primary": "9.9.9.10",
     "dhcp_dns_secondary": "${HOST_IP}",
-    "comment": "DNS1 = SOS Quad9 Unsecured (UDP/53 OK on FR ISP) ; DNS2 = dns-libre on VM :53. UncensoredDNS/DG = DoT only."
+    "comment": "DNS1 = SOS Quad9 9.9.9.10 No Threat Blocking, no ECS (UDP/53 OK on FR ISP) ; DNS2 = dns-libre on VM :53. UncensoredDNS/DG = DoT only. See docs/quad9.md."
   },
   "dual_personality_ideal": {
     "option_a_two_ips": {
@@ -120,6 +120,8 @@
     "213.228.0.168",
     "8.8.8.8",
     "1.1.1.1",
-    "9.9.9.9"
+    "9.9.9.9",
+    "9.9.9.11",
+    "9.9.9.12"
   ]
 }

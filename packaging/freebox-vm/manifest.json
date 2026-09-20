@@ -55,7 +55,7 @@
   "dhcp_recommended": {
     "dns1": "9.9.9.10",
     "dns2": "HOST_IP",
-    "note": "DNS1=SOS Quad9, DNS2=Freebox VM IP — never Windows PC"
+    "note": "DNS1=SOS Quad9 9.9.9.10 No Threat Blocking (no ECS), DNS2=Freebox VM IP — never Windows PC"
   },
   "import_freebox_os": {
     "format": "qcow2",

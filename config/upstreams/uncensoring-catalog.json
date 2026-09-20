@@ -5,6 +5,8 @@
     "8.8.8.8",
     "1.1.1.1",
     "9.9.9.9",
+    "9.9.9.11",
+    "9.9.9.12",
     "212.27.32.5",
     "213.228.0.168",
     "45.90.28.0",
@@ -12,10 +14,51 @@
     "family.dns.mullvad.net",
     "adblock.dns.mullvad.net"
   ],
+  "quad9_variants": {
+    "doc": "docs/quad9.md",
+    "official": "https://docs.quad9.net/services/",
+    "chosen_sos": "9.9.9.10",
+    "why": "No Threat Blocking + no ECS — intact answers, better privacy; malware filtered locally on dns-secure",
+    "dnssec_note": "Since 2026-06-15 Quad9 validates DNSSEC on all endpoints including .10",
+    "matrix": [
+      {
+        "ipv4": ["9.9.9.9", "149.112.112.112"],
+        "label": "Secure",
+        "threat_blocking": true,
+        "ecs": false,
+        "tls_name": "dns.quad9.net",
+        "use_in_repo": "exclude_as_primary"
+      },
+      {
+        "ipv4": ["9.9.9.10", "149.112.112.10"],
+        "label": "No Threat Blocking",
+        "threat_blocking": false,
+        "ecs": false,
+        "tls_name": "dns10.quad9.net",
+        "use_in_repo": "FREEBOX_DNS_1 / SOS #1"
+      },
+      {
+        "ipv4": ["9.9.9.11", "149.112.112.11"],
+        "label": "Secure + ECS",
+        "threat_blocking": true,
+        "ecs": true,
+        "tls_name": "dns11.quad9.net",
+        "use_in_repo": "exclude_as_primary"
+      },
+      {
+        "ipv4": ["9.9.9.12", "149.112.112.12"],
+        "label": "No Threat Blocking + ECS",
+        "threat_blocking": false,
+        "ecs": true,
+        "tls_name": "dns12.quad9.net",
+        "use_in_repo": "exclude_as_primary"
+      }
+    ]
+  },
   "sos_plain": {
     "note": "UDP/53 reachable on FR Free ISP (probed). Use for DHCP SOS / bootstrap.",
     "order": ["9.9.9.10", "194.242.2.2", "94.140.14.140"],
-    "labels": ["Quad9 Unsecured", "Mullvad Unfiltered", "AdGuard Non-filtering"]
+    "labels": ["Quad9 No Threat Blocking", "Mullvad Unfiltered", "AdGuard Non-filtering"]
   },
   "dot_only_on_fr_isp": {
     "note": "TCP/UDP 53 often timed out or refused from Freebox LAN; DoT :853 OK — keep in Unbound DoT, not DHCP SOS.",
@@ -56,7 +99,7 @@
       "id": "quad9_unsecured",
       "tls_name": "dns10.quad9.net",
       "ipv4": ["9.9.9.10", "149.112.112.10"],
-      "note": "FREEBOX_DNS_1 — Quad9 Unsecured (not 9.9.9.9) — SOS plain #1"
+      "note": "FREEBOX_DNS_1 — Quad9 No Threat Blocking / Unsecured (not .9/.11/.12) — SOS plain #1, no ECS"
     },
     {
       "id": "applied_privacy",
@@ -103,7 +146,7 @@
   ],
   "doh_uncensoring": [
     {"id": "mullvad", "url": "https://dns.mullvad.net/dns-query"},
-    {"id": "quad9_unsecured", "url": "https://dns10.quad9.net/dns-query", "note": "Unsecured path — not 9.9.9.9"},
+    {"id": "quad9_unsecured", "url": "https://dns10.quad9.net/dns-query", "note": "No Threat Blocking — not .9/.11/.12"},
     {"id": "adguard_unfiltered", "url": "https://dns-unfiltered.adguard.com/dns-query"},
     {"id": "digitale_gesellschaft", "url": "https://dns.digitale-gesellschaft.ch/dns-query"},
     {"id": "dns0_open", "url": "https://open.dns0.eu/dns-query"}

@@ -6,7 +6,7 @@ Chaque pin DHCP porte un **vocabulaire métier** distinct. Les DNS locaux du pro
 
 | Pin | IP | Nom | Lexique officiel / bits | Ce qu’on **prend** | Ce qu’on **refuse** |
 | --- | --- | --- | --- | --- | --- |
-| **FREEBOX_DNS_1** | `9.9.9.10` | **Quad9 Unsecured** (+ ECS) | Quad9 **Unsecured** / unblocked ; opposé à **Secured** (`9.9.9.9`) ; ECS ; DNSSEC ; anycast | Chemin *unblocked* + **SOS UDP** joignable sur Free | **Secured** distant — malware filtré **chez nous** |
+| **FREEBOX_DNS_1** | `9.9.9.10` | **Quad9 No Threat Blocking** | **Unsecured** / unblocked ; **pas** de threat-intel Quad9 ; **pas d’ECS** ; DNSSEC (depuis 2026-06-15) ; anycast ; ≠ Secured `9.9.9.9` / ≠ ECS `.11`/`.12` | Chemin *unblocked* + **SOS UDP** joignable sur Free | **Secured** distant — malware filtré **chez nous** |
 | **FREEBOX_DNS_2** | `194.242.2.2` | **Mullvad Unfiltered** | unfiltered, privacy, DoT/DoH (pas adblock/family) | Privacy + réponses intactes | Profils adblock/family Mullvad |
 | **FREEBOX_DNS_3** | `94.140.14.140` | **AdGuard Non-filtering** | non-filtering / unfiltered (≠ dns.adguard.com) | SOS #3 plain UDP | AdGuard « default » filtré |
 | **FREEBOX_DNS_4** | `45.90.28.0` | **NextDNS** | *firewall for the modern Internet*, threat model, denylist/allowlist, configs/profiles, ads & trackers, analytics, block page, « Pi-hole in the cloud » | Dual-profil, denylist ads/malware, UI/analytics locale, modèle *threat* | Parental / porn / SafeSearch / censure morale / cloud obligatoire / logs longs |
@@ -20,8 +20,9 @@ Chaque pin DHCP porte un **vocabulaire métier** distinct. Les DNS locaux du pro
 | --- | --- | --- |
 | Uncensored / censurfri | Pas de filtre politique | **dns-libre** — bit `uncensored` |
 | Keine Sperrlisten | Aucune liste de blocage amont | Amonts DoT libres (Mullvad, dns0.eu, DG, UncensoredDNS) |
-| Quad9 **Unsecured** | Pas de threat-intel Quad9 | dns-libre = réponses intactes |
-| Quad9 **Secured** | Block malware *chez* Quad9 | **Non** — remplacé par filtrage **local** dns-secure |
+| Quad9 **No Threat Blocking** (`9.9.9.10`) | Pas de threat-intel Quad9, **pas d’ECS** | dns-libre = réponses intactes |
+| Quad9 **Secured** (`9.9.9.9`) | Block malware *chez* Quad9 | **Non** — remplacé par filtrage **local** dns-secure |
+| Quad9 **+ ECS** (`.11` / `.12`) | Préfixe client vers les autoritaires | **Non** — privacy SOS |
 | NextDNS *configuration* / *profile* | Plusieurs politiques DNS | Exactement 2 profils locaux fixes |
 | NextDNS *denylist* | Listes de blocage | Blocky groupes `pihole` + `ublock` + `anti_adblock` + `malware` |
 | NextDNS *firewall* | Contrôle au niveau DNS | dns-secure = pare-feu DNS **LAN**, pas cloud |

@@ -84,6 +84,7 @@ bash scripts/health-check.sh
 | [docs/encrypted-dns.md](docs/encrypted-dns.md) | DoH / DoT / DoQ |
 | [docs/ci.md](docs/ci.md) | GitHub Actions automation |
 | [docs/anti-degradation.md](docs/anti-degradation.md) | Bitrot / regression watchdog |
+| [docs/quad9.md](docs/quad9.md) | Pourquoi SOS = Quad9 `9.9.9.10` |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribuer |
 | [SECURITY.md](SECURITY.md) | Sécurité |
 
