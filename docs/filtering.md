@@ -6,7 +6,7 @@ Chaîne commune : **hosts locaux → filtre du mode → Unbound (DoT) → monde*
 
 ## uncensored — `dns-libre`
 
-Inspiré de **UncensoredDNS** (#1), **Digitale Gesellschaft** (#2), **Quad9 Unsecured** (#3).
+Inspiré de **UncensoredDNS** (#1), **Digitale Gesellschaft** (#2), **Quad9 No Threat Blocking** (#3).
 
 - Pas de blocklists (*keine Sperrlisten*).
 - Amonts DoT non censeurs via Unbound ; réponses *unblocked*.
@@ -23,6 +23,8 @@ Pare-feu pubs/trackers intelligent (**Pi-hole + uBlock Origin DNS + anti–anti-
 ## secure — `dns-secure` — bit `threat-local`
 
 antipub **+** malware, sans cloud NextDNS ni contrôle parental.
+
+Les benches publics ([Nexxwave 2025](https://techblog.nexxwave.eu/public-dns-malware-filters-to-be-tested-in-2025/), fil [r/dns](https://www.reddit.com/r/dns/comments/1fv5f9u/what_dns_do_you_recommend_1111_vs_9999_vs_opendns/)) placent ControlD / dns0 / Quad9 Secured en tête du **blocage distant** — ici on reproduit l’intention avec des **listes locales** (URLhaus, HaGeZi TIF…) pour garder le contrôle et un SOS uncensoring. Voir [public-dns-landscape.md](public-dns-landscape.md).
 
 ### Features mappées intelligemment
 

@@ -33,9 +33,9 @@ UncensoredDNS / Digitale Gesellschaft : **pas** en plain fallback (DoT Unbound s
 
 ## Exclus en primaire
 
-Google, Cloudflare, Quad9 Secured `9.9.9.9`, Quad9 ECS `.11`/`.12`, DNS Free, NextDNS profilé, Mullvad adblock/family, AdGuard filtré, dns0.eu non-open.
+Google, Cloudflare (`1.1.1.1` / Families `.2`/`.3`), OpenDNS Cisco, Quad9 Secured `9.9.9.9` + ECS `.11`/`.12`, ControlD Malware `76.76.2.1`, dns0.eu filtré / ZERO, DNS4EU Protective, CleanBrowsing, DNS Free, NextDNS profilé, Mullvad adblock/family, AdGuard filtré.
 
-Matrice Quad9 : [quad9.md](quad9.md).
+Matrice Quad9 : [quad9.md](quad9.md) · paysage communauté : [public-dns-landscape.md](public-dns-landscape.md).
 
 ---
 

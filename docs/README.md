@@ -6,6 +6,7 @@
 | **Anti-dégradation** | [anti-degradation.md](anti-degradation.md) |
 | **CI / GitHub Actions** | [ci.md](ci.md) |
 | **Quad9 `9.9.9.10` (SOS)** | [quad9.md](quad9.md) |
+| **Paysage DNS public (r/dns + benches)** | [public-dns-landscape.md](public-dns-landscape.md) |
 | **Features livrées** | [../FEATURES.md](../FEATURES.md) |
 | **Changelog** | [../CHANGELOG.md](../CHANGELOG.md) |
 | **Modes smart spit** | [modes.md](modes.md) |

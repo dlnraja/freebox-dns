@@ -47,4 +47,4 @@ Unbound DoT   →  9.9.9.10@853#dns10.quad9.net  (avant UncensoredDNS)
 dns-libre     →  plain + DoH/DoT vers dns10.quad9.net
 ```
 
-Voir aussi [dns-pins.md](dns-pins.md) · [dns-lexicon.md](dns-lexicon.md) · [safe-freebox-deploy.md](safe-freebox-deploy.md).
+Voir aussi [dns-pins.md](dns-pins.md) · [dns-lexicon.md](dns-lexicon.md) · [safe-freebox-deploy.md](safe-freebox-deploy.md) · [public-dns-landscape.md](public-dns-landscape.md).

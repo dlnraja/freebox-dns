@@ -36,7 +36,7 @@ Objectif : **non censure + DoT + diversité géographique/juridique**, compléme
 | UncensoredDNS | `anycast.uncensoreddns.org` | DoT catalogue (UDP/53 souvent filtré sur Free) |
 | Quad9 unblocked | `dns10.quad9.net` via `9.9.9.10` | SOS #1 + bootstrap |
 
-**Exclus volontairement comme amonts primaires :** Google `8.8.8.8`, Cloudflare `1.1.1.1`, DNS Free, NextDNS profilé, Quad9 `9.9.9.9` / `.11` (filtre distant) et `.12` (ECS) — on filtre **en local** sur dns-secure ; détail variantes : [quad9.md](quad9.md).
+**Exclus volontairement comme amonts primaires :** Google `8.8.8.8`, Cloudflare `1.1.1.x`, OpenDNS, Quad9 `9.9.9.9` / `.11` / `.12`, ControlD malware, dns0 filtré, DNS4EU Protective — on filtre **en local** sur dns-secure. Synthèse communauté + benches : [public-dns-landscape.md](public-dns-landscape.md) · Quad9 : [quad9.md](quad9.md).
 
 ## Architecture « ton propre DNS local »
 

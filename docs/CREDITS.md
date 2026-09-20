@@ -108,6 +108,19 @@ Scripts locaux (pas d’upload OONI) : `scripts/ooni-like-anti-lie.py`, `scripts
 | RFC 8484 | DNS over HTTPS (DoH) |
 | RFC 9250 | DNS over QUIC (DoQ) |
 | RFC 8767 | Serve-stale (résilience Unbound) |
+| RFC 7816 | QNAME minimization (récursion) |
+
+---
+
+## Benchmarks & discussions publiques
+
+| Source | Usage | Lien |
+| --- | --- | --- |
+| **r/dns** (1.1.1.1 vs 9.9.9.9 vs OpenDNS) | Synthèse communauté → [public-dns-landscape.md](public-dns-landscape.md) | [reddit.com/r/dns/…](https://www.reddit.com/r/dns/comments/1fv5f9u/what_dns_do_you_recommend_1111_vs_9999_vs_opendns/) |
+| **Nexxwave** malware DNS tests | Justification du filtrage **local** vs resolveurs « Secure » | [2025](https://techblog.nexxwave.eu/public-dns-malware-filters-to-be-tested-in-2025/) · [2024](https://techblog.nexxwave.eu/public-dns-malware-filters-tested-in-2024/) |
+| **Quad9 forwarder best practices** | Cache / dual-IP côté forwarder | [docs.quad9.net](https://docs.quad9.net/Quad9_For_Organizations/DNS_Forwarder_Best_Practices/) |
+| **Pi-hole + Unbound guide** | Schéma voisin Blocky→Unbound | [docs.pi-hole.net](https://docs.pi-hole.net/guides/dns/unbound/) |
+| **Control D free DNS** | Profils (uncensored déjà catalogue ; malware = réf. bench) | [controld.com/free-dns](https://controld.com/free-dns) |
 
 ---
 
