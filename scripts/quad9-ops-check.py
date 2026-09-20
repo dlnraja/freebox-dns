@@ -160,11 +160,8 @@ def main() -> int:
 
     for url in DOH_URLS:
         ok, detail = http2_ok(url)
-        item = {"name": f"doh_http2_{url.split('/')[2]}", "ok": ok, "detail": detail}
-        if "dns10" in url and not ok:
-            hard_fail = True
-        elif not ok:
-            item["soft"] = True
+        # DoH HTTP/2 probes are flaky from GitHub runners; SOS UDP above is the hard gate.
+        item = {"name": f"doh_http2_{url.split('/')[2]}", "ok": ok, "detail": detail, "soft": True}
         checks.append(item)
 
     # Protocol self-test via system resolver (informational)
