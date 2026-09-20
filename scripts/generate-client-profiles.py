@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Generate client encrypted-DNS profiles for Freebox OS / phones / browsers.
 
@@ -97,7 +97,7 @@ def main() -> int:
         },
         "malware": {
             "bit": "malware-free",
-            "dns": env_int("DNS_MALWARE_PORT", 5355),
+            "dns": env_int("DNS_MALWARE_PORT", 5357),
             "doh": env_int("DOH_MALWARE_PORT", 8445),
             "dot": env_int("DOT_MALWARE_PORT", 8855),
             "doq": None,
@@ -221,3 +221,4 @@ Regenerate: `python3 scripts/generate-client-profiles.py`
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

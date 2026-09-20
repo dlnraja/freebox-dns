@@ -1,4 +1,4 @@
-# Modes DNS intelligents (smart spit)
+﻿# Modes DNS intelligents (smart spit)
 
 La VM **héberge son propre DNS**. Chaque mode applique le même **smart split** :
 
@@ -12,7 +12,7 @@ La VM **héberge son propre DNS**. Chaque mode applique le même **smart split**
 | Mode | Service | Port DNS (lab) | DoH | Filtre |
 | --- | --- | --- | --- | --- |
 | **uncensored** | `dns-libre` | `5356` (prod `:53`) | `:8453` | Aucun denylist |
-| **malware** | `dns-malware` | `5355` | `:8445` | Menaces / phishing uniquement |
+| **malware** | `dns-malware` | `5357` | `:8445` | Menaces / phishing uniquement |
 | **antipub** | `dns-antipub` | `5358` | `:8446` | Pubs + trackers + anti–anti-adblock |
 | **secure** | `dns-secure` | `5354` | `:8444` | antipub **+** malware |
 
@@ -47,7 +47,7 @@ Les pubs **passent** — utile pour un NAS / TV où l’on veut la sécurité sa
 # Uncensored
 dig @$HOST_IP -p 53 example.com +short
 # Malware (ads encore résolus en général)
-dig @$HOST_IP -p 5355 doubleclick.net +short
+dig @$HOST_IP -p 5357 doubleclick.net +short
 # Antipub (ads → NXDOMAIN)
 dig @$HOST_IP -p 5358 doubleclick.net +short
 # Secure = antipub + malware
@@ -61,3 +61,4 @@ Profils clients : `python3 scripts/generate-client-profiles.py` → `config/clie
 ## Sources & crédits
 
 Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).
+

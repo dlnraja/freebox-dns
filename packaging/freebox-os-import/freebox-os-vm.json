@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "freebox-dns",
   "description": "All-in-one dual DNS (dns-libre + dns-secure) for Freebox OS VM import",
   "freebox_os": {
@@ -29,7 +29,7 @@
     "services": ["unbound", "dns-libre", "dns-malware", "dns-antipub", "dns-secure"],
     "ports": {
       "dns_uncensored": 53,
-      "dns_malware": 5355,
+      "dns_malware": 5357,
       "dns_antipub": 5358,
       "dns_secure": 5354,
       "doh_uncensored": 8453,
@@ -71,3 +71,4 @@
     "enable_screen": "true"
   }
 }
+

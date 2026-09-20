@@ -1,4 +1,4 @@
-name: validate-and-health
+﻿name: validate-and-health
 
 on:
   push:
@@ -228,7 +228,7 @@ jobs:
           set -e
           dig @127.0.0.1 -p 5356 example.com +time=5 +tries=3 +short | tee /tmp/libre.txt
           grep -qE '^[0-9.]+' /tmp/libre.txt
-          dig @127.0.0.1 -p 5355 example.com +time=5 +tries=3 +short | tee /tmp/malware.txt
+          dig @127.0.0.1 -p 5357 example.com +time=5 +tries=3 +short | tee /tmp/malware.txt
           grep -qE '^[0-9.]+' /tmp/malware.txt
           dig @127.0.0.1 -p 5358 example.com +time=5 +tries=3 +short | tee /tmp/antipub.txt
           grep -qE '^[0-9.]+' /tmp/antipub.txt
@@ -242,3 +242,4 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose down -v
+

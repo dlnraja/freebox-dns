@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # Health-check all smart DNS modes (uncensored / malware / antipub / secure).
 set -euo pipefail
 HOST="${DNS_HOST:-127.0.0.1}"
 LIBRE_PORT="${DNS_LIBRE_PORT:-5356}"
-MALWARE_PORT="${DNS_MALWARE_PORT:-5355}"
+MALWARE_PORT="${DNS_MALWARE_PORT:-5357}"
 ANTIPUB_PORT="${DNS_ANTIPUB_PORT:-5358}"
 SECURE_PORT="${DNS_SECURE_PORT:-5354}"
 
@@ -55,3 +55,4 @@ if command -v curl >/dev/null; then
 fi
 
 exit "${fail}"
+

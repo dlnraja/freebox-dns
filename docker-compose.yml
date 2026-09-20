@@ -1,7 +1,7 @@
-# Freebox smart DNS — 4 modes on HOST_IP (local-only, never 0.0.0.0)
+﻿# Freebox smart DNS — 4 modes on HOST_IP (local-only, never 0.0.0.0)
 #
 #   uncensored  dns-libre    :5356 / DoH :8453  → hosts → Unbound → world
-#   malware     dns-malware  :5355 / DoH :8445  → hosts → malware lists → Unbound
+#   malware     dns-malware  :5357 / DoH :8445  → hosts → malware lists → Unbound
 #   antipub     dns-antipub  :5358 / DoH :8446  → hosts → ads+uBO+anti-adblock → Unbound
 #   secure      dns-secure   :5354 / DoH :8444  → hosts → antipub+malware → Unbound
 #
@@ -63,8 +63,8 @@ services:
       unbound:
         condition: service_healthy
     ports:
-      - "${HOST_IP}:${DNS_MALWARE_PORT:-5355}:53/udp"
-      - "${HOST_IP}:${DNS_MALWARE_PORT:-5355}:53/tcp"
+      - "${HOST_IP}:${DNS_MALWARE_PORT:-5357}:53/udp"
+      - "${HOST_IP}:${DNS_MALWARE_PORT:-5357}:53/tcp"
       - "${HOST_IP}:${DOH_MALWARE_PORT:-8445}:443/tcp"
       - "${HOST_IP}:${DOT_MALWARE_PORT:-8855}:853/tcp"
     volumes:
@@ -154,3 +154,4 @@ networks:
     ipam:
       config:
         - subnet: 172.28.0.0/24
+

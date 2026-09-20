@@ -1,4 +1,4 @@
-# Freebox Dual DNS — dns-libre + dns-secure
+﻿# Freebox Dual DNS — dns-libre + dns-secure
 
 Stack DNS open-source pour **Freebox** (Delta / Ultra / VM Freebox locale), aussi **Raspberry Pi** et **Windows / WSL2**.
 
@@ -10,7 +10,7 @@ La VM **héberge son DNS** avec **smart spit** : listes locales d’abord, puis 
 | Mode | Service | Port lab | DoH | Filtrage |
 | --- | --- | --- | --- | --- |
 | **uncensored** | `dns-libre` | `5356` (prod `:53`) | `:8453` | Aucun denylist |
-| **malware** | `dns-malware` | `5355` | `:8445` | Menaces uniquement |
+| **malware** | `dns-malware` | `5357` | `:8445` | Menaces uniquement |
 | **antipub** | `dns-antipub` | `5358` | `:8446` | Pubs + trackers + anti–anti-adblock |
 | **secure** | `dns-secure` | `5354` | `:8444` | antipub + malware |
 
@@ -141,3 +141,4 @@ Ce dépôt orchestre Unbound, dnsproxy, Blocky, listes Pi-hole / uBlock / HaGeZi
 ## Ouvrir dans Cursor
 
 Voir [OPEN-IN-CURSOR.md](OPEN-IN-CURSOR.md).
+

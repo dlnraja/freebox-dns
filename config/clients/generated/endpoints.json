@@ -12,7 +12,7 @@
     },
     "malware": {
       "bit": "malware-free",
-      "plain": "192.168.1.15:5355",
+      "plain": "192.168.1.15:5357",
       "doh": "https://192.168.1.15:8445/dns-query",
       "dot": "tls://192.168.1.15:8855",
       "note": "Malware/phishing only \u2014 ads still resolve",

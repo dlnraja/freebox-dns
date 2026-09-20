@@ -6,7 +6,7 @@ Smart split: **local hosts → mode filter → Unbound → world** — see [docs
 | Mode | Plain | DoH | DoT |
 | --- | --- | --- | --- |
 | **uncensored** | `192.168.1.15:5356` | `https://192.168.1.15:8453/dns-query` | `tls://192.168.1.15:8853` |
-| **malware** | `192.168.1.15:5355` | `https://192.168.1.15:8445/dns-query` | `tls://192.168.1.15:8855` |
+| **malware** | `192.168.1.15:5357` | `https://192.168.1.15:8445/dns-query` | `tls://192.168.1.15:8855` |
 | **antipub** | `192.168.1.15:5358` | `https://192.168.1.15:8446/dns-query` | `tls://192.168.1.15:8856` |
 | **secure** | `192.168.1.15:5354` | `https://192.168.1.15:8444/dns-query` | `tls://192.168.1.15:8854` |
 
