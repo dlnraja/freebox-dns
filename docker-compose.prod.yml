@@ -1,4 +1,4 @@
-﻿# Production overlay — classic DNS :53 = uncensored (dns-libre) on HOST_IP
+# Production overlay — classic DNS :53 = uncensored (dns-libre) on HOST_IP
 # Usage:
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 # ARM64 Freebox / Pi also add: -f docker-compose.arm64.yml

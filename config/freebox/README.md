@@ -1,4 +1,4 @@
-﻿# Freebox OS — DNS / DHCP (option Freebox)
+# Freebox OS — DNS / DHCP (option Freebox)
 
 Le résolveur = la **VM / Pi** (`HOST_IP`), pas un PC qui s’éteint.
 Sans Freebox : même paire DNS sur n’importe quel routeur — [docs/wifi-lan.md](../../docs/wifi-lan.md).

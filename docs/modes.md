@@ -1,4 +1,4 @@
-﻿# Modes DNS intelligents (« smart spit »)
+# Modes DNS intelligents (« smart spit »)
 
 « **Smart spit** » = quatre personnalités DNS séparées par port / DoH
 (équivalent pratique d’un *smart split* — pas un seul Pi-hole FTL + groupes clients).

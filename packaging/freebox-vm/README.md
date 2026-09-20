@@ -1,4 +1,4 @@
-﻿# Paquet VM Freebox OS
+# Paquet VM Freebox OS
 
 Contenu livré pour Freebox OS → **VM** :
 

@@ -1,4 +1,4 @@
-﻿# Modèle de filtrage (lexique pins → local)
+# Modèle de filtrage (lexique pins → local)
 
 Voir : [dns-lexicon.md](dns-lexicon.md) · **modes (smart spit)** : [modes.md](modes.md) · **parité Pi-hole** : [pihole-parity.md](pihole-parity.md) · catalogue : [`config/blocky/lists/filter-intelligence.json`](../config/blocky/lists/filter-intelligence.json)
 

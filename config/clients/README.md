@@ -1,4 +1,4 @@
-﻿# Client encrypted-DNS profiles
+# Client encrypted-DNS profiles
 
 Generate with:
 

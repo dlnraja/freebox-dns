@@ -1,4 +1,4 @@
-﻿# Identité des 5 DNS épinglés (FREEBOX_DNS_1..5)
+# Identité des 5 DNS épinglés (FREEBOX_DNS_1..5)
 
 Pins **plain UDP** pour DHCP SOS / bootstrap (prouvés joignables depuis Freebox LAN FR).  
 UncensoredDNS + Digitale Gesellschaft restent dans le **catalogue DoT** (UDP/53 souvent filtré).

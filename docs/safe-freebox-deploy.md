@@ -1,4 +1,4 @@
-﻿# Déploiement VM Freebox — mode sûr (ne pas casser Internet)
+# Déploiement VM Freebox — mode sûr (ne pas casser Internet)
 
 ## État de sécurité constaté
 

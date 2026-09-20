@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Generate client encrypted-DNS profiles for Freebox OS / phones / browsers.
 

@@ -1,4 +1,4 @@
-﻿# Analyse des DNS épinglés + amonts complémentaires
+# Analyse des DNS épinglés + amonts complémentaires
 
 Verdict court : **garder 1–2–3–5 comme filet de secours LAN** ; **ne plus s’appuyer sur NextDNS (4) comme amont principal** ; **le vrai « DNS du projet » = stack locale** (dns-libre + dns-secure).
 

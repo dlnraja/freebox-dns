@@ -1,4 +1,4 @@
-﻿# Freebox smart DNS — 4 modes on HOST_IP (local-only, never 0.0.0.0)
+# Freebox smart DNS — 4 modes on HOST_IP (local-only, never 0.0.0.0)
 #
 #   uncensored  dns-libre       :5356 / DoH :8453 / DoT·DoQ :8853 → hosts → Unbound
 #   malware     dns-malware     :5357 / DoH :8445 / DoT :8855

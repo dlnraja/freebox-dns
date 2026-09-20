@@ -1,4 +1,4 @@
-﻿# DHCP Freebox (option) — filet SOS
+# DHCP Freebox (option) — filet SOS
 
 Sans Freebox : même logique sur tout routeur — [wifi-lan.md](wifi-lan.md).
 

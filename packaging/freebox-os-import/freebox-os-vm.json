@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "freebox-dns",
   "description": "All-in-one dual DNS (dns-libre + dns-secure) for Freebox OS VM import",
   "freebox_os": {

@@ -1,4 +1,4 @@
-﻿name: validate-and-health
+name: validate-and-health
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.prod.yml config -q
           docker compose -f docker-compose.yml -f docker-compose.arm64.yml config -q
           # ipv6 overlay needs HOST_IP6
-          HOST_IP6=fd00:fb0x:dns::71 docker compose -f docker-compose.yml -f docker-compose.ipv6.yml config -q
+          HOST_IP6=fd00:fb0d::71 docker compose -f docker-compose.yml -f docker-compose.ipv6.yml config -q
       - name: Assert HOST_IP bind + Blocky drift
         run: |
           set -euo pipefail

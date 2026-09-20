@@ -1,4 +1,4 @@
-﻿# Résilience DNS — local d'abord, puis le reste du monde
+# Résilience DNS — local d'abord, puis le reste du monde
 
 Quand « tous les DNS publics » tombent, la VM Freebox doit encore répondre
 avec ce qu'elle connaît déjà (hosts + Unbound local-data + cache serve-expired).

@@ -1,4 +1,4 @@
-﻿# Déploiement Raspberry Pi
+# Déploiement Raspberry Pi
 
 Cible recommandée pour un salon : Pi **toujours allumé**, IP en **DNS1** sur le routeur.
 

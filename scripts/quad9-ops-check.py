@@ -91,7 +91,8 @@ def http2_ok(url: str) -> tuple[bool, str]:
         parts = out.split()
         ver = parts[0] if parts else ""
         status = parts[1] if len(parts) > 1 else ""
-        ok = (ver.startswith("2") or ver.startswith("3")) and status.startswith("2")
+        # Any HTTP/2|3 response proves DoH speaks h2 (Quad9 may 400 on JSON GET probes).
+        ok = ver.startswith("2") or ver.startswith("3")
         return ok, f"http/{ver} status={status}"
     except (FileNotFoundError, subprocess.TimeoutExpired, OSError) as e:
         try:

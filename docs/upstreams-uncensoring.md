@@ -1,4 +1,4 @@
-﻿# Catalogue amonts DNS libres / sans censure
+# Catalogue amonts DNS libres / sans censure
 
 Source de vérité machine : [`config/upstreams/uncensoring-catalog.json`](../config/upstreams/uncensoring-catalog.json).
 

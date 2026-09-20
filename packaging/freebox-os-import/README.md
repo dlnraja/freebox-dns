@@ -1,4 +1,4 @@
-﻿# Paquet d’import Freebox OS (QCOW2)
+# Paquet d’import Freebox OS (QCOW2)
 
 Freebox OS → **VM** → **Ajouter** → **image de disque existante** = fichier **`.qcow2`**.
 

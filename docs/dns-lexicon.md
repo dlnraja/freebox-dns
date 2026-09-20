@@ -1,4 +1,4 @@
-﻿# Lexique des 5 DNS Freebox → personnalités locales
+# Lexique des 5 DNS Freebox → personnalités locales
 
 Chaque pin DHCP porte un **vocabulaire métier** distinct. Les DNS locaux du projet (`dns-libre`, `dns-secure`) ne copient pas les marques : ils **réutilisent ces bits sémantiques** pour rester cohérents avec ce que la Freebox annonce déjà.
 

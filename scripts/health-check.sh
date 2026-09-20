@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Health-check all smart DNS modes (uncensored / malware / antipub / secure).
 set -euo pipefail
 HOST="${DNS_HOST:-127.0.0.1}"

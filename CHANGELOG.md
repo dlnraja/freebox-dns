@@ -10,6 +10,8 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/).
 - CI: Blocky YAML CRLF drift on Linux runners (`.gitattributes` eol=lf)
 - CI: lychee v0.24 — `--include-mail=false` (was `--exclude-mail`)
 - CI: static job `permissions` (dynamic `&&`/`||` expressions rejected by Actions)
+- CI: strip accidental UTF-8 BOM; valid ULA IPv6 example (`fd00:fb0d::/64`)
+- CI: Quad9 DoH check accepts HTTP/2 even when JSON GET returns 400
 
 ## [1.3.0] — 2026-09-20
 

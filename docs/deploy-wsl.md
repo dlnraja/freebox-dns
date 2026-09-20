@@ -1,4 +1,4 @@
-﻿# Lab Windows / WSL — tests seulement
+# Lab Windows / WSL — tests seulement
 
 Pour **héberger** le DNS du salon sur Windows **sans Docker** → [deploy-windows.md](deploy-windows.md).
 

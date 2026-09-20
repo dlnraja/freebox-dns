@@ -1,4 +1,4 @@
-﻿# Anti–DNS menteur (couche locale avant forward)
+# Anti–DNS menteur (couche locale avant forward)
 # Inspiré d’**OONI** (Open Observatory of Network Interference) — la « pieuvre »
 # des mesures de censure réseau : https://ooni.org/
 # Intro FR : https://korben.info/ooni-probe-mesurer-niveau-de-manipulation-surveillance-censure-de-internet.html

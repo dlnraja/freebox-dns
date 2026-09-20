@@ -1,4 +1,4 @@
-﻿# Smart local DNS lists (anti lie / blockpage / gov redirect)
+# Smart local DNS lists (anti lie / blockpage / gov redirect)
 # See docs/anti-lie-dns.md — never stores ANJ/DGCCRF/127.0.0.1
 
 | Fichier | Rôle |
