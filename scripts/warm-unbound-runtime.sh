@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Warm Unbound runtime cache so serve-expired has answers when all DoT die.
-set -euo pipefail
+set -eu
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
