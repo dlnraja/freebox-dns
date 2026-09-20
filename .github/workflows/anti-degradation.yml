@@ -11,19 +11,25 @@ on:
   push:
     paths:
       - "scripts/anti-degradation-check.py"
-      - ".github/workflows/anti-degradation.yml"
-      - "config/upstreams/uncensoring-catalog.json"
-      - "config/freebox-dns-snapshot.json"
-      - "config/blocky/config.yml"
-      - "docker-compose.yml"
-  pull_request:
-    paths:
-      - "scripts/anti-degradation-check.py"
+      - "scripts/assert-lan-only.py"
+      - "scripts/ci-assert-product.py"
       - ".github/workflows/anti-degradation.yml"
       - "config/upstreams/**"
       - "config/freebox-dns-snapshot.json"
       - "config/blocky/**"
       - "docker-compose.yml"
+      - "docs/lan-only.md"
+  pull_request:
+    paths:
+      - "scripts/anti-degradation-check.py"
+      - "scripts/assert-lan-only.py"
+      - "scripts/ci-assert-product.py"
+      - ".github/workflows/anti-degradation.yml"
+      - "config/upstreams/**"
+      - "config/freebox-dns-snapshot.json"
+      - "config/blocky/**"
+      - "docker-compose.yml"
+      - "docs/lan-only.md"
 
 permissions:
   contents: read
@@ -81,9 +87,10 @@ jobs:
             echo '```'
             echo
             echo "### Next steps"
-            echo "1. Inspect failed checks (SOS digs, blocklist HTTP, Pages, invariants)."
-            echo "2. Re-run \`python3 scripts/anti-degradation-check.py\` locally."
-            echo "3. Fix pins/catalog/Blocky or replace dead upstreams."
+            echo "1. Inspect failed checks (SOS digs as **DNS2 filet**, blocklist HTTP, Pages, lan-only / product invariants)."
+            echo "2. Remember: DHCP **DNS1 = HOST_IP** (resolver), **DNS2 = 9.9.9.10** (SOS). Pin \`FREEBOX_DNS_1\` is the SOS inventory label, not DHCP DNS1."
+            echo "3. Re-run \`python3 scripts/anti-degradation-check.py\` and \`python3 scripts/ci-assert-product.py\` locally."
+            echo "4. Fix pins/catalog/Blocky or replace dead upstreams."
           } > "$BODY_FILE"
 
           gh label create anti-degradation --color B60205 --description "Automated bitrot/regression" 2>/dev/null || true

@@ -51,9 +51,9 @@
     "note": "Sur Windows, 5353 est souvent pris (mDNS). En lab Freebox DHCP ne pousse que le port 53 — utiliser overlay prod ou forwarder. DNSCrypt :5359 = proxy→Quad9 ; :8443 = serveur LAN (profile)."
   },
   "prod_recommended": {
-    "dhcp_dns_primary": "9.9.9.10",
-    "dhcp_dns_secondary": "${HOST_IP}",
-    "comment": "DNS1 = SOS Quad9 9.9.9.10 No Threat Blocking, no ECS (UDP/53 OK on FR ISP) ; DNS2 = dns-libre on VM :53. UncensoredDNS/DG = DoT only. See docs/quad9.md."
+    "dhcp_dns_primary": "${HOST_IP}",
+    "dhcp_dns_secondary": "9.9.9.10",
+    "comment": "DNS1 = freebox-dns on HOST_IP :53 (the product). DNS2 = SOS Quad9 9.9.9.10 No Threat Blocking, no ECS. Test dig @HOST_IP before changing router DHCP. See docs/wifi-lan.md + docs/quad9.md."
   },
   "dual_personality_ideal": {
     "option_a_two_ips": {

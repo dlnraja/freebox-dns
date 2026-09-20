@@ -46,8 +46,8 @@
         <table>
           <thead><tr><th>Priorité</th><th>IP</th><th>Service</th></tr></thead>
           <tbody>
-            <tr><td>DNS1</td><td><code>9.9.9.10</code></td><td>Quad9 No Threat Blocking (SOS UDP, sans ECS)</td></tr>
-            <tr><td>DNS2</td><td><code>HOST_IP</code></td><td>VM / Pi freebox-dns</td></tr>
+            <tr><td>DNS1</td><td><code>HOST_IP</code></td><td>Résolveur freebox-dns (Pi / VM / Windows)</td></tr>
+            <tr><td>DNS2</td><td><code>9.9.9.10</code></td><td>Quad9 No Threat Blocking (SOS si la machine tombe)</td></tr>
           </tbody>
         </table>
         <p>Si la VM tombe, le LAN continue via Quad9 Unsecured. Si la VM répond, elle sert dns-libre en DNS2 — <strong>toujours deux entrées</strong>.</p>
@@ -78,8 +78,10 @@ python scripts/quad9-ops-check.py
 dig +short txt proto.on.quad9.net.</code></pre>
     <p>Ne mélangez jamais <code>9.9.9.9</code> et <code>9.9.9.10</code> dans le DHCP. Doc : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/quad9.md">docs/quad9.md</a> · <a href="https://www.captaindns.com/fr/blog/dns-9999-quad9">CaptainDNS</a>.</p>
 
-    <h2>Pourquoi DNS1 = <code>9.9.9.10</code> (Quad9)</h2>
-    <p>Adresse officielle <strong>No Threat Blocking</strong> : pas de filtre malware chez Quad9, <strong>pas d’ECS</strong> (privacy). Le filtrage pub/malware se fait en local sur <code>dns-secure</code>.</p>
+    <h2>Pourquoi DNS2 = <code>9.9.9.10</code> (SOS Quad9)</h2>
+    <p>Adresse officielle <strong>No Threat Blocking</strong> : pas de filtre malware chez Quad9, <strong>pas d’ECS</strong> (privacy).
+    C’est le <strong>filet</strong> (DNS2) si le résolveur local tombe. Le filtrage pub/malware se fait en local sur <code>dns-secure</code>.
+    En régime normal : <strong>DNS1 = HOST_IP</strong> (ce projet).</p>
     <table>
       <thead><tr><th>IP</th><th>Service</th><th>Chez nous</th></tr></thead>
       <tbody>

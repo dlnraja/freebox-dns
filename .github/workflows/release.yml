@@ -65,8 +65,17 @@ jobs:
           TAG="${{ steps.meta.outputs.tag }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG" -m "$TAG" 2>/dev/null || git tag "$TAG" || true
-          git push origin "$TAG"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists at $(git rev-parse "$TAG")"
+          else
+            git tag -a "$TAG" -m "$TAG"
+            git push origin "$TAG"
+          fi
+          # Require a CHANGELOG section for this version (soft stub only if Unreleased-only projects)
+          VER="${{ steps.meta.outputs.ver }}"
+          if ! grep -qE "^## \[${VER}\]" CHANGELOG.md; then
+            echo "::warning::CHANGELOG.md has no ## [$VER] section — release notes will be generic"
+          fi
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,34 +1,48 @@
 # Documentation freebox-dns
 
-| Ressource | Lien |
-| --- | --- |
-| **Guides illustrés (GitHub Pages)** | [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) |
-| **Anti-dégradation** | [anti-degradation.md](anti-degradation.md) |
-| **CI / GitHub Actions** | [ci.md](ci.md) |
-| **Quad9 `9.9.9.10` (SOS)** | [quad9.md](quad9.md) |
-| **Paysage DNS public (r/dns + benches)** | [public-dns-landscape.md](public-dns-landscape.md) |
-| **Features livrées** | [../FEATURES.md](../FEATURES.md) |
-| **Changelog** | [../CHANGELOG.md](../CHANGELOG.md) |
-| **Modes smart spit** | [modes.md](modes.md) |
-| **Pi-hole parity (Blocky)** | [pihole-parity.md](pihole-parity.md) |
-| **Filtrage Pi-hole / uBlock** | [filtering.md](filtering.md) |
-| **Wi‑Fi / LAN (résolveur = VM)** | [wifi-lan.md](wifi-lan.md) |
-| Freebox DHCP / DoH | [freebox.md](freebox.md) |
-| Import VM Freebox (QCOW2) | [freebox-vm.md](freebox-vm.md) |
-| Déploiement sûr | [safe-freebox-deploy.md](safe-freebox-deploy.md) |
-| Anti–DNS menteur (OONI) | [anti-lie-dns.md](anti-lie-dns.md) |
-| Analyse pins DNS | [dns-analysis.md](dns-analysis.md) |
-| OSINT Web-Check / Korben | [osint-toolkit.md](osint-toolkit.md) |
-| DoH / DoT / DoQ | [encrypted-dns.md](encrypted-dns.md) |
-| DNSCrypt | [encrypted-dns.md](encrypted-dns.md) · [config/dnscrypt/](../config/dnscrypt/) |
-| Pins FREEBOX_DNS_1..5 | [dns-pins.md](dns-pins.md) |
-| Lexique | [dns-lexicon.md](dns-lexicon.md) |
-| Amonts uncensoring | [upstreams-uncensoring.md](upstreams-uncensoring.md) |
-| Résilience local-first | [resilience.md](resilience.md) |
-| **Crédits & sources** | [CREDITS.md](CREDITS.md) |
-| Pi | [deploy-pi.md](deploy-pi.md) |
-| WSL (lab) | [deploy-wsl.md](deploy-wsl.md) |
-| Contribuer | [../CONTRIBUTING.md](../CONTRIBUTING.md) |
-| Sécurité | [../SECURITY.md](../SECURITY.md) |
+**But produit :** héberger un DNS local → mettre son IP en **DNS1** → ça marche.
+Freebox / Docker / votre salon précis ne sont **pas** des prérequis.
 
-Sources HTML du site : dossier [`../site/`](../site/).
+## Démarrer ici
+
+| | |
+| --- | --- |
+| **Choisir où déployer** | [deploy.md](deploy.md) |
+| **Pi** | [deploy-pi.md](deploy-pi.md) |
+| **Windows (exe, sans Docker)** | [deploy-windows.md](deploy-windows.md) |
+| **VM Freebox (option)** | [freebox-vm.md](freebox-vm.md) |
+| **Pointer DNS1 / Wi‑Fi** | [wifi-lan.md](wifi-lan.md) |
+| **LAN only (pas Internet)** | [lan-only.md](lan-only.md) |
+| **Guides web** | [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) |
+
+## Produit
+
+| Doc | Sujet |
+| --- | --- |
+| [modes.md](modes.md) | 4 modes « smart spit » |
+| [filtering.md](filtering.md) · [pihole-parity.md](pihole-parity.md) | Listes Blocky (pas un clone Pi-hole) |
+| [resilience.md](resilience.md) | Local-first Unbound / hosts |
+| [encrypted-dns.md](encrypted-dns.md) | Do53 / DoH / DoT / DoQ / DNSCrypt |
+| [anti-lie-dns.md](anti-lie-dns.md) | Anti–DNS menteur |
+| [quad9.md](quad9.md) | SOS `9.9.9.10` |
+| [dns-analysis.md](dns-analysis.md) | Analyse des pins |
+| [CREDITS.md](CREDITS.md) | Sources & crédits |
+
+## Freebox seulement (optionnel)
+
+| Doc | Sujet |
+| --- | --- |
+| [freebox.md](freebox.md) | DHCP Freebox |
+| [safe-freebox-deploy.md](safe-freebox-deploy.md) | Ne pas casser Internet |
+| [dns-pins.md](dns-pins.md) · [dns-lexicon.md](dns-lexicon.md) | Pins historiques du projet |
+
+## Lab / CI
+
+| Doc | Sujet |
+| --- | --- |
+| [deploy-wsl.md](deploy-wsl.md) | Lab Docker / WSL (pas le DNS salon) |
+| [ci.md](ci.md) · [anti-degradation.md](anti-degradation.md) | Automatisation GitHub |
+| [CREDITS.md](CREDITS.md) | Sources |
+| [../CONTRIBUTING.md](../CONTRIBUTING.md) · [../SECURITY.md](../SECURITY.md) | Contrib / sécu |
+
+Site HTML : [`../site/`](../site/).

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Wi‑Fi / LAN — freebox-dns</title>
-  <meta name="description" content="Le DNS du Wi‑Fi vient de la Freebox DHCP vers la VM freebox-dns — pas du PC Windows.">
+  <meta name="description" content="Mettez l’IP du résolveur en DNS1 sur le routeur ou l’appareil — Pi, VM ou Windows.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -38,39 +38,41 @@
     </nav>
 
     <h1>Wi‑Fi / LAN</h1>
-    <p>Le résolveur DNS de votre salon = la <strong>VM freebox-dns sur la Freebox</strong>. Votre PC Windows est un client Wi‑Fi comme un téléphone.</p>
+    <p>Le résolveur DNS = la machine qui fait tourner <strong>freebox-dns</strong> (Pi, VM Freebox, mini-PC Windows).
+    Mettez <strong>son IP en DNS1</strong> sur le routeur ou sur l’appareil.</p>
 
     <div class="callout-warning">
       <img class="callout-icon" src="../assets/warning-sos.svg" width="48" height="48" alt="">
       <div>
-        <h3>Pas le PC</h3>
-        <p>Ne mettez <strong>jamais</strong> l'IP de votre PC Windows dans le DHCP Freebox. Si le PC s'éteint, tout le Wi‑Fi perd le DNS.</p>
+        <h3>Machine toujours allumée</h3>
+        <p>Évitez un laptop qui dort comme DNS du salon. Pi / VM / mini-PC dédié. Windows natif : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/deploy-windows.md">guide Windows</a>.</p>
       </div>
     </div>
 
     <h2>Chaîne</h2>
-    <pre><code>Clients Wi-Fi  →  Freebox DHCP
-                    DNS1 = 9.9.9.10   (SOS Quad9)
-                    DNS2 = IP_VM     (ex. 192.168.1.71)
-                         →
-                    VM freebox-dns (hosts → Unbound → DoT)</code></pre>
+    <pre><code>Clients  →  Routeur DHCP (ou DNS manuel)
+               DNS1 = IP_RESOLVEUR   (Pi / VM / Windows)
+               DNS2 = 9.9.9.10      (SOS Quad9)
+                    →
+               freebox-dns (:53)</code></pre>
 
-    <h2>Configurer Freebox OS</h2>
+    <h2>Configurer le routeur</h2>
     <ol>
-      <li>Paramètres → Mode avancé → <strong>DHCP</strong></li>
-      <li>DNS personnalisés : DNS1 = <code>9.9.9.10</code>, DNS2 = IP de la VM</li>
-      <li>Sur les clients : reconnecter le Wi‑Fi ou <code>ipconfig /renew</code></li>
+      <li>Réservez l’IP du résolveur (bail fixe).</li>
+      <li>DHCP → DNS personnalisés : <strong>DNS1 = IP résolveur</strong>, DNS2 = <code>9.9.9.10</code>.</li>
+      <li>Sur Freebox OS : Paramètres → Mode avancé → <strong>DHCP</strong> (mêmes valeurs).</li>
+      <li>Reconnectez le Wi‑Fi / <code>ipconfig /renew</code>.</li>
     </ol>
 
-    <h2>Vérifier depuis Windows</h2>
+    <h2>Vérifier</h2>
     <pre><code>Get-DnsClientServerAddress -AddressFamily IPv4
-# Wi-Fi doit lister 9.9.9.10 puis l'IP de la VM
+# Attendu : IP_RESOLVEUR puis 9.9.9.10
 
-# La VM répond ?
-# dig @IP_VM example.com +short</code></pre>
+Resolve-DnsName example.com -Server IP_RESOLVEUR
+# ou : dig @IP_RESOLVEUR example.com +short</code></pre>
 
-    <h2>Lab PC / WSL</h2>
-    <p>Docker sur le PC = tests seulement. Voir <a href="deploy-wsl.html">guide WSL</a> — ne pas pousser cette IP en DHCP.</p>
+    <h2>Lab Docker sur PC</h2>
+    <p>Ports <code>5356</code>… = tests. Ne poussez pas cette IP en DHCP salon sauf mini-PC dédié en prod <code>:53</code>. Voir <a href="deploy-wsl.html">lab WSL</a>.</p>
 
     <p class="doc-link">Markdown : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/wifi-lan.md">docs/wifi-lan.md</a> · <a href="dhcp-safe.html">DHCP sûr</a></p>
   </main>

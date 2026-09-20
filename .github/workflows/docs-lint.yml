@@ -1,0 +1,63 @@
+name: docs-lint
+
+# Extra link lint (lychee). docs-ci already checks required files + local site hrefs.
+# PR = soft (upload report); schedule/dispatch = hard fail on broken links.
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "site/**"
+      - "README.md"
+      - ".github/workflows/docs-lint.yml"
+  push:
+    branches: [main, master]
+    paths:
+      - "docs/**"
+      - "site/**"
+      - "README.md"
+      - ".github/workflows/docs-lint.yml"
+  schedule:
+    - cron: "20 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-lint-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Link check (lychee)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --verbose
+            --no-progress
+            --max-concurrency 4
+            --timeout 25
+            --accept 200,204,206,429,403
+            --exclude-mail
+            --exclude 'localhost|127\.0\.0\.1|192\.168\.|HOST_IP|example\.com|mafreebox'
+            README.md
+            'docs/**/*.md'
+            'site/**/*.html'
+          fail: ${{ github.event_name != 'pull_request' }}
+          format: markdown
+          output: lychee-out.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload lychee report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: lychee-out.md
+          if-no-files-found: ignore
+          retention-days: 14

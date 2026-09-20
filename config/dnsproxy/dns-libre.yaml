@@ -14,8 +14,10 @@ bootstrap:
   - "194.242.2.2:53"
   - "94.140.14.140:53"
 
+# Listen inside the container only. Host publish is ${HOST_IP}:… (LAN) — never 0.0.0.0 on the host.
+# See docs/lan-only.md
 listen-addrs:
-  - "::"
+  - "0.0.0.0"
 
 listen-ports:
   - 53

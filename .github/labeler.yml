@@ -1,0 +1,59 @@
+# Auto-label PRs by path (actions/labeler)
+
+dns:
+  - changed-files:
+      - any-glob-to-any-file:
+          - config/unbound/**
+          - config/dnsproxy/**
+          - config/uncensor/**
+          - config/upstreams/**
+          - scripts/ooni-like-anti-lie.py
+          - scripts/warm-*.py
+          - scripts/warm-*.sh
+
+filtering:
+  - changed-files:
+      - any-glob-to-any-file:
+          - config/blocky/**
+          - scripts/generate-blocky-modes.py
+          - scripts/blocky-refresh-lists.sh
+          - docs/filtering.md
+          - docs/pihole-parity.md
+
+packaging:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packaging/**
+          - cloud-init/**
+          - scripts/build-freebox-qcow2.sh
+          - scripts/package-*.sh
+
+site:
+  - changed-files:
+      - any-glob-to-any-file:
+          - site/**
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/**
+          - README.md
+          - CHANGELOG.md
+          - FEATURES.md
+          - CONTRIBUTING.md
+          - SECURITY.md
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/workflows/**
+          - .github/dependabot.yml
+          - scripts/ci-*.py
+          - scripts/assert-lan-only.py
+          - scripts/anti-degradation-check.py
+
+windows:
+  - changed-files:
+      - any-glob-to-any-file:
+          - scripts/windows-native/**
+          - docs/deploy-windows.md

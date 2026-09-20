@@ -1,6 +1,9 @@
-﻿# Modes DNS intelligents (smart spit)
+﻿# Modes DNS intelligents (« smart spit »)
 
-La VM **héberge son propre DNS**. Chaque mode applique le même **smart spit** :
+« **Smart spit** » = quatre personnalités DNS séparées par port / DoH
+(équivalent pratique d’un *smart split* — pas un seul Pi-hole FTL + groupes clients).
+
+La **machine** héberge son propre DNS. Chaque mode applique la même chaîne :
 
 ```text
 1. Listes / hosts LOCAUX   (anti-lie, seeds critiques)
@@ -35,7 +38,7 @@ Source machine : [`config/blocky/modes.json`](../config/blocky/modes.json) (rég
 
 - **Order** : hosts locaux → Unbound `172.28.0.10` → si Unbound down, fallbacks DoH/DoT/plain SOS (`dns-libre.yaml`)
 - **Filtre** : aucun denylist
-- **DHCP** : c’est le mode poussé en DNS2 (`:53` prod)
+- **DHCP** : c’est le mode poussé en **DNS1** (`:53` prod)
 
 ### malware — `dns-malware` (Blocky)
 
@@ -54,13 +57,13 @@ Source machine : [`config/blocky/modes.json`](../config/blocky/modes.json) (rég
 - **Filtre** : antipub **+** malware
 - **Extras** : UI Blocky `:3080`, query log CSV 7 j (`config/blocky/querylog/`)
 
-## DHCP Freebox
+## DHCP (tout routeur)
 
 | DNS1 | DNS2 |
 | --- | --- |
-| SOS `9.9.9.10` (Quad9 No Threat Blocking) | IP VM = **uncensored** `:53` |
+| IP du résolveur = **uncensored** `:53` | SOS `9.9.9.10` (Quad9) |
 
-Les modes `malware` / `antipub` / `secure` se choisissent par **port Do53**, **DoH** ou profil généré — **ne jamais** mettre un mode filtré seul en DHCP sans SOS.
+Les modes `malware` / `antipub` / `secure` se choisissent par **port Do53**, **DoH** ou profil généré — **ne jamais** mettre un mode filtré seul en DNS1 sans filet SOS.
 
 Chaîne Unbound : [resilience.md](resilience.md) · listes : [filtering.md](filtering.md) · transports : [encrypted-dns.md](encrypted-dns.md).
 

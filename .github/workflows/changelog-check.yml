@@ -1,0 +1,58 @@
+name: changelog-check
+
+# Require CHANGELOG.md update when product paths change on a PR.
+
+on:
+  pull_request:
+    paths:
+      - "config/**"
+      - "docker-compose*.yml"
+      - "scripts/**"
+      - "packaging/**"
+      - "cloud-init/**"
+      - ".env.example"
+      - "README.md"
+      - "FEATURES.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: changelog-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require CHANGELOG for product PRs
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          mapfile -t files < <(git diff --name-only "$base"..."$head")
+          printf '%s\n' "${files[@]}"
+          grep -q '## \[Unreleased\]' CHANGELOG.md
+          product=0
+          for f in "${files[@]}"; do
+            case "$f" in
+              config/*|docker-compose*.yml|scripts/*|packaging/*|cloud-init/*|.env.example|README.md|FEATURES.md)
+                product=1
+                ;;
+            esac
+          done
+          if [ "$product" -eq 1 ]; then
+            touched=0
+            for f in "${files[@]}"; do
+              [ "$f" = "CHANGELOG.md" ] && touched=1
+            done
+            if [ "$touched" -eq 0 ]; then
+              echo "::error::Product change without CHANGELOG.md — add a bullet under ## [Unreleased]"
+              exit 1
+            fi
+          fi
+          echo "CHANGELOG check OK"

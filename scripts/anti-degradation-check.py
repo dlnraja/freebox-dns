@@ -121,6 +121,45 @@ def invariants() -> list[dict]:
     ok("catalog_dot_min10", len(cat.get("dot_uncensoring", [])) >= 10, str(len(cat.get("dot_uncensoring", []))))
     ok("catalog_sos_plain", "sos_plain" in cat, "")
     ok("compose_unbound_cache", "unbound-cache" in compose, "")
+    ok(
+        "compose_mounts_unbound_conf",
+        "unbound.conf:/opt/unbound/etc/unbound/unbound.conf" in compose,
+        "",
+    )
+    ok(
+        "compose_mounts_critical",
+        "a-records.critical.conf:/opt/unbound/etc/unbound/a-records.critical.conf" in compose,
+        "",
+    )
+    unbound_main = (ROOT / "config/unbound/unbound.conf").read_text(encoding="utf-8")
+    ok(
+        "unbound_conf_forward_include_active",
+        any(
+            line.lstrip().startswith("include:") and "forward-records.conf" in line and not line.lstrip().startswith("#")
+            for line in unbound_main.splitlines()
+            if "forward-records.conf" in line
+        ),
+        "forward include must be uncommented",
+    )
+    a_recs = (ROOT / "config/unbound/a-records.conf").read_text(encoding="utf-8")
+    ok("serve_expired_explicit", "serve-expired: yes" in a_recs, "")
+    ok("serve_expired_client_timeout_0", "serve-expired-client-timeout: 0" in a_recs, "")
+    crit = (ROOT / "config/unbound/a-records.critical.conf").read_text(encoding="utf-8")
+    ok("critical_zones_static", 'local-zone:' in crit and "static" in crit and "typetransparent" not in crit, "")
+    ok("verify_forwards_script", (ROOT / "scripts/verify-unbound-forwards.sh").is_file(), "")
+    try:
+        r = subprocess.run(
+            [sys.executable, str(ROOT / "scripts/assert-lan-only.py")],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        ok("assert_lan_only", r.returncode == 0, (r.stdout or r.stderr or "")[:200])
+    except Exception as e:  # noqa: BLE001
+        ok("assert_lan_only", False, type(e).__name__)
+    blocky_stub = (ROOT / "config/uncensor/blocky-custom-dns.yml").read_text(encoding="utf-8")
+    ok("blocky_custom_dns_obsolete_stub", "OBSOLETE" in blocky_stub and "customDNS:" not in blocky_stub, "")
     ok("compose_querylog", "querylog" in compose, "")
     ok("blocky_querylog", "queryLog:" in blocky, "")
     ok("blocky_pihole_group", "pihole:" in blocky, "")

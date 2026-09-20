@@ -69,8 +69,8 @@
     }
   },
   "dhcp": {
-    "dns1_sos": "9.9.9.10",
-    "dns2": "HOST_IP (uncensored / dns-libre :53 prod)",
-    "note": "Other modes via DoH / alternate Do53 ports \u2014 never replace SOS with only a filtered mode"
+    "dns1": "HOST_IP (uncensored / dns-libre :53 prod)",
+    "dns2_sos": "9.9.9.10",
+    "note": "DNS1 = this project. DNS2 = SOS if the host is down. Other modes via DoH / alternate ports."
   }
 }

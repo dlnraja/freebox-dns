@@ -2,22 +2,22 @@ name: github-pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
     paths:
       - "site/**"
       - "docs/CREDITS.md"
       - ".github/workflows/github-pages.yml"
+      - "scripts/ci-assert-product.py"
   pull_request:
     paths:
       - "site/**"
       - "docs/CREDITS.md"
       - ".github/workflows/github-pages.yml"
+      - "scripts/ci-assert-product.py"
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Sync CREDITS + basic site checks
+      - name: Sync CREDITS + site + product DHCP asserts
         run: |
           set -euo pipefail
           cp docs/CREDITS.md site/CREDITS.md
@@ -38,9 +38,15 @@ jobs:
           test -f site/guides/filtering.html
           test -f site/guides/dhcp-safe.html
           test -f site/guides/deploy-freebox.html
+          test -f site/guides/usage.html
           grep -q 'freebox-dns' site/index.html
           grep -q '9.9.9.10' site/guides/dhcp-safe.html
-          # Broken relative links (simple)
+          # Steady-state: DNS1 = HOST_IP / resolver, DNS2 = SOS
+          grep -q 'HOST_IP' site/guides/dhcp-safe.html
+          grep -q 'DNS2' site/guides/dhcp-safe.html
+          ! grep -qE 'Pourquoi DNS1 = <code>9\.9\.9\.10' site/guides/dhcp-safe.html
+          grep -qE 'DNS1 = IP_RESOLVEUR|DNS1 = IP résolveur|HOST_IP.*résolveur' site/guides/wifi-lan.html site/guides/usage.html
+          python3 scripts/ci-assert-product.py
           python3 - <<'PY'
           from pathlib import Path
           import re
@@ -69,10 +75,15 @@ jobs:
   deploy:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     needs: check
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Sync CREDITS into site
@@ -93,7 +104,7 @@ jobs:
           url="${{ steps.deployment.outputs.page_url }}"
           url="${url:-https://dlnraja.github.io/freebox-dns/}"
           for i in 1 2 3 4 5; do
-            code=$(curl -sL -o /tmp/pages.html -w "%{http_code}" --max-time 30 "$url" || true)
+            code=$(curl -sL -o /tmp/pages.html -w "%{http_code}" --max-time 30 "$url" || echo "000")
             echo "try=$i HTTP $code"
             if [ "$code" = "200" ] && grep -qi freebox /tmp/pages.html; then
               exit 0

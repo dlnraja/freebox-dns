@@ -13,7 +13,7 @@ Voir aussi : [filtering.md](filtering.md) · [quad9.md](quad9.md) · [`config/dn
 | **DNSCrypt** proxy | `:5359` → Quad9 nofilter | — | Tests / fallback chiffré |
 | **DNSCrypt** server | `:8443` `sdns://` (profile) | — | Nebulo, dnscrypt-proxy |
 
-DHCP Freebox reste **Do53 only** : DNS1=`9.9.9.10`, DNS2=VM — le chiffrement se fait vers la VM (DoH/DoT/DoQ/DNSCrypt), pas dans le DHCP.
+DHCP reste **Do53 only** : DNS1=`HOST_IP`, DNS2=`9.9.9.10` (SOS) — le chiffrement se fait vers le résolveur (DoH/DoT/DoQ/DNSCrypt), pas dans le DHCP.
 
 ```bash
 bash scripts/generate-certs.sh
@@ -25,11 +25,11 @@ bash scripts/dnscrypt-server-init.sh
 docker compose --profile dnscrypt-server up -d dnscrypt-libre
 ```
 
-## Freebox OS / app mobile
+## Routeur / clients
 
-1. **DHCP** (après health VM) — filet SOS Do53 :
-   - DNS1 = `9.9.9.10` (Quad9 No Threat Blocking)
-   - DNS2 = IP de la VM freebox-dns
+1. **DHCP** (après health) — Do53 :
+   - DNS1 = IP du résolveur (Pi / VM / Windows)
+   - DNS2 = `9.9.9.10` (Quad9 No Threat Blocking, SOS)
 2. **DoH** : `https://HOST_IP:8453/dns-query` (libre) · `:8444` (secure)
 3. **DoT** : `tls://HOST_IP:853` (prod) / `:8853` (lab)
 4. **DoQ** : `quic://HOST_IP:853` (prod, libre only)

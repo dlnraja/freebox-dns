@@ -11,6 +11,8 @@ on:
       - "CONTRIBUTING.md"
       - "SECURITY.md"
       - ".github/workflows/docs-ci.yml"
+      - "scripts/ci-assert-product.py"
+      - "scripts/assert-lan-only.py"
   push:
     branches: [main, master]
     paths:
@@ -19,6 +21,11 @@ on:
       - "README.md"
       - "CHANGELOG.md"
       - "FEATURES.md"
+      - "CONTRIBUTING.md"
+      - "SECURITY.md"
+      - ".github/workflows/docs-ci.yml"
+      - "scripts/ci-assert-product.py"
+      - "scripts/assert-lan-only.py"
   workflow_dispatch:
 
 permissions:
@@ -34,21 +41,32 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Required docs present
+      - name: Required docs + site guides
         run: |
           set -euo pipefail
           for f in \
             README.md CHANGELOG.md FEATURES.md CONTRIBUTING.md SECURITY.md \
             docs/README.md docs/pihole-parity.md docs/wifi-lan.md docs/filtering.md \
-            docs/resilience.md docs/CREDITS.md docs/modes.md \
-            site/index.html site/guides/wifi-lan.html site/guides/filtering.html
-          do test -f "$f"; done
-      - name: README links to Pages + Pi-hole parity
+            docs/resilience.md docs/CREDITS.md docs/modes.md docs/ci.md \
+            docs/deploy.md docs/deploy-windows.md docs/deploy-pi.md docs/deploy-wsl.md \
+            docs/lan-only.md docs/quad9.md docs/encrypted-dns.md docs/anti-lie-dns.md \
+            docs/safe-freebox-deploy.md docs/freebox.md docs/freebox-vm.md \
+            docs/dns-analysis.md docs/dns-lexicon.md docs/dns-pins.md \
+            docs/anti-degradation.md docs/public-dns-landscape.md \
+            site/index.html site/credits.html \
+            site/guides/wifi-lan.html site/guides/filtering.html \
+            site/guides/dhcp-safe.html site/guides/usage.html site/guides/modes.html \
+            site/guides/install.html site/guides/deploy-pi.html \
+            site/guides/deploy-freebox.html site/guides/deploy-wsl.html
+          do test -f "$f" || (echo "missing $f"; exit 1); done
+      - name: README + product invariants
         run: |
           set -euo pipefail
           grep -q 'dlnraja.github.io/freebox-dns' README.md
           grep -q 'pihole-parity' README.md
           grep -q 'CHANGELOG' README.md
+          grep -q 'lan-only' README.md
+          python3 scripts/ci-assert-product.py
       - name: Site local link check
         run: |
           set -euo pipefail

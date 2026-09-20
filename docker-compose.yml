@@ -18,9 +18,11 @@ services:
     container_name: dns-unbound
     restart: unless-stopped
     volumes:
+      - ./config/unbound/unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
       - ./config/unbound/forward-records.conf:/opt/unbound/etc/unbound/forward-records.conf:ro
       - ./config/unbound/a-records.conf:/opt/unbound/etc/unbound/a-records.conf:ro
       - ./config/unbound/a-records.critical.conf:/opt/unbound/etc/unbound/a-records.critical.conf:ro
+      - ./config/unbound/srv-records.conf:/opt/unbound/etc/unbound/srv-records.conf:ro
       - unbound-cache:/opt/unbound/etc/unbound/var
     networks:
       dnsnet:

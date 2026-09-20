@@ -1,6 +1,7 @@
 name: freebox-conf-sync
 
-# Validates Freebox-oriented confs — never polls a live Freebox.
+# Path-filtered conf lint — never polls a live Freebox.
+# Logic: scripts/ci-conf-lint.py via reusable-conf-lint.yml
 
 on:
   push:
@@ -12,6 +13,7 @@ on:
       - "config/dnsproxy/**"
       - "config/upstreams/**"
       - "config/uncensor/**"
+      - "config/dnscrypt/**"
       - "cloud-init/**"
       - "packaging/freebox-vm/**"
       - "packaging/freebox-os-import/**"
@@ -23,10 +25,18 @@ on:
       - "docs/upstreams-uncensoring.md"
       - "docs/wifi-lan.md"
       - "docs/pihole-parity.md"
+      - "docs/lan-only.md"
+      - "docs/modes.md"
+      - "docs/quad9.md"
+      - "docs/safe-freebox-deploy.md"
       - ".env.example"
       - "docker-compose*.yml"
       - "scripts/generate-blocky-modes.py"
+      - "scripts/assert-lan-only.py"
+      - "scripts/ci-assert-product.py"
+      - "scripts/ci-conf-lint.py"
       - ".github/workflows/freebox-conf-sync.yml"
+      - ".github/workflows/reusable-conf-lint.yml"
   pull_request:
     paths:
       - "config/freebox/**"
@@ -36,6 +46,7 @@ on:
       - "config/dnsproxy/**"
       - "config/upstreams/**"
       - "config/uncensor/**"
+      - "config/dnscrypt/**"
       - "cloud-init/**"
       - "packaging/freebox-vm/**"
       - "packaging/freebox-os-import/**"
@@ -47,10 +58,18 @@ on:
       - "docs/upstreams-uncensoring.md"
       - "docs/wifi-lan.md"
       - "docs/pihole-parity.md"
+      - "docs/lan-only.md"
+      - "docs/modes.md"
+      - "docs/quad9.md"
+      - "docs/safe-freebox-deploy.md"
       - ".env.example"
       - "docker-compose*.yml"
       - "scripts/generate-blocky-modes.py"
+      - "scripts/assert-lan-only.py"
+      - "scripts/ci-assert-product.py"
+      - "scripts/ci-conf-lint.py"
       - ".github/workflows/freebox-conf-sync.yml"
+      - ".github/workflows/reusable-conf-lint.yml"
   workflow_dispatch:
   schedule:
     - cron: "15 4 * * 1"
@@ -64,63 +83,4 @@ concurrency:
 
 jobs:
   lint-conf:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install PyYAML
-        run: python3 -m pip install --user pyyaml
-      - name: YAML / JSON parse + Blocky drift
-        run: |
-          set -euo pipefail
-          export PATH="$HOME/.local/bin:$PATH"
-          python3 - <<'PY'
-          import json, pathlib, subprocess, sys
-          import yaml
-          root = pathlib.Path(".")
-          json.loads((root / "config/freebox/dhcp-dns.json").read_text(encoding="utf-8"))
-          json.loads((root / "config/freebox-dns-snapshot.json").read_text(encoding="utf-8"))
-          for y in (
-              "config/blocky/config.yml",
-              "config/blocky/config-malware.yml",
-              "config/blocky/config-antipub.yml",
-              "config/dnsproxy/dns-libre.yaml",
-              "cloud-init/pi-user-data.yaml",
-              "cloud-init/freebox-vm-user-data.yaml",
-          ):
-              yaml.safe_load((root / y).read_text(encoding="utf-8"))
-          fr = (root / "config/unbound/forward-records.conf").read_text(encoding="utf-8")
-          for must in ("dns.mullvad.net", "open.dns0.eu", "digitale-gesellschaft", "uncensoreddns", "applied-privacy", "libredns", "lavate", "public-rdns", "radeksprta", "controld", "adguard", "9.9.9.10"):
-              assert must in fr, must
-          by = (root / "config/blocky/config.yml").read_text(encoding="utf-8")
-          assert "denylists" in by and "queryLog:" in by
-          assert "pihole:" in by and "ublock:" in by and "anti_adblock:" in by
-          assert (root / "config/blocky/lists/anti-adblock.txt").is_file()
-          assert (root / "config/blocky/lists/allowlist.txt").is_file()
-          snap = json.loads((root / "config/freebox-dns-snapshot.json").read_text(encoding="utf-8"))
-          assert snap["local_lexicon"]["dns_libre"]["bit"] == "uncensored"
-          assert snap["local_lexicon"]["dns_secure"]["bit"] == "threat-local"
-          cat = json.loads((root / "config/upstreams/uncensoring-catalog.json").read_text(encoding="utf-8"))
-          assert len(cat["dot_uncensoring"]) >= 10
-          assert "sos_plain" in cat
-          man = json.loads((root / "packaging/freebox-vm/manifest.json").read_text(encoding="utf-8"))
-          assert man["dhcp_recommended"]["dns1"] == "9.9.9.10"
-          subprocess.check_call([sys.executable, "scripts/generate-blocky-modes.py"])
-          print("conf lint OK")
-          PY
-          git diff --exit-code -- config/blocky/config.yml config/blocky/config-malware.yml config/blocky/config-antipub.yml \
-            || (echo "Blocky drift — regenerate and commit"; exit 1)
-      - name: Documented DoH ports match .env.example
-        run: |
-          set -euo pipefail
-          grep -q 'DOH_LIBRE_PORT=8453' .env.example
-          grep -q 'DOH_SECURE_PORT=8444' .env.example
-          grep -q 'DNSCRYPT_PROXY_PORT=5359' .env.example
-          grep -q '8453' docs/freebox.md
-          grep -q 'HOST_IP' docker-compose.yml
-          grep -q 'dnscrypt-proxy' docker-compose.yml
-          test -f config/dnscrypt/proxy/dnscrypt-proxy.toml
-          test -f config/dnscrypt/quad9-nofilter.stamps
-          grep -q '"dnscrypt": true' config/upstreams/uncensoring-catalog.json
-          grep -q 'open.dns0.eu' config/unbound/forward-records.conf
-          grep -q 'querylog' docker-compose.yml
+    uses: ./.github/workflows/reusable-conf-lint.yml

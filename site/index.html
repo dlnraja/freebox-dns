@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>freebox-dns — DNS sur VM Freebox (pas le PC)</title>
-  <meta name="description" content="Résolveur LAN = VM freebox-dns sur Freebox OS. Wi‑Fi via DHCP. Lab WSL/Pi optionnels.">
+  <title>freebox-dns — résolveur DNS local pour votre LAN</title>
+  <meta name="description" content="Hébergez un DNS sur Pi, VM Freebox ou Windows. Mettez son IP en DNS1 — ça résout chez vous.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -35,20 +35,20 @@
   <main>
     <section class="hero">
       <div class="badge-row">
-        <span class="badge">dns-libre · uncensored</span>
-        <span class="badge">dns-secure · threat-local</span>
-        <span class="badge">DoH · DoT · Docker</span>
+        <span class="badge">Pi · VM · Windows</span>
+        <span class="badge">DNS1 = votre IP</span>
+        <span class="badge">DoH · DoT · hosts locaux</span>
       </div>
       <h1>freebox-dns</h1>
-      <p class="hero-sub">Le DNS de votre LAN tourne sur la <strong>VM Freebox</strong> — pas sur votre PC. Modes sans censure (<strong>dns-libre</strong>) et filtrés (<strong>dns-secure</strong>).</p>
-      <p class="hero-en">Production resolver = Freebox OS VM. Windows/WSL is lab only.</p>
+      <p class="hero-sub">Un résolveur DNS <strong>chez vous</strong>. Démarrez-le sur un Pi, une VM (Freebox ou autre) ou Windows — puis mettez <strong>son IP en DNS1</strong> sur le routeur ou l’appareil.</p>
+      <p class="hero-en">Self-hosted LAN DNS. Freebox optional. Docker optional on Windows (native exe).</p>
 
-      <img class="hero-illus" src="assets/architecture.svg" width="480" height="320" alt="Schéma architecture dual DNS">
+      <img class="hero-illus" src="assets/architecture.svg" width="480" height="320" alt="Schéma : clients → DNS1 = résolveur local">
 
       <div class="cta-row">
-        <a class="btn btn-primary" href="guides/install.html">Commencer l'installation</a>
-        <a class="btn btn-secondary" href="guides/dhcp-safe.html">DHCP sans casser le LAN</a>
-        <a class="btn btn-secondary" href="https://github.com/dlnraja/freebox-dns">Voir le dépôt</a>
+        <a class="btn btn-primary" href="guides/install.html">Choisir où installer</a>
+        <a class="btn btn-secondary" href="guides/wifi-lan.html">Pointer DNS1</a>
+        <a class="btn btn-secondary" href="https://github.com/dlnraja/freebox-dns">GitHub</a>
       </div>
     </section>
 
@@ -58,8 +58,8 @@
         <article class="card">
           <img class="card-icon" src="assets/steps.svg" width="64" height="64" alt="">
           <h3>Installation</h3>
-          <p><strong>Prod = Freebox VM</strong>. Lab Docker / Pi / WSL ensuite.</p>
-          <a class="card-link" href="guides/install.html">Guide installation →</a>
+          <p>Pi · VM Freebox · Windows (exe sans Docker). Même but : une IP en DNS1.</p>
+          <a class="card-link" href="guides/install.html">Choisir une cible →</a>
         </article>
         <article class="card">
           <img class="card-icon" src="assets/checkmark-health.svg" width="64" height="64" alt="">
@@ -75,27 +75,27 @@
         </article>
         <article class="card">
           <img class="card-icon" src="assets/freebox-box.svg" width="80" height="64" alt="">
-          <h3>Freebox OS VM</h3>
-          <p>Résolveur canonique — import QCOW2 ARM64, cloud-init, DHCP sûr.</p>
+          <h3>VM Freebox (option)</h3>
+          <p>Une façon d’héberger le résolveur — QCOW2 ARM64, cloud-init.</p>
           <a class="card-link" href="guides/deploy-freebox.html">Déployer sur Freebox →</a>
         </article>
         <article class="card">
           <img class="card-icon" src="assets/warning-sos.svg" width="64" height="64" alt="">
           <h3>Wi‑Fi / LAN</h3>
-          <p>DHCP Freebox pousse DNS1 SOS + DNS2 = IP VM vers tous les clients Wi‑Fi.</p>
-          <a class="card-link" href="guides/wifi-lan.html">Configurer le Wi‑Fi →</a>
+          <p>DNS1 = IP du résolveur, DNS2 = SOS 9.9.9.10 — tout routeur.</p>
+          <a class="card-link" href="guides/wifi-lan.html">Configurer le LAN →</a>
         </article>
         <article class="card">
           <img class="card-icon" src="assets/pi.svg" width="64" height="64" alt="">
           <h3>Raspberry Pi</h3>
-          <p>Alternative prod si pas de VM Freebox — compose prod sur le Pi.</p>
+          <p>Cible recommandée — stack complète, toujours allumé.</p>
           <a class="card-link" href="guides/deploy-pi.html">Déployer sur Pi →</a>
         </article>
         <article class="card">
           <img class="card-icon" src="assets/wsl-window.svg" width="72" height="64" alt="">
-          <h3>Windows / WSL2 (lab)</h3>
-          <p>Tests locaux uniquement — ne jamais mettre l'IP du PC dans le DHCP Freebox.</p>
-          <a class="card-link" href="guides/deploy-wsl.html">Lab WSL →</a>
+          <h3>Windows natif</h3>
+          <p>dnsproxy.exe sans Docker — mini-PC toujours on. Lab WSL à part.</p>
+          <a class="card-link" href="https://github.com/dlnraja/freebox-dns/blob/main/docs/deploy-windows.md">Guide Windows →</a>
         </article>
         <article class="card">
           <img class="card-icon" src="assets/ports-map.svg" width="120" height="75" alt="">
@@ -106,7 +106,7 @@
         <article class="card">
           <img class="card-icon" src="assets/warning-sos.svg" width="64" height="64" alt="">
           <h3>DHCP sûr</h3>
-          <p>Filet SOS : DNS1 = 9.9.9.10, DNS2 = IP VM. Ne jamais casser Internet.</p>
+          <p>Testez dig @IP avant le DHCP. DNS2 SOS si la machine tombe.</p>
           <a class="card-link" href="guides/dhcp-safe.html">Filet de sécurité →</a>
         </article>
       </div>
@@ -117,16 +117,15 @@
       <div class="mermaid-wrap">
         <pre class="mermaid">
 flowchart TB
-  wifi[Clients Wi-Fi]
-  dhcp[Freebox DHCP]
-  vm[VM freebox-dns]
-  unbound[Unbound local-first]
+  wifi[Clients Wi-Fi / Ethernet]
+  dhcp[Routeur DHCP]
+  box[Résolveur freebox-dns]
   sos[SOS 9.9.9.10]
 
   wifi --> dhcp
-  dhcp -->|DNS2| vm
-  dhcp -->|DNS1| sos
-  vm --> unbound
+  dhcp -->|DNS1| box
+  dhcp -->|DNS2| sos
+  box --> unbound[hosts + DoT / Unbound]
         </pre>
       </div>
     </section>

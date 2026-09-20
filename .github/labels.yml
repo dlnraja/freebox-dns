@@ -1,4 +1,4 @@
-# Reference labels used by automation (create via `gh label create` or UI).
+# Reference labels used by automation (create via `gh label create` or UI / labeler).
 - name: anti-degradation
   color: B60205
   description: Automated bitrot / regression watchdog
@@ -14,3 +14,33 @@
 - name: stale
   color: 666666
   description: Marked inactive by stale bot
+- name: dns
+  color: 1D76DB
+  description: Resolver / Unbound / uncensor / upstreams
+- name: filtering
+  color: FBCA04
+  description: Blocky lists / modes / Pi-hole parity
+- name: packaging
+  color: 5319E7
+  description: Freebox VM / qcow2 / cloud-init kit
+- name: site
+  color: BFDADC
+  description: GitHub Pages HTML
+- name: docs
+  color: 0075CA
+  description: Markdown documentation
+- name: windows
+  color: 0052CC
+  description: Windows-native dnsproxy path
+- name: dependencies
+  color: 0366D6
+  description: Dependabot / dependency bumps
+- name: docker
+  color: 0DB7ED
+  description: Docker / Compose
+- name: chore
+  color: C5DEF5
+  description: Maintenance / regen
+- name: anti-lie
+  color: D93F0B
+  description: OONI-like anti–DNS menteur

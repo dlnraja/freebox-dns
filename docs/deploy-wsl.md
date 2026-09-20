@@ -1,41 +1,37 @@
-﻿# Déploiement Windows / WSL2 — **lab uniquement**
+﻿# Lab Windows / WSL — tests seulement
 
-Le résolveur Wi‑Fi du salon = la **VM Freebox**, pas ce PC.  
-Docker / WSL ici sert à tester avant déploiement — **ne jamais** mettre l’IP Windows dans le DHCP Freebox.
+Pour **héberger** le DNS du salon sur Windows **sans Docker** → [deploy-windows.md](deploy-windows.md).
 
-Voir [wifi-lan.md](wifi-lan.md) · [safe-freebox-deploy.md](safe-freebox-deploy.md).
+Cette page = **lab** (Docker Desktop / WSL) pour développer. Ne mettez **pas** l’IP de ce PC de lab dans le DHCP familial, sauf mini-PC dédié toujours allumé.
 
-Docker Desktop n’est pas obligatoire si vous utilisez **WSL2 + Docker Engine**.
-
-## WSL2
+## WSL2 + Docker (lab)
 
 ```bash
-# Dans Ubuntu WSL
 sudo apt update && sudo apt install -y docker.io docker-compose-v2
 sudo service docker start
-cd /mnt/c/Users/Dell/Documents/freebox-dns
+cd /mnt/c/Users/VOUS/Documents/freebox-dns   # adaptez le chemin
 cp .env.example .env
+# HOST_IP = IP LAN Windows visible sur le réseau (pas seulement l’IP WSL)
 bash scripts/generate-certs.sh
 docker compose up -d
 ```
 
-Exposez les ports Windows : Docker Desktop / WSL mirroir réseau, ou `netsh interface portproxy`.
+Ports lab : `5356` (libre), `5357`… — pas `:53` tant que vous n’ajoutez pas `docker-compose.prod.yml`.
 
-`HOST_IP` doit être l’IP **LAN Windows** visible par la Freebox (pas l’IP virtuelle WSL seule), sauf mirroir réseau activé.
-
-## PowerShell (certs)
+## Certs PowerShell
 
 ```powershell
-cd C:\Users\Dell\Documents\freebox-dns
 powershell -File .\scripts\generate-certs.ps1
 ```
 
-## Sans Docker sur l’hôte Windows
+## Salon Windows
 
-Installez Docker Desktop, activez l’intégration WSL2, puis `docker compose up -d` depuis ce dossier (ou depuis WSL sur le même chemin monté).
+| Besoin | Guide |
+| --- | --- |
+| DNS Windows natif (exe) | [deploy-windows.md](deploy-windows.md) |
+| DNS1 sur routeur / PC | [wifi-lan.md](wifi-lan.md) |
+| Choisir une cible | [deploy.md](deploy.md) |
 
 ---
 
-## Sources & crédits
-
-Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).
+[CREDITS.md](CREDITS.md)

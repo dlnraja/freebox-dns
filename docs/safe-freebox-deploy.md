@@ -32,7 +32,7 @@ python scripts/safe-freebox-vm-deploy.py dhcp-sos   # après auth API
 4. **FTP** — copier vers `/VMs/` sur le disque Freebox (mot de passe Freebox OS).
 5. **VM** — Freebox OS → VM → image disque existante → monter ISO CD → démarrer.
 6. **health** — `dig @IP_VM example.com` OK.
-7. **DHCP (seulement après health)** — DNS1 = `9.9.9.10`, DNS2 = IP_VM.
+7. **DHCP (seulement après health)** — DNS1 = IP_VM, DNS2 = `9.9.9.10` (SOS).
 
 ## Interdit
 

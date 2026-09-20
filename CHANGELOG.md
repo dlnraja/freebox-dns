@@ -5,16 +5,34 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-09-20
+
+### Added
+
+- **Windows natif** (`scripts/windows-native/`) : `dnsproxy.exe` sans Docker — [docs/deploy-windows.md](docs/deploy-windows.md)
+- Hub déploiement multi-cible [docs/deploy.md](docs/deploy.md) (Pi / VM / Windows)
+- **LAN-only** : refuse bind public / `0.0.0.0` — [docs/lan-only.md](docs/lan-only.md) · `scripts/assert-lan-only.py`
+- Shared CI gates: `ci-conf-lint.py` + reusable workflow; `changelog-check`, `labeler`, `docs-lint` (lychee)
+- Hardened workflows: scoped write perms, qcow2 no mid-build cancel, link-health fail-closed criticals, Pages deploy timeout
+- **Unbound resilience (full chain)**: custom mounted `unbound.conf` with **active** DoT
+  `forward-records.conf` include; `local-zone: … static` for critical + anti-lie names;
+  `serve-expired: yes` + `serve-expired-client-timeout: 0` in `a-records.conf`;
+  `a-records.critical.conf` + `srv-records.conf` mounts; `scripts/verify-unbound-forwards.sh`;
+  `blocky-custom-dns.yml` stub (hostsFile only); acceptance tests in `docs/resilience.md`
+
+### Changed
+
+- README / docs / site : parité Pi-hole **honnête** (Blocky, UI secure only, hors scope)
+- Product DHCP : **DNS1 = HOST_IP**, **DNS2 = 9.9.9.10** (SOS)
+- PR template + CONTRIBUTING (LAN-only, regen clients, pas de FTL)
+- « smart spit » = marque volontaire (4 personnalités par port/DoH)
+- Multi-host framing (Pi / Freebox VM / Windows) — Freebox optional
+
 ### Documentation
 
-- GitHub Pages Wi‑Fi / LAN guide; Freebox VM as canonical resolver
-- Pi-hole parity map (`docs/pihole-parity.md`)
-- CONTRIBUTING, SECURITY, issue templates
-- CI docs (`docs/ci.md`) — automated workflows
-- Quad9 matrix (`docs/quad9.md`) — why SOS = `9.9.9.10` (No Threat Blocking, no ECS)
-- Public DNS landscape from r/dns + Nexxwave benches (`docs/public-dns-landscape.md`)
-- CaptainDNS Quad9 guide folded in: ops tests, DoH HTTP/2, `scripts/quad9-ops-check.py`
-- Complete smart-spit modes matrix (ports + resolution order) in docs/site/`modes.json`
+- GitHub Pages Wi‑Fi / LAN guide; deploy hub; lan-only; pihole-parity
+- CI docs (`docs/ci.md`) — reusable conf-lint, changelog-check, labeler, docs-lint
+- Quad9 matrix, public DNS landscape, CaptainDNS ops
 
 ### CI / Automation
 
@@ -26,8 +44,8 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/).
 - Nightly `ci-regen` (Blocky + client profiles → PR)
 - `release.yml` from `v*.*.*` tags + CHANGELOG notes
 - Dependabot for GitHub Actions
-- `docs-ci.yml` for README/docs/site gates
-- **Anti-degradation watchdog** (`anti-degradation.yml` + script) → GitHub issue
+- `docs-ci.yml` / `docs-lint.yml` / `changelog-check.yml` / `labeler.yml`
+- **Anti-degradation watchdog** → GitHub issue
 - **Link-health** daily + **stale** bot
 
 ## [1.2.0] — 2026-09-20

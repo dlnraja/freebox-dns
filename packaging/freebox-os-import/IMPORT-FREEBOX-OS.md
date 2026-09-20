@@ -25,7 +25,7 @@ Le package all-in-one ajoute aussi un **CD cloud-init** (`.iso`) que Freebox OS 
 3. Freebox OS → **VM** → **Ajouter une VM** → **Sélectionner une image de disque existante** → `freebox-dns.qcow2`.
 4. Régler : **2 vCPU**, **2048 Mo RAM**, réseau **LAN**, OS **debian**, écran virtuel OK.
 5. **CD-ROM virtuel** → monter `freebox-dns-cidata.iso` (cloud-init au 1er boot).
-6. Démarrer → attendre 2–5 min (Docker + stack) → noter l’**IP LAN** → DHCP **sûr** : DNS1 = `9.9.9.10`, DNS2 = IP_VM.
+6. Démarrer → attendre 2–5 min (Docker + stack) → noter l’**IP LAN** → DHCP : **DNS1 = IP_VM**, DNS2 = `9.9.9.10` (SOS).
 
 ## Vérification
 

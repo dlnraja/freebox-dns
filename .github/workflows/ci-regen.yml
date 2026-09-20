@@ -32,6 +32,7 @@ jobs:
           test -f config/clients/generated/endpoints.json
           grep -q '192.168.1.71' config/clients/generated/endpoints.json
           grep -q 'queryLog:' config/blocky/config.yml
+          python3 scripts/ci-assert-product.py
       - name: Open PR if generators drifted
         uses: peter-evans/create-pull-request@v6
         with:

@@ -8,6 +8,8 @@ Smart local DNS list builder (anti–DNS menteur / anti–page de censure).
 4) Compare Free/gateway liars — if they lie or redirect to blockpage, flag it.
 5) Write LOCAL hosts ALWAYS for verified consensus (local-first resilience),
    not only when a lie is detected.
+6) Emit Unbound local-zone: … static + local-data (never forward when DoT/root die).
+7) blocky-custom-dns.yml is a stub — Blocky uses hostsFile only.
 
 Refs: OONI France report, censxres.fr, Citizen Lab fr.csv
 """
@@ -318,6 +320,8 @@ def main() -> int:
                 continue
 
             if domain not in stored_domains:
+                # static zone: never forward this name when DoT/root are dead
+                unbound_lines.append(f'local-zone: "{domain}." static')
                 for ip in ctrl_a:
                     host_lines.append(f"{ip} {domain}")
                     unbound_lines.append(f'local-data: "{domain}. IN A {ip}"')
@@ -359,13 +363,15 @@ def main() -> int:
 
     OUT_HOSTS.write_text("\n".join(safe_hosts) + "\n", encoding="utf-8")
     OUT_UNBOUND.write_text("\n".join(unbound_lines) + "\n", encoding="utf-8")
-    yml = ["# Generated smart local mapping (clean IPs only)", "customDNS:", "  mapping:"]
-    for d, ip in sorted(blocky_map.items()):
-        if is_clean_public(ip):
-            yml.append(f"    {d}: {ip}")
-    if len(yml) == 3:
-        yml.append("    # empty")
-    OUT_BLOCKY.write_text("\n".join(yml) + "\n", encoding="utf-8")
+    # blocky-custom-dns.yml is obsolete: Blocky uses hostsFile (hosts.critical/local/generated).
+    # Keep a stub so old docs/CI paths do not resurrect a divergent third map.
+    OUT_BLOCKY.write_text(
+        "# OBSOLETE — do not wire into Blocky.\n"
+        "# Runtime uses hostsFile → hosts.critical / hosts.local / hosts.generated\n"
+        "# (see config/blocky/*.yml). Mapping count at last OONI run: "
+        f"{sum(1 for ip in blocky_map.values() if is_clean_public(ip))}\n",
+        encoding="utf-8",
+    )
     OUT_REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     print(

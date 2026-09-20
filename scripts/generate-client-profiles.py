@@ -161,8 +161,8 @@ def main() -> int:
             "init": "bash scripts/dnscrypt-server-init.sh",
         },
         "freebox_os": {
-            "dhcp_dns1_sos": "9.9.9.10",
-            "dhcp_dns2_vm_uncensored": host,
+            "dhcp_dns1_resolver": host,
+            "dhcp_dns2_sos": "9.9.9.10",
             "modes_doc": "docs/modes.md",
         },
     }

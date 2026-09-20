@@ -1,20 +1,19 @@
-﻿# Freebox OS — DNS / DHCP (résolveur = VM, pas le PC)
+﻿# Freebox OS — DNS / DHCP (option Freebox)
 
-1. VM Freebox (recommandé) ou Pi, IP LAN fixe = `HOST_IP` (ex. `192.168.1.71`).
-2. **Ne pas** utiliser l’IP d’un PC Windows comme DNS DHCP du salon.
-3. Après health-check : Freebox OS → DHCP.
+Le résolveur = la **VM / Pi** (`HOST_IP`), pas un PC qui s’éteint.
+Sans Freebox : même paire DNS sur n’importe quel routeur — [docs/wifi-lan.md](../../docs/wifi-lan.md).
+
+1. Machine toujours allumée, IP LAN fixe = `HOST_IP`.
+2. Health-check OK (`dig @HOST_IP example.com`).
+3. Freebox OS → DHCP :
 
 | Champ | Valeur |
 | --- | --- |
-| DNS1 (SOS) | `9.9.9.10` (Quad9 No Threat Blocking — [quad9.md](../../docs/quad9.md)) |
-| DNS2 (résolveur) | `HOST_IP` = IP de la **VM** dns-libre `:53` |
+| **DNS1** (résolveur) | `HOST_IP` — dns-libre `:53` |
+| **DNS2** (SOS) | `9.9.9.10` (Quad9 — [quad9.md](../../docs/quad9.md)) |
 
-Wi‑Fi : [docs/wifi-lan.md](../../docs/wifi-lan.md) · Pages : [wifi-lan.html](https://dlnraja.github.io/freebox-dns/guides/wifi-lan.html)
-
-Fallbacks max : `config/upstreams/uncensoring-catalog.json` → `plain_fallback_order`.
-
-DoH (navigateur / téléphone, toujours vers la VM) :
+DoH (vers la même machine) :
 
 - Libre : `https://HOST_IP:8453/dns-query`
 - Secure : `https://HOST_IP:8444/dns-query`
-- Blocky : `http://HOST_IP:3080`
+- Blocky UI : `http://HOST_IP:3080`

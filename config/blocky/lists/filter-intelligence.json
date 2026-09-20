@@ -21,7 +21,11 @@
     "not_mapped": [
       "pihole_dhcp",
       "local_dns_records_ui",
-      "gravity_teleporter"
+      "gravity_teleporter",
+      "regex_blacklist_ui",
+      "per_client_groups",
+      "full_pihole_dashboard",
+      "prometheus_grafana"
     ],
     "list_force_refresh": "scripts/blocky-refresh-lists.sh"
   },

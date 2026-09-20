@@ -6,6 +6,10 @@ Checklist of product goals delivered since the start of the project.
 
 - [x] Dual personality → **4 smart spit modes** (uncensored / malware / antipub / secure)
 - [x] **Local-first**: hosts → Unbound local-data/cache → DoT → root
+- [x] Unbound **mounted `unbound.conf`** (DoT forward include active) + `local-zone: static` + serve-expired + cache volume
+- [x] Déploiements : **Pi** · **VM Freebox (option)** · **Windows natif** (`dnsproxy.exe`, sans Docker)
+- [x] Promesse produit : **DNS1 = IP du résolveur** → ça résout (DNS2 SOS optionnel)
+- [x] **LAN only** — pas d’exposition Internet (`assert-lan-only.py`, bind `HOST_IP`)
 - [x] Max **uncensoring** DoT catalogue + plain SOS reachable on Free ISP
 - [x] **Pi-hole-like** gravity via Blocky (+ uBlock DNS + anti–anti-adblock)
 - [x] DoH / DoT / DoQ (libre) · DoH / DoT (Blocky modes)

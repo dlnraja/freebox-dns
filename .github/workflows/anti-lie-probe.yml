@@ -33,19 +33,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
-      contents: write
-      pull-requests: write
+      contents: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'write' || 'read' }}
+      pull-requests: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'write' || 'read' }}
     steps:
       - uses: actions/checkout@v4
       - name: Install dig
-        run: sudo apt-get update -y && sudo apt-get install -y dnsutils
+        run: |
+          set -euo pipefail
+          for i in 1 2 3; do
+            sudo apt-get update -y && sudo apt-get install -y dnsutils && break
+            sleep 5
+          done
+          command -v dig
       - name: Warm critical local seeds
         run: python3 scripts/warm-local-cache.py
       - name: Run OONI-like anti-lie probe
         run: python3 scripts/ooni-like-anti-lie.py
       - name: Web Connectivity lite
         run: python3 scripts/web-connectivity-lite.py
-      - name: Show report summary
+      - name: Show report summary + lan-only
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -60,11 +66,13 @@ jobs:
           w=json.load(open("config/uncensor/last-web-connectivity.json"))
           print("http_blockpage", len(w.get("http_blockpage", [])))
           print("stripped", w.get("stripped_from_hosts", 0))
+          assert "verified_stored" in r
           PY
           test -f config/uncensor/hosts.generated
           test -f config/uncensor/hosts.critical
           test -f config/unbound/a-records.conf
           grep -q github.com config/uncensor/hosts.critical
+          python3 scripts/assert-lan-only.py
       - name: Upload probe reports
         if: always()
         uses: actions/upload-artifact@v4

@@ -63,9 +63,9 @@
     "client_profiles": "config/clients/generated/"
   },
   "dhcp_recommended": {
-    "dns1": "9.9.9.10",
-    "dns2": "HOST_IP",
-    "note": "DNS1=SOS Quad9 9.9.9.10 No Threat Blocking (no ECS), DNS2=Freebox VM IP — never Windows PC"
+    "dns1": "HOST_IP",
+    "dns2": "9.9.9.10",
+    "note": "DNS1=resolver (Pi/VM/Windows) :53, DNS2=SOS Quad9 9.9.9.10 — machine always-on"
   },
   "import_freebox_os": {
     "format": "qcow2",

@@ -1,0 +1,24 @@
+name: reusable-conf-lint
+
+# Called by freebox-conf-sync and validate-and-health — single source of truth.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PyYAML
+        run: python3 -m pip install --user pyyaml
+      - name: Conf lint (JSON/YAML/Blocky/product/lan-only)
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.local/bin:$PATH"
+          python3 scripts/ci-conf-lint.py
+          grep -q '8453' docs/freebox.md

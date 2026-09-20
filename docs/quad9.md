@@ -6,7 +6,8 @@ Références : [Services Quad9](https://docs.quad9.net/services/) · [CaptainDNS
 
 | Rôle | Adresse | Pourquoi |
 | --- | --- | --- |
-| **DHCP SOS #1** + bootstrap | **`9.9.9.10`** (`dns10.quad9.net`) | **No Threat Blocking** + **pas d’ECS** ; Internet intact si la VM tombe |
+| **DHCP DNS2 (SOS)** + bootstrap | **`9.9.9.10`** (`dns10.quad9.net`) | **No Threat Blocking** + **pas d’ECS** ; Internet intact si le résolveur tombe |
+| **DHCP DNS1** | IP du résolveur (ce projet) | Le produit — hosts / filtres / DoT locaux |
 | Filtrage malware / pubs | **local** (`dns-secure` / Blocky) | Équivalent opérationnel de Quad9 Secure, mais contrôlé chez nous |
 | Amont Unbound / dns-libre | DoT `dns10.quad9.net` | Même service *unfiltered* en chiffré |
 
@@ -40,8 +41,8 @@ Ne basculer vers `.11` / `.12` **que** si un vrai problème CDN/géoloc est prou
 ## Pattern forwarder (aligné CaptainDNS)
 
 ```text
-Clients LAN  →  Freebox DHCP : DNS1=9.9.9.10  DNS2=IP_VM
-IP_VM        →  dns-libre / Blocky  →  Unbound (cache)
+Clients LAN  →  DHCP : DNS1=IP_RESOLVEUR  DNS2=9.9.9.10
+IP_RESOLVEUR →  dns-libre / Blocky  →  Unbound (cache)
 Unbound      →  DoT 9.9.9.10@853#dns10.quad9.net (+ catalogue)
 ```
 
@@ -74,7 +75,7 @@ Windows : `Resolve-DnsName -Type txt proto.on.quad9.net.`
 ## Config projet (rappel)
 
 ```text
-Freebox DHCP  →  DNS1 = 9.9.9.10 (+ optionnel 149.112.112.10 en 3ᵉ pin lab)
+Freebox / routeur DHCP  →  DNS1 = IP résolveur · DNS2 = 9.9.9.10 (+ optionnel 149.112.112.10 en 3ᵉ pin lab)
 Unbound DoT   →  9.9.9.10@853#dns10.quad9.net
 dns-libre FB  →  https://dns10.quad9.net/dns-query  puis  tls://dns10.quad9.net
 ```

@@ -33,7 +33,8 @@ permissions:
 
 concurrency:
   group: qcow2-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Long builds must not be cancelled by a later push on the same ref
+  cancel-in-progress: false
 
 jobs:
   kit-only:
@@ -41,6 +42,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Product + lan-only asserts
+        run: |
+          set -euo pipefail
+          python3 scripts/ci-assert-product.py
+          test -f docs/lan-only.md
       - name: Zip import kit (no disk image)
         run: |
           set -euo pipefail
@@ -72,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     permissions:
-      contents: write
+      contents: ${{ github.event_name == 'release' && 'write' || 'read' }}
     steps:
       - uses: actions/checkout@v4
 

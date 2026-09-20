@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  contents: read
   issues: write
   pull-requests: write
 
@@ -18,6 +19,7 @@ concurrency:
 jobs:
   stale:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/stale@v9
         with:
@@ -28,6 +30,7 @@ jobs:
           stale-issue-label: stale
           stale-pr-label: stale
           exempt-issue-labels: anti-degradation,security
+          exempt-pr-labels: security
           stale-issue-message: >
             This issue has been marked stale due to inactivity.
             Comment to keep it open, or it will close in 14 days.

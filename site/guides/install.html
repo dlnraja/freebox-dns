@@ -37,22 +37,24 @@
     </nav>
 
     <h1>Installation</h1>
-    <p><strong>Production</strong> = VM Freebox OS (résolveur LAN pour tout le Wi‑Fi). Docker Desktop / WSL = <strong>lab uniquement</strong>.</p>
+    <p><strong>But :</strong> une machine répond au DNS → vous mettez <strong>son IP en DNS1</strong>.
+    Freebox optionnelle. Sur Windows vous pouvez démarrer <strong>sans Docker</strong>.</p>
 
     <div class="callout-warning">
       <img class="callout-icon" src="../assets/warning-sos.svg" width="48" height="48" alt="">
       <div>
         <h3>Qui est le DNS ?</h3>
-        <p>La <strong>VM sur la Freebox</strong>. Pas votre PC. Guide : <a href="wifi-lan.html">Wi‑Fi / LAN</a> · <a href="deploy-freebox.html">Déployer Freebox</a>.</p>
+        <p>La machine <strong>toujours allumée</strong> (Pi, VM, mini-PC Windows) — pas un laptop qui dort.
+        Guide : <a href="wifi-lan.html">Wi‑Fi / LAN</a> · détail GitHub : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/deploy.md">docs/deploy.md</a>.</p>
       </div>
     </div>
 
     <div class="prereq-box">
       <h3>Prérequis</h3>
       <ul>
-        <li>Prod : Freebox OS + image QCOW2 ARM64 (ou Pi)</li>
-        <li>Lab : Docker Engine + Compose v2</li>
-        <li><code>HOST_IP</code> = IP LAN de la <strong>VM freebox-dns</strong> (ex. <code>192.168.1.71</code>) — pas l'IP du PC Windows</li>
+        <li>Pi / VM Linux : Docker Engine + Compose v2</li>
+        <li>Windows salon : PowerShell admin (télécharge <code>dnsproxy.exe</code>)</li>
+        <li><code>HOST_IP</code> (stack Docker) = IP LAN de <em>cette</em> machine — celle du DNS1</li>
       </ul>
     </div>
 
@@ -123,7 +125,12 @@ curl -sk "https://HOST_IP:8453/dns-query?name=example.com&type=A"</code></pre>
       </article>
       <article class="card">
         <img class="card-icon" src="../assets/wsl-window.svg" width="72" height="64" alt="">
-        <h3>Windows / WSL2</h3>
+        <h3>Windows (exe)</h3>
+        <a class="card-link" href="https://github.com/dlnraja/freebox-dns/blob/main/docs/deploy-windows.md">Sans Docker →</a>
+      </article>
+      <article class="card">
+        <img class="card-icon" src="../assets/wsl-window.svg" width="72" height="64" alt="">
+        <h3>Lab WSL</h3>
         <a class="card-link" href="deploy-wsl.html">Guide WSL →</a>
       </article>
     </div>
@@ -132,7 +139,7 @@ curl -sk "https://HOST_IP:8453/dns-query?name=example.com&type=A"</code></pre>
       <img class="callout-icon" src="../assets/warning-sos.svg" width="48" height="48" alt="">
       <div>
         <h3>Avant de toucher au DHCP Freebox</h3>
-        <p>Ne modifiez le DHCP qu'après un health-check OK. Filet SOS : DNS1 = <code>9.9.9.10</code>, DNS2 = IP VM.</p>
+        <p>Testez <code>dig @HOST_IP example.com</code> <strong>avant</strong> de changer le DHCP. DNS1 = résolveur, DNS2 = <code>9.9.9.10</code> (SOS).</p>
         <a href="dhcp-safe.html">Guide DHCP sûr →</a>
       </div>
     </div>

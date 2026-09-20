@@ -6,6 +6,8 @@
 #
 # Docs: docs/encrypted-dns.md · docs/quad9.md
 
+# Listen inside container only. Host side is bound to HOST_IP (LAN) by docker-compose — never 0.0.0.0 on the host.
+# See docs/lan-only.md
 listen_addresses = ['0.0.0.0:53']
 
 server_names = ['quad9-dnscrypt-ip4-nofilter-pri', 'quad9-dnscrypt-ip4-nofilter-alt']

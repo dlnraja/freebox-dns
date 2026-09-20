@@ -37,7 +37,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 echo ""
 echo "Installed. HOST_IP=${IP:-unknown}"
-echo "Freebox DHCP → DNS1=9.9.9.10  DNS2=${IP:-HOST_IP}  (VM = résolveur, pas le PC)"
+echo "DHCP → DNS1=${IP:-HOST_IP}  DNS2=9.9.9.10  (résolveur local + SOS)"
 echo "Wi-Fi clients renew DHCP after Freebox OS change."
 echo "Warm local Unbound: python3 scripts/warm-local-cache.py && bash scripts/warm-unbound-runtime.sh"
 echo "Docs: docs/freebox-vm.md"

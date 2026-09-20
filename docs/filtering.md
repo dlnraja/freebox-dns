@@ -1,6 +1,6 @@
 ﻿# Modèle de filtrage (lexique pins → local)
 
-Voir le glossaire : [dns-lexicon.md](dns-lexicon.md) · **modes smart spit** : [modes.md](modes.md) · catalogue : [`config/blocky/lists/filter-intelligence.json`](../config/blocky/lists/filter-intelligence.json)
+Voir : [dns-lexicon.md](dns-lexicon.md) · **modes (smart spit)** : [modes.md](modes.md) · **parité Pi-hole** : [pihole-parity.md](pihole-parity.md) · catalogue : [`config/blocky/lists/filter-intelligence.json`](../config/blocky/lists/filter-intelligence.json)
 
 Chaîne commune : **hosts locaux → filtre du mode → Unbound (DoT) → monde**.
 
@@ -52,11 +52,30 @@ Les benches publics ([Nexxwave 2025](https://techblog.nexxwave.eu/public-dns-mal
 
 Allowlist commune : `config/blocky/lists/allowlist.txt` (GitHub, Freebox, mirrors…).  
 Refresh forcé : `bash scripts/blocky-refresh-lists.sh`.  
-UI + query log CSV (7 j) : mode **secure** → `http://HOST_IP:3080` · fichiers dans `config/blocky/querylog/`.
+**UI Blocky = mode secure uniquement** → `http://HOST_IP:3080` (malware/antipub ont `http:4000` en interne, **non publiés** sur l’hôte).  
+Query log CSV (7 j, VM locale) : `config/blocky/querylog/` · `log.privacy: true` (pas de log verbeux type Pi-hole).  
+Prometheus : **désactivé** (pas de Grafana dans ce dépôt).
 
-Parité détaillée : [pihole-parity.md](pihole-parity.md).
+Parité détaillée / hors scope : [pihole-parity.md](pihole-parity.md).
 
-**Exclu volontairement** : parental, porn, SafeSearch, listes StevenBlack *gambling/social/porn*, censure nationale, logs cloud.
+### Blocky HTTP API (secure → `:3080`)
+
+API native Blocky (même port que l’UI). Exemples LAN-only :
+
+```bash
+# Santé / status
+curl -s "http://HOST_IP:3080/api/blocking/status"
+
+# Forcer un refresh des listes (équivalent soft de gravity)
+curl -s -X POST "http://HOST_IP:3080/api/lists/refresh"
+
+# Ou script projet
+bash scripts/blocky-refresh-lists.sh
+```
+
+Référence amont : [Blocky API docs](https://0xerr0r.github.io/blocky/latest/api/). Ne pas exposer `:3080` sur Internet — [lan-only.md](lan-only.md).
+
+**Exclu volontairement** : parental, porn, SafeSearch, listes StevenBlack *gambling/social/porn*, censure nationale, logs cloud, regex UI, groupes par client/MAC, teleporter, DHCP intégré.
 
 Les hosts anti-lie (`hosts.generated`) passent **avant** les denylists : on ne remplace jamais une vérité contrôle par une page de censure.
 

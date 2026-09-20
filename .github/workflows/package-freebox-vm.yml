@@ -9,11 +9,14 @@ on:
     paths:
       - "packaging/freebox-vm/**"
       - "packaging/freebox-os-import/**"
-      - "cloud-init/freebox-vm-user-data.yaml"
+      - "cloud-init/**"
       - "docker-compose*.yml"
       - "config/**"
       - "scripts/package-freebox-vm.sh"
+      - "scripts/assert-lan-only.py"
+      - "scripts/ci-assert-product.py"
       - "docs/freebox-vm.md"
+      - "docs/lan-only.md"
       - ".github/workflows/package-freebox-vm.yml"
   pull_request:
     paths:
@@ -23,7 +26,10 @@ on:
       - "docker-compose*.yml"
       - "config/**"
       - "scripts/package-freebox-vm.sh"
+      - "scripts/assert-lan-only.py"
+      - "scripts/ci-assert-product.py"
       - "docs/freebox-vm.md"
+      - "docs/lan-only.md"
       - ".github/workflows/package-freebox-vm.yml"
   workflow_dispatch:
   release:
@@ -41,10 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      contents: write
+      contents: ${{ github.event_name == 'release' && 'write' || 'read' }}
     steps:
       - uses: actions/checkout@v4
-      - name: Validate manifest + packages
+      - name: Validate manifest + packages + product
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -52,7 +58,8 @@ jobs:
           m = json.loads(pathlib.Path("packaging/freebox-vm/manifest.json").read_text())
           assert m["name"] == "freebox-dns-vm"
           assert len(m["docker_images"]) >= 3
-          assert m["dhcp_recommended"]["dns1"] == "9.9.9.10"
+          assert m["dhcp_recommended"]["dns1"] == "HOST_IP"
+          assert m["dhcp_recommended"]["dns2"] == "9.9.9.10"
           pkgs = pathlib.Path("packaging/freebox-vm/packages.txt").read_text().splitlines()
           pkgs = [p.strip() for p in pkgs if p.strip() and not p.startswith("#")]
           for p in ("docker.io", "docker-compose-v2", "git"):
@@ -61,12 +68,20 @@ jobs:
           assert len(cat["dot_uncensoring"]) >= 10
           print("VM package metadata OK")
           PY
+          python3 scripts/ci-assert-product.py
           chmod +x packaging/freebox-vm/install.sh scripts/package-freebox-vm.sh
           test -f docs/freebox-vm.md
+          test -f docs/lan-only.md
           test -f cloud-init/freebox-vm-user-data.yaml
-          # light shell syntax check
           bash -n packaging/freebox-vm/install.sh
           bash -n scripts/package-freebox-vm.sh
+          bash -n scripts/verify-unbound-forwards.sh
+          if command -v shellcheck >/dev/null; then
+            shellcheck -x packaging/freebox-vm/install.sh scripts/package-freebox-vm.sh || true
+          else
+            sudo apt-get update -y && sudo apt-get install -y shellcheck
+            shellcheck -x packaging/freebox-vm/install.sh scripts/package-freebox-vm.sh || true
+          fi
       - name: Build tarball + kit zip
         run: |
           set -euo pipefail

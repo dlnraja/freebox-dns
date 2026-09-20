@@ -25,6 +25,6 @@ UncensoredDNS + Digitale Gesellschaft restent dans le **catalogue DoT** (UDP/53 
 
 1. **dns-libre** : Unbound (DoT complémentaires) ; fallback pins **1 → 2 → 3 → 5**.
 2. **dns-secure** : Blocky denylist locale ; amont Unbound (même DoT).
-3. **DHCP Freebox** : DNS1 = `FREEBOX_DNS_1` (`9.9.9.10`) ; DNS2 = `HOST_IP` (VM).
+3. **DHCP** : DNS1 = `HOST_IP` (résolveur) ; DNS2 = `FREEBOX_DNS_1` (`9.9.9.10` SOS).
 
 Variantes Quad9 (`.9` / `.10` / `.11` / `.12`) : [quad9.md](quad9.md).

@@ -1,93 +1,83 @@
-# Freebox Dual DNS — le résolveur est la **VM Freebox**, pas votre PC
+# freebox-dns — résolveur DNS local pour votre LAN
 
-**Production** : Docker sur la **VM Freebox OS** (ARM64). Wi‑Fi / Ethernet → DHCP Freebox → IP de cette VM.  
-PC Windows / WSL = **lab uniquement**.
+**But :** une machine toujours allumée répond au DNS. Vous mettez **son IP en DNS1**
+sur le routeur (ou sur un PC / téléphone) → la résolution passe par chez vous
+(hosts locaux, anti–DNS menteur, filtres optionnels, DoT uncensoring).
+
+Ce dépôt **n’exige pas** votre Freebox ni Docker. Freebox / Pi / Windows sont
+trois façons d’héberger le même rôle : *le serveur DNS du salon*.
+
+| Vous avez… | Vous faites… |
+| --- | --- |
+| **Raspberry Pi** (recommandé) | [docs/deploy-pi.md](docs/deploy-pi.md) — stack complète |
+| **VM sur Freebox OS** (ou autre hyperviseur) | [docs/freebox-vm.md](docs/freebox-vm.md) — option Freebox |
+| **PC Windows** (sans Docker) | [docs/deploy-windows.md](docs/deploy-windows.md) — `dnsproxy.exe` |
+| Juste tester | [docs/deploy.md](docs/deploy.md) — choisir une cible |
+
+Guides web : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) · [docs/](docs/README.md)
+
+---
+
+## En 30 secondes
+
+1. Démarrez le résolveur sur une machine **toujours allumée** (Pi / VM / Windows).
+2. Notez son IP LAN, ex. `192.168.1.71`.
+3. Sur le routeur **ou** l’appareil final :
 
 | | |
 | --- | --- |
-| **Guides** | [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) |
-| **Crédits** | [docs/CREDITS.md](docs/CREDITS.md) |
-| **Changelog** | [CHANGELOG.md](CHANGELOG.md) |
-| **Features** | [FEATURES.md](FEATURES.md) |
-| **Pi-hole-like** | [docs/pihole-parity.md](docs/pihole-parity.md) |
+| **DNS1** | `192.168.1.71` ← **ce projet** |
+| **DNS2** | `9.9.9.10` (SOS Quad9, optionnel si la machine tombe) |
 
-## Modes (smart spit)
+4. Vérifiez : `dig @192.168.1.71 example.com` (ou `Resolve-DnsName example.com -Server 192.168.1.71`).
 
-| Mode | Service | Port (lab) | Order |
+**LAN only** — ne pas exposer le DNS sur Internet ([docs/lan-only.md](docs/lan-only.md)).
+
+```text
+Client / Wi‑Fi
+    → DNS1 = IP du résolveur (Pi · VM · Windows)
+    → hosts locaux → cache → DoT uncensoring → (SOS si besoin)
+```
+
+---
+
+## Quatre modes « smart spit » (Pi / VM + Docker)
+
+Personnalités séparées par **port / DoH** (pas un clone Pi-hole FTL) :
+
+| Mode | Rôle | Port prod | Transports |
 | --- | --- | --- | --- |
-| **uncensored** | `dns-libre` | `5356` (prod `:53`) | hosts → Unbound → (dnsproxy fallbacks) |
-| **malware** | `dns-malware` | `5357` | hosts → malware denylist → Unbound |
-| **antipub** | `dns-antipub` | `5358` | hosts → pihole + ublock + anti_adblock → Unbound |
-| **secure** | `dns-secure` | `5354` | hosts → pihole + ublock + anti_adblock + malware → Unbound |
+| **uncensored** | Anti-censure, pas de filtre pub | `:53` | Do53 · DoH `:8453` · DoT/DoQ `:853` |
+| **malware** | Denylist menaces | `5357` | Do53 · DoH · DoT |
+| **antipub** | Pubs / trackers | `5358` | Do53 · DoH · DoT |
+| **secure** | antipub + malware | `5354` | Do53 · DoH · DoT · **UI** `:3080` |
 
-DoH : `:8453` / `:8445` / `:8446` / `:8444` · UI secure `:3080` · détail [docs/modes.md](docs/modes.md).
+- **Pi-hole / uBlock au DNS** → Blocky ([docs/filtering.md](docs/filtering.md) · [docs/pihole-parity.md](docs/pihole-parity.md)) — UI **secure only** `http://HOST_IP:3080`
+- Modes : [docs/modes.md](docs/modes.md) · transports : [docs/encrypted-dns.md](docs/encrypted-dns.md)
+- Windows natif = lite uncensoring (hosts + DoT) — [deploy-windows](docs/deploy-windows.md)
 
-## Pi-hole / uBlock (via Blocky)
+---
 
-Pas de Pi-hole FTL : **Blocky** fournit gravity multi-listes, whitelist, groupes, NXDOMAIN, refresh 12h, UI et journal CSV local sur `secure`.  
-Détail : [docs/filtering.md](docs/filtering.md) · [docs/pihole-parity.md](docs/pihole-parity.md).
+## Ce que ce projet n’est pas
 
-```bash
-# Whitelist / blacklist fichiers
-# config/blocky/lists/allowlist.txt · ads-extra.txt · malware-extra.txt
-bash scripts/blocky-refresh-lists.sh   # force refresh (gravity-like)
-# UI : http://IP_VM:3080
-```
+- Pas un **clone Pi-hole** (pas de DHCP FTL, pas de regex UI, pas de teleporter) — volontaire
+- Pas « seulement pour Freebox » — Freebox est un **hôte possible**, comme un Pi
+- Pas le DNS d’un laptop qui dort — machine toujours allumée
+- Docker = moyen pour la stack complète, pas le produit
 
-## DHCP / Wi‑Fi
-
-| DNS1 | DNS2 |
-| --- | --- |
-| `9.9.9.10` (SOS Quad9) | IP_VM (ex. `192.168.1.71`) |
-
-Guide : [docs/wifi-lan.md](docs/wifi-lan.md) · Pages : [Wi‑Fi / LAN](https://dlnraja.github.io/freebox-dns/guides/wifi-lan.html)
-
-## Architecture
-
-```mermaid
-flowchart TB
-  wifi[Clients Wi-Fi]
-  dhcp[Freebox DHCP]
-  vm[VM freebox-dns]
-  unbound[Unbound local-first]
-  sos[SOS 9.9.9.10]
-
-  wifi --> dhcp
-  dhcp -->|DNS2| vm
-  dhcp -->|DNS1| sos
-  vm --> unbound
-```
-
-## Prod — Freebox VM
-
-1. QCOW2 ARM64 + cloud-init — [packaging/freebox-os-import/](packaging/freebox-os-import/)
-2. `dig @IP_VM example.com`
-3. Freebox DHCP : DNS1=`9.9.9.10`, DNS2=`IP_VM`
-4. Warm : `python3 scripts/warm-local-cache.py` · `bash scripts/warm-unbound-runtime.sh`
-
-## Lab — PC / WSL (pas en DHCP Freebox)
-
-```bash
-cp .env.example .env
-bash scripts/generate-certs.sh
-docker compose up -d
-bash scripts/health-check.sh
-```
+---
 
 ## Docs utiles
 
-| Doc | Sujet |
+| Doc | Pour qui |
 | --- | --- |
-| [docs/README.md](docs/README.md) | Index |
+| [docs/deploy.md](docs/deploy.md) | Démarrer — Pi / VM / Windows |
+| [docs/lan-only.md](docs/lan-only.md) | LAN only |
+| [docs/wifi-lan.md](docs/wifi-lan.md) | DNS1 / Wi‑Fi |
+| [docs/filtering.md](docs/filtering.md) · [pihole-parity.md](docs/pihole-parity.md) | Listes Blocky |
 | [docs/resilience.md](docs/resilience.md) | Local-first Unbound |
-| [docs/anti-lie-dns.md](docs/anti-lie-dns.md) | Anti–DNS menteur |
-| [docs/encrypted-dns.md](docs/encrypted-dns.md) | Do53 / DoH / DoT / DoQ / DNSCrypt |
-| [docs/ci.md](docs/ci.md) | GitHub Actions automation |
-| [docs/anti-degradation.md](docs/anti-degradation.md) | Bitrot / regression watchdog |
-| [docs/quad9.md](docs/quad9.md) | Pourquoi SOS = Quad9 `9.9.9.10` |
-| [docs/public-dns-landscape.md](docs/public-dns-landscape.md) | r/dns + benches → mapping projet |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribuer |
-| [SECURITY.md](SECURITY.md) | Sécurité |
+| [docs/modes.md](docs/modes.md) | 4 modes |
+| [CHANGELOG.md](CHANGELOG.md) · [FEATURES.md](FEATURES.md) · [CONTRIBUTING.md](CONTRIBUTING.md) | Suivi / contrib |
 
 ## Licence
 

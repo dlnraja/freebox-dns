@@ -9,6 +9,8 @@ on:
       - "site/**"
       - "LICENSE"
       - ".github/ISSUE_TEMPLATE/**"
+      - ".github/PULL_REQUEST_TEMPLATE.md"
+      - ".github/labels.yml"
   schedule:
     - cron: "0 */12 * * *"
   workflow_dispatch:
@@ -21,6 +23,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  conf-lint:
+    uses: ./.github/workflows/reusable-conf-lint.yml
+
   compose-config:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -33,24 +38,26 @@ jobs:
           set -euo pipefail
           docker compose -f docker-compose.yml config -q
           docker compose -f docker-compose.yml -f docker-compose.prod.yml config -q
-          docker compose -f docker-compose.yml -f docker-compose.arm64.yml config -q || true
+          docker compose -f docker-compose.yml -f docker-compose.arm64.yml config -q
+          # ipv6 overlay needs HOST_IP6
+          HOST_IP6=fd00:fb0x:dns::71 docker compose -f docker-compose.yml -f docker-compose.ipv6.yml config -q
       - name: Assert HOST_IP bind + Blocky drift
         run: |
           set -euo pipefail
+          expected_ip=$(grep -E '^HOST_IP=' .env.example | head -1 | cut -d= -f2 | tr -d '[:space:]"'"'"'')
+          test -n "$expected_ip"
           out=$(docker compose -f docker-compose.yml config)
-          echo "$out" | grep -q '192.168.1.50' || (echo "HOST_IP from .env.example missing"; exit 1)
+          echo "$out" | grep -q "$expected_ip" || (echo "HOST_IP $expected_ip from .env.example missing in compose"; exit 1)
           if echo "$out" | grep -E '0\.0\.0\.0:' ; then
             echo "ERROR: wildcard bind forbidden"; exit 1
           fi
           docker compose -f docker-compose.yml config --services | grep -E 'unbound|dns-libre|dns-malware|dns-antipub|dns-secure'
-          test -f config/blocky/config-malware.yml
-          test -f config/blocky/config-antipub.yml
-          test -f config/blocky/modes.json
           python3 scripts/generate-blocky-modes.py
           git diff --exit-code -- config/blocky/config.yml config/blocky/config-malware.yml config/blocky/config-antipub.yml config/blocky/modes.json \
             || (echo "Blocky configs drifted — run: python3 scripts/generate-blocky-modes.py && commit"; exit 1)
           grep -q '172.28.0.10' config/blocky/config.yml
           grep -q 'queryLog:' config/blocky/config.yml
+          python3 scripts/assert-lan-only.py
 
   freebox-conf:
     runs-on: ubuntu-latest
@@ -90,6 +97,7 @@ jobs:
             docs/dns-analysis.md docs/dns-lexicon.md docs/freebox-vm.md \
             docs/upstreams-uncensoring.md docs/wifi-lan.md docs/pihole-parity.md \
             docs/anti-lie-dns.md docs/resilience.md \
+            docs/deploy.md docs/deploy-windows.md docs/lan-only.md \
             packaging/freebox-vm/manifest.json packaging/freebox-vm/packages.txt \
             packaging/freebox-vm/install.sh \
             packaging/freebox-os-import/freebox-os-vm.json \
@@ -104,11 +112,21 @@ jobs:
           grep -q 'forward-first: yes' config/unbound/forward-records.conf
           grep -q 'a-records.critical.conf' config/unbound/a-records.conf
           grep -q 'serve-expired: yes' config/unbound/a-records.conf
+          grep -q 'serve-expired-client-timeout: 0' config/unbound/a-records.conf
           grep -q 'unbound-cache' docker-compose.yml
+          grep -q 'unbound.conf:/opt/unbound/etc/unbound/unbound.conf' docker-compose.yml
+          grep -qE '^[[:space:]]*include:[[:space:]]+/opt/unbound/etc/unbound/forward-records\.conf' config/unbound/unbound.conf
+          grep -q 'local-zone:.*static' config/unbound/a-records.critical.conf
+          ! grep -q typetransparent config/unbound/a-records.critical.conf
+          grep -q 'OBSOLETE' config/uncensor/blocky-custom-dns.yml
+          test -f scripts/verify-unbound-forwards.sh
+          bash scripts/verify-unbound-forwards.sh
+          python3 scripts/assert-lan-only.py
           grep -q 'hosts.critical' config/dnsproxy/dns-libre.yaml
           python3 -c "import json; c=json.load(open('config/upstreams/uncensoring-catalog.json')); assert len(c['dot_uncensoring'])>=10; assert 'sos_plain' in c"
           python3 -c "import json; j=json.load(open('packaging/freebox-os-import/freebox-os-vm.json')); assert j['vm']['disk_type']=='qcow2'"
           python3 -c "import json; j=json.load(open('config/freebox/dhcp-dns.json')); assert 'anti_lie' in j and 'ipv6' in j"
+          python3 scripts/ci-assert-product.py
 
   upstream-health:
     runs-on: ubuntu-latest
@@ -145,8 +163,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      contents: write
-      pull-requests: write
+      contents: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'write' || 'read' }}
+      pull-requests: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'write' || 'read' }}
     steps:
       - uses: actions/checkout@v4
       - name: Probe blocklist URLs
@@ -198,7 +216,7 @@ jobs:
   smoke-stack:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [compose-config, freebox-conf]
+    needs: [compose-config, freebox-conf, conf-lint]
     steps:
       - uses: actions/checkout@v4
       - name: Prepare lab env
@@ -211,6 +229,8 @@ jobs:
             -days 1 -nodes -subj "/CN=freebox-dns-ci"
           chmod 644 certs/server.crt certs/server.key
           HOST_IP=127.0.0.1 python3 scripts/generate-client-profiles.py
+          test -f config/clients/generated/endpoints.json
+          grep -q '127.0.0.1' config/clients/generated/endpoints.json
       - name: Start stack
         run: docker compose up -d
       - name: Wait healthy
@@ -237,27 +257,26 @@ jobs:
             dig @127.0.0.1 -p "$port" example.com +time=5 +tries=3 +short | tee "/tmp/p$port.txt"
             grep -qE '^[0-9.]+' "/tmp/p$port.txt"
           done
-          dig @127.0.0.1 -p 5358 doubleclick.net +time=5 +tries=2 | tee /tmp/ads.txt || true
-          grep -q NXDOMAIN /tmp/ads.txt || grep -q 'status: NXDOMAIN' /tmp/ads.txt
-      - name: Upload compose logs on failure
+          set +e
+          dig @127.0.0.1 -p 5358 doubleclick.net +time=5 +tries=2 | tee /tmp/ads.txt
+          set -e
+          grep -qE 'NXDOMAIN|status: NXDOMAIN' /tmp/ads.txt
+      - name: Collect docker logs on failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          docker compose logs --no-color > /tmp/compose-full.log 2>&1 || true
+          docker compose ps > /tmp/compose-ps.txt 2>&1 || true
+      - name: Upload smoke artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: smoke-compose-logs
+          name: smoke-failure
           path: |
             /tmp/*.txt
+            /tmp/compose-full.log
           retention-days: 7
           if-no-files-found: ignore
-      - name: Collect docker logs
-        if: failure()
-        run: docker compose logs --no-color > /tmp/compose-full.log 2>&1 || true
-      - name: Upload full logs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: smoke-docker-logs
-          path: /tmp/compose-full.log
-          retention-days: 7
       - name: Tear down
         if: always()
         run: docker compose down -v

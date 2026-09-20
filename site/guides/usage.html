@@ -49,13 +49,13 @@
       </ul>
     </div>
 
-    <h2>DHCP Freebox (après health VM)</h2>
+    <h2>DHCP (après health)</h2>
     <div class="callout-warning">
       <img class="callout-icon" src="../assets/warning-sos.svg" width="48" height="48" alt="">
       <div>
-        <h3>Filet SOS obligatoire</h3>
-        <p>DNS1 = <code>9.9.9.10</code> · DNS2 = IP VM. Ne jamais une seule entrée.</p>
-        <a href="dhcp-safe.html">Guide complet →</a>
+        <h3>DNS1 = résolveur</h3>
+        <p>DNS1 = IP du résolveur · DNS2 = <code>9.9.9.10</code> (SOS). Testez <code>dig @IP</code> avant de changer le DHCP.</p>
+        <a href="wifi-lan.html">Wi‑Fi / LAN →</a> · <a href="dhcp-safe.html">DHCP sûr →</a>
       </div>
     </div>
 
@@ -64,13 +64,13 @@
         <div class="step-num">1</div>
         <div class="step-content">
           <img class="step-visual" src="../assets/freebox-box.svg" width="64" height="52" alt="">
-          <h3>Freebox OS → DHCP</h3>
-          <p>Paramètres de la Freebox → DHCP → DNS personnalisés.</p>
+          <h3>Routeur / Freebox → DHCP</h3>
+          <p>DNS personnalisés (Freebox OS → Mode avancé → DHCP, ou tout autre routeur).</p>
           <table>
             <thead><tr><th>Priorité</th><th>Valeur</th></tr></thead>
             <tbody>
-              <tr><td>DNS1</td><td><code>9.9.9.10</code> (Quad9 No Threat Blocking)</td></tr>
-              <tr><td>DNS2</td><td><code>HOST_IP</code> (VM freebox-dns)</td></tr>
+              <tr><td>DNS1</td><td><code>HOST_IP</code> (résolveur freebox-dns)</td></tr>
+              <tr><td>DNS2</td><td><code>9.9.9.10</code> (SOS Quad9)</td></tr>
             </tbody>
           </table>
         </div>
@@ -147,33 +147,36 @@ bash scripts/health-check.sh</code></pre>
       </article>
     </div>
 
-    <h2>UI Blocky (dns-secure)</h2>
+    <h2>UI Blocky (mode secure uniquement)</h2>
     <div class="steps">
       <article class="step-card">
         <div class="step-num">5</div>
         <div class="step-content">
-          <h3>Tableau de bord</h3>
-          <p>Ouvrir dans un navigateur LAN :</p>
+          <h3>Tableau de bord léger</h3>
+          <p>Ouvrir dans un navigateur <strong>LAN</strong> (pas Internet) :</p>
           <pre><code>http://HOST_IP:3080</code></pre>
-          <p>Statistiques de requêtes, listes actives, blocages récents — équivalent local Pi-hole / uBlock via Blocky.</p>
+          <p>UI + log CSV local — <strong>pas</strong> un clone du dashboard Pi-hole.
+          Les modes malware/antipub n’exposent pas d’UI. Détail :
+          <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/pihole-parity.md">pihole-parity.md</a>.</p>
         </div>
       </article>
     </div>
 
-    <h2>Deux personnalités DNS</h2>
+    <h2>Quatre modes (smart spit)</h2>
     <div class="mermaid-wrap">
       <pre class="mermaid">
 flowchart LR
   q[Requête client]
-  libre[dns-libre uncensored]
-  secure[dns-secure threat-local]
-  up1[UncensoredDNS DG Quad9]
-  up2[Blocky + listes Pi-hole uBlock]
+  libre[uncensored :53]
+  secure[secure :5354 / UI :3080]
+  up1[Unbound DoT]
+  up2[Blocky listes]
 
-  q -->|port 53 / 8453| libre
-  q -->|port 5354 / 8444| secure
+  q -->|DNS1 / DoH 8453| libre
+  q -->|DoH 8444| secure
   libre --> up1
   secure --> up2
+  up2 --> up1
       </pre>
     </div>
 

@@ -12,7 +12,8 @@ Le consensus du fil **ne change pas** notre architecture — il la **valide** :
 | --- | --- |
 | Filtrer **en local** (Pi-hole / Blocky / AdGuard Home) | `dns-secure` + Blocky gravity |
 | Unbound en amont / cache | Unbound + `forward-first` DoT |
-| Filet si le LAN tombe | DHCP DNS1 = **`9.9.9.10`** (No Threat Blocking) |
+| Filet si le résolveur tombe | DHCP **DNS2** = **`9.9.9.10`** (No Threat Blocking) |
+| Résolveur du salon | DHCP **DNS1** = IP Pi / VM / Windows |
 | Malware **distant** (`.9`, `1.1.1.2`, ControlD malware…) | **Non** en primaire — on filtre **ici** |
 | Cloudflare / OpenDNS / parental | **Exclus** en primaire |
 
