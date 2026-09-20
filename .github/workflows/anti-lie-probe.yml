@@ -76,7 +76,7 @@ jobs:
           python3 scripts/assert-lan-only.py
       - name: Upload probe reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: anti-lie-reports
           path: |
