@@ -1,0 +1,16 @@
+# Reference labels used by automation (create via `gh label create` or UI).
+- name: anti-degradation
+  color: B60205
+  description: Automated bitrot / regression watchdog
+- name: ci
+  color: 0E8A16
+  description: CI / automation
+- name: bug
+  color: d73a4a
+  description: Something isn't working
+- name: security
+  color: EE0701
+  description: Security-related (exempt from stale)
+- name: stale
+  color: 666666
+  description: Marked inactive by stale bot

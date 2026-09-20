@@ -1,0 +1,111 @@
+name: anti-degradation
+
+# Continuous bitrot / regression watchdog — never polls a live Freebox.
+# Opens/updates a GitHub issue when hard degradation is detected.
+
+on:
+  schedule:
+    # Every 8 hours
+    - cron: "20 */8 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/anti-degradation-check.py"
+      - ".github/workflows/anti-degradation.yml"
+      - "config/upstreams/uncensoring-catalog.json"
+      - "config/freebox-dns-snapshot.json"
+      - "config/blocky/config.yml"
+      - "docker-compose.yml"
+  pull_request:
+    paths:
+      - "scripts/anti-degradation-check.py"
+      - ".github/workflows/anti-degradation.yml"
+      - "config/upstreams/**"
+      - "config/freebox-dns-snapshot.json"
+      - "config/blocky/**"
+      - "docker-compose.yml"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: anti-degradation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run anti-degradation suite
+        id: check
+        run: |
+          set -euo pipefail
+          set +e
+          python3 scripts/anti-degradation-check.py
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          python3 - <<'PY'
+          import json
+          r=json.load(open("config/uncensor/last-anti-degradation.json"))
+          print("ok", r["ok_count"], "fail", r["fail_count"])
+          for f in r.get("failed", []):
+              print("FAIL", f["name"], f.get("detail",""))
+          PY
+          exit "$code"
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: anti-degradation-report
+          path: config/uncensor/last-anti-degradation.json
+          retention-days: 30
+      - name: Open or update degradation issue
+        if: failure() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TITLE="[anti-degradation] DNS stack health degraded"
+          BODY_FILE=/tmp/deg-issue.md
+          {
+            echo "## Anti-degradation failure"
+            echo
+            echo "Workflow: \`${{ github.workflow }}\` · run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo '```json'
+            python3 -c "import json;print(json.dumps(json.load(open('config/uncensor/last-anti-degradation.json')),indent=2)[:8000])"
+            echo '```'
+            echo
+            echo "### Next steps"
+            echo "1. Inspect failed checks (SOS digs, blocklist HTTP, Pages, invariants)."
+            echo "2. Re-run \`python3 scripts/anti-degradation-check.py\` locally."
+            echo "3. Fix pins/catalog/Blocky or replace dead upstreams."
+          } > "$BODY_FILE"
+
+          gh label create anti-degradation --color B60205 --description "Automated bitrot/regression" 2>/dev/null || true
+          gh label create ci --color 0E8A16 --description "CI / automation" 2>/dev/null || true
+          gh label create bug --color d73a4a --description "Something isn't working" 2>/dev/null || true
+
+          existing=$(gh issue list --label anti-degradation --state open --json number,title --jq '.[] | select(.title=="'"$TITLE"'") | .number' | head -1 || true)
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file "$BODY_FILE"
+            echo "Commented on #$existing"
+          else
+            gh issue create --title "$TITLE" --label "bug,anti-degradation,ci" --body-file "$BODY_FILE"
+          fi
+      - name: Close degradation issue when healthy
+        if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TITLE="[anti-degradation] DNS stack health degraded"
+          existing=$(gh issue list --label anti-degradation --state open --json number,title --jq '.[] | select(.title=="'"$TITLE"'") | .number' | head -1 || true)
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "Anti-degradation checks are green again (run ${{ github.run_id }}). Closing."
+            gh issue close "$existing" --reason completed
+          fi

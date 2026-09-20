@@ -23,6 +23,8 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/).
 - `release.yml` from `v*.*.*` tags + CHANGELOG notes
 - Dependabot for GitHub Actions
 - `docs-ci.yml` for README/docs/site gates
+- **Anti-degradation watchdog** (`anti-degradation.yml` + script) → GitHub issue
+- **Link-health** daily + **stale** bot
 
 ## [1.2.0] — 2026-09-20
 

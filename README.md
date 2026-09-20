@@ -83,6 +83,7 @@ bash scripts/health-check.sh
 | [docs/anti-lie-dns.md](docs/anti-lie-dns.md) | Anti–DNS menteur |
 | [docs/encrypted-dns.md](docs/encrypted-dns.md) | DoH / DoT / DoQ |
 | [docs/ci.md](docs/ci.md) | GitHub Actions automation |
+| [docs/anti-degradation.md](docs/anti-degradation.md) | Bitrot / regression watchdog |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribuer |
 | [SECURITY.md](SECURITY.md) | Sécurité |
 

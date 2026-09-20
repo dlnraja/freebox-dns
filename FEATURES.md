@@ -17,6 +17,8 @@ Checklist of product goals delivered since the start of the project.
 - [x] Client profiles (Firefox / Apple / Android / Windows DoH)
 - [x] CI validate + list health + anti-lie probe + Pages deploy
 - [x] Automated CI: regen PRs, release tags, Dependabot, docs-ci, weekly qcow2
+- [x] Anti-degradation watchdog (SOS/DoT/lists/Pages/invariants → issue)
+- [x] Link-health + stale automation
 
 ## Pi-hole-like (Blocky)
 

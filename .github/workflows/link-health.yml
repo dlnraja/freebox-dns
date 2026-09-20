@@ -1,0 +1,85 @@
+name: link-health
+
+# Remote URL bitrot for docs Pages + gravity sources + DoT hosts listed in catalog.
+
+on:
+  schedule:
+    - cron: "50 6 * * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "site/**"
+      - "config/blocky/**"
+      - "config/upstreams/**"
+      - ".github/workflows/link-health.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: link-health-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check critical remote URLs
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, urllib.request, sys
+          from pathlib import Path
+
+          fail = []
+          urls = [
+              "https://dlnraja.github.io/freebox-dns/",
+              "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
+              "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/multi.txt",
+              "https://v.firebog.net/hosts/Admiral.txt",
+              "https://quad9.net/",
+              "https://github.com/0xERR0R/blocky",
+          ]
+          cat = json.loads(Path("config/upstreams/uncensoring-catalog.json").read_text(encoding="utf-8"))
+          for e in cat.get("doh_uncensoring", []):
+              u = e.get("url")
+              if u:
+                  urls.append(u.split("/dns-query")[0] + "/")
+
+          # Blocky remote lists from filter-intelligence
+          fi = json.loads(Path("config/blocky/lists/filter-intelligence.json").read_text(encoding="utf-8"))
+          for group, items in (fi.get("groups") or {}).items():
+              for u in items:
+                  if isinstance(u, str) and u.startswith("http"):
+                      urls.append(u)
+
+          seen = set()
+          for url in urls:
+              if url in seen:
+                  continue
+              seen.add(url)
+              try:
+                  req = urllib.request.Request(url, headers={"User-Agent": "freebox-dns-link-health/1.0"})
+                  with urllib.request.urlopen(req, timeout=40) as r:
+                      if r.status >= 400:
+                          fail.append((url, f"HTTP {r.status}"))
+                      else:
+                          print("OK", r.status, url[:90])
+              except Exception as e:
+                  fail.append((url, type(e).__name__))
+                  print("FAIL", url[:90], type(e).__name__)
+
+          if len(fail) > 5:
+              print("Too many dead links:", len(fail))
+              for u, e in fail[:30]:
+                  print(" ", e, u)
+              sys.exit(1)
+          if fail:
+              print("Soft failures (allowed <=5):", len(fail))
+              for u, e in fail:
+                  print(" ", e, u)
+          print(f"checked {len(seen)} URLs")
+          PY

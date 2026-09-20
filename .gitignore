@@ -20,6 +20,7 @@ secrets/
 
 
 .dhcp-safe-confirm
+config/uncensor/last-anti-degradation.json
 config/blocky/querylog/*
 !config/blocky/querylog/.gitkeep
 
