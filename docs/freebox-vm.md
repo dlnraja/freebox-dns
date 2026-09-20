@@ -1,4 +1,4 @@
-# Freebox OS — rubrique VM (entière) + import QCOW2
+﻿# Freebox OS — rubrique VM (entière) + import QCOW2
 
 Deux façons d’avoir **freebox-dns** sur Freebox Delta / Ultra :
 
@@ -86,3 +86,9 @@ docker compose ps
 ```
 
 Voir [freebox.md](freebox.md), [upstreams-uncensoring.md](upstreams-uncensoring.md), [dns-lexicon.md](dns-lexicon.md).
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

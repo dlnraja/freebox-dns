@@ -1,4 +1,4 @@
-# Paquet d’import Freebox OS (QCOW2)
+﻿# Paquet d’import Freebox OS (QCOW2)
 
 Freebox OS → **VM** → **Ajouter** → **image de disque existante** = fichier **`.qcow2`**.
 
@@ -21,3 +21,9 @@ sudo apt-get install -y qemu-utils libguestfs-tools zip
 bash scripts/build-freebox-qcow2.sh
 bash scripts/package-freebox-os-allinone.sh
 ```
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

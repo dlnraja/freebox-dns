@@ -1,4 +1,4 @@
-# Déploiement Windows / WSL2
+﻿# Déploiement Windows / WSL2
 
 Docker Desktop n’est pas obligatoire si vous utilisez **WSL2 + Docker Engine**.
 
@@ -28,3 +28,9 @@ powershell -File .\scripts\generate-certs.ps1
 ## Sans Docker sur l’hôte Windows
 
 Installez Docker Desktop, activez l’intégration WSL2, puis `docker compose up -d` depuis ce dossier (ou depuis WSL sur le même chemin monté).
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

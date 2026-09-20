@@ -1,4 +1,4 @@
-# Catalogue amonts DNS libres / sans censure
+﻿# Catalogue amonts DNS libres / sans censure
 
 Source de vérité machine : [`config/upstreams/uncensoring-catalog.json`](../config/upstreams/uncensoring-catalog.json).
 
@@ -32,3 +32,9 @@ Politique : **zéro censure politique**, **zéro parental amont**, **zéro filtr
 ## Exclus en primaire
 
 Google, Cloudflare, Quad9 Secured `9.9.9.9`, DNS Free, NextDNS profilé, Mullvad adblock/family, AdGuard filtré, dns0.eu non-open.
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

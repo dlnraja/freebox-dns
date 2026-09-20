@@ -1,4 +1,4 @@
-# Lexique des 5 DNS Freebox → personnalités locales
+﻿# Lexique des 5 DNS Freebox → personnalités locales
 
 Chaque pin DHCP porte un **vocabulaire métier** distinct. Les DNS locaux du projet (`dns-libre`, `dns-secure`) ne copient pas les marques : ils **réutilisent ces bits sémantiques** pour rester cohérents avec ce que la Freebox annonce déjà.
 
@@ -85,3 +85,9 @@ FREEBOX_DNS_5 Freebox GW     ──lexique──►  local-only bind + ultimate 
 ```
 
 Fichiers liés : `config/freebox-dns-snapshot.json` → `local_lexicon`, `config/freebox/dhcp-dns.json`, Compose `dns-libre` / `dns-secure`.
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

@@ -1,4 +1,4 @@
-# Résilience DNS — local d’abord, puis le reste du monde
+﻿# Résilience DNS — local d’abord, puis le reste du monde
 
 Quand « tous les DNS publics » tombent, ce projet doit encore répondre
 avec ce qu’il connaît déjà, puis tenter les racines Internet, puis les amonts.
@@ -51,3 +51,9 @@ docker compose up -d --force-recreate
 | `config/unbound/a-records.conf` | serve-expired + local-data |
 | `config/dnsproxy/dns-libre.yaml` | local → unbound → fallbacks |
 | `docs/anti-lie-dns.md` | couche anti-censure |
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Étapes numérotées">
+  <rect width="64" height="64" rx="12" fill="#E8F4F2" stroke="#0B3D3A" stroke-width="2"/>
+  <circle cx="20" cy="22" r="10" fill="#0B3D3A"/>
+  <text x="20" y="26" text-anchor="middle" font-family="Georgia,serif" font-size="12" font-weight="700" fill="#E8F4F2">1</text>
+  <circle cx="44" cy="22" r="10" fill="#145751"/>
+  <text x="44" y="26" text-anchor="middle" font-family="Georgia,serif" font-size="12" font-weight="700" fill="#E8F4F2">2</text>
+  <circle cx="32" cy="46" r="10" fill="#E07A5F"/>
+  <text x="32" y="50" text-anchor="middle" font-family="Georgia,serif" font-size="12" font-weight="700" fill="#fff">3</text>
+  <path d="M26 28l4 8M38 28l-4 8" stroke="#0B3D3A" stroke-width="1.5" fill="none" opacity="0.5"/>
+</svg>

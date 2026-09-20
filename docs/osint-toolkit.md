@@ -1,4 +1,4 @@
-# Boîte à outils OSINT / mesure (Korben)
+﻿# Boîte à outils OSINT / mesure (Korben)
 
 Références :
 
@@ -34,3 +34,9 @@ docker compose --profile osint up -d web-check
 ```
 
 Utile pour radiographier un domaine *après* résolution via `dns-libre` (vérifier CDN, WAF, historique) — complémentaire, pas un bloqueur.
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

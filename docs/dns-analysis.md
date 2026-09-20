@@ -1,4 +1,4 @@
-# Analyse des DNS épinglés + amonts complémentaires
+﻿# Analyse des DNS épinglés + amonts complémentaires
 
 Verdict court : **garder 1–2–3–5 comme filet de secours LAN** ; **ne plus s’appuyer sur NextDNS (4) comme amont principal** ; **le vrai « DNS du projet » = stack locale** (dns-libre + dns-secure).
 
@@ -59,3 +59,9 @@ Clients LAN (Freebox DHCP / Pi / VM)
 | Freebox Delta / Ultra VM | `config/freebox/`, `docs/freebox.md`, `docker-compose.prod.yml` |
 | Raspberry Pi OS | `docs/deploy-pi.md`, `cloud-init/pi-user-data.yaml` |
 | Windows / WSL lab | ports `5356`/`5354` (5353 souvent pris par mDNS) |
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

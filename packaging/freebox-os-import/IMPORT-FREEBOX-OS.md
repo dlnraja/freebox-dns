@@ -1,4 +1,4 @@
-# Importer freebox-dns dans Freebox OS (all-in-one)
+﻿# Importer freebox-dns dans Freebox OS (all-in-one)
 
 Freebox OS n’importe **pas** d’OVA : il faut une image disque **`.qcow2`**.  
 Le package all-in-one ajoute aussi un **CD cloud-init** (`.iso`) que Freebox OS peut monter.
@@ -56,3 +56,9 @@ sudo apt-get install -y qemu-utils cloud-image-utils genisoimage zip curl
 bash scripts/build-freebox-qcow2.sh
 bash scripts/package-freebox-os-allinone.sh
 ```
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

@@ -1,4 +1,4 @@
-# DNS chiffré local — DoH / DoT / DoQ (+ fallbacks)
+﻿# DNS chiffré local — DoH / DoT / DoQ (+ fallbacks)
 
 Voir aussi : [filtering.md](filtering.md) · [anti-lie-dns.md](anti-lie-dns.md) · profils clients générés : [`config/clients/generated/`](../config/clients/generated/).
 
@@ -46,3 +46,9 @@ curl -sk "https://$HOST_IP:8444/dns-query?name=example.com&type=A"
 # DoT (si dig + openssl dispo)
 # dig @HOST_IP -p 8853 +tls example.com
 ```
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

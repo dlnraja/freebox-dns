@@ -1,4 +1,4 @@
-# Freebox — configuration DHCP / DNS / DoH / DoT
+﻿# Freebox — configuration DHCP / DNS / DoH / DoT
 
 ## DHCP (après health VM uniquement)
 
@@ -28,3 +28,9 @@ Profils prêts à installer : `config/clients/generated/`
 | DoT secure | `:8854` | `:8854` |
 
 Détail : [encrypted-dns.md](encrypted-dns.md).
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Utilisation — freebox-dns</title>
+  <meta name="description" content="DHCP, clients DoH/DoT, tests dig et UI Blocky pour freebox-dns.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../index.html">
+        <svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="#E8F4F2"/><text x="18" y="23" text-anchor="middle" font-family="Georgia,serif" font-size="14" font-weight="700" fill="#0B3D3A">fb</text></svg>
+        <span class="brand-text">freebox-dns</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">☰</button>
+      <nav id="site-nav" class="site-nav" aria-label="Navigation principale">
+        <ul>
+          <li><a href="../index.html">Accueil</a></li>
+          <li><a href="install.html">Installation</a></li>
+          <li><a href="usage.html" aria-current="page">Utilisation</a></li>
+          <li><a href="dhcp-safe.html">DHCP sûr</a></li>
+          <li><a href="../credits.html">Crédits</a></li>
+          <li><a href="https://github.com/dlnraja/freebox-dns">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <nav class="breadcrumb" aria-label="Fil d'Ariane">
+      <a href="../index.html">Accueil</a> › <a href="install.html">Guides</a> › <span aria-current="page">Utilisation</span>
+    </nav>
+
+    <h1>Utilisation au quotidien</h1>
+    <p>Configurer le LAN, les clients chiffrés (DoH/DoT), valider avec <code>dig</code> et consulter l'UI Blocky.</p>
+
+    <div class="prereq-box">
+      <h3>Prérequis</h3>
+      <ul>
+        <li>Stack démarrée et <code>bash scripts/health-check.sh</code> OK</li>
+        <li><code>HOST_IP</code> connu (ex. IP VM typique <code>192.168.1.x</code> — la vôtre peut différer)</li>
+        <li>Certificats DoH générés (<code>scripts/generate-certs.sh</code>)</li>
+      </ul>
+    </div>
+
+    <h2>DHCP Freebox (après health VM)</h2>
+    <div class="callout-warning">
+      <img class="callout-icon" src="../assets/warning-sos.svg" width="48" height="48" alt="">
+      <div>
+        <h3>Filet SOS obligatoire</h3>
+        <p>DNS1 = <code>91.239.100.100</code> · DNS2 = IP VM. Ne jamais une seule entrée.</p>
+        <a href="dhcp-safe.html">Guide complet →</a>
+      </div>
+    </div>
+
+    <div class="steps">
+      <article class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <img class="step-visual" src="../assets/freebox-box.svg" width="64" height="52" alt="">
+          <h3>Freebox OS → DHCP</h3>
+          <p>Paramètres de la Freebox → DHCP → DNS personnalisés.</p>
+          <table>
+            <thead><tr><th>Priorité</th><th>Valeur</th></tr></thead>
+            <tbody>
+              <tr><td>DNS1</td><td><code>91.239.100.100</code> (UncensoredDNS)</td></tr>
+              <tr><td>DNS2</td><td><code>HOST_IP</code> (VM freebox-dns)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+
+    <h2>Clients DoH / DoT</h2>
+    <img src="../assets/ports-map.svg" width="320" height="200" alt="Ports DoH et DoT">
+
+    <table>
+      <thead><tr><th>Transport</th><th>Libre</th><th>Secure</th><th>Client typique</th></tr></thead>
+      <tbody>
+        <tr><td>Plain DNS</td><td>:5356 lab / :53 prod</td><td>:5354</td><td>DHCP, IoT</td></tr>
+        <tr><td><strong>DoH</strong></td><td><code>:8453/dns-query</code></td><td><code>:8444/dns-query</code></td><td>Firefox, Chrome, iOS</td></tr>
+        <tr><td><strong>DoT</strong></td><td>:8853 lab / :853 prod</td><td>:8854</td><td>Android apps</td></tr>
+        <tr><td><strong>DoQ</strong></td><td>:8853/udp</td><td>—</td><td>dnsproxy clients</td></tr>
+      </tbody>
+    </table>
+
+    <div class="steps">
+      <article class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>URLs DoH</h3>
+          <pre><code># dns-libre (uncensored)
+https://HOST_IP:8453/dns-query
+
+# dns-secure (filtrage Blocky)
+https://HOST_IP:8444/dns-query</code></pre>
+          <p>Générer les profils clients :</p>
+          <pre><code>python3 scripts/generate-client-profiles.py</code></pre>
+          <p>Fichiers dans <code>config/clients/generated/</code> : Firefox policies, Apple mobileconfig, Android Private DNS, Windows PowerShell.</p>
+        </div>
+      </article>
+
+      <article class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Par plateforme</h3>
+          <ul>
+            <li><strong>iOS / macOS</strong> : installer <code>apple-doh-libre.mobileconfig</code> ou <code>apple-doh-secure.mobileconfig</code></li>
+            <li><strong>Firefox</strong> : policies JSON dans <code>config/clients/generated/</code></li>
+            <li><strong>Android</strong> : Private DNS = hostname seulement → utiliser Nebulo/Intra avec DoH, ou DoT :853 en prod</li>
+            <li><strong>Windows</strong> : <code>windows-doh.ps1</code> généré</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+
+    <h2>Tests rapides</h2>
+    <div class="steps">
+      <article class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <img class="step-visual" src="../assets/checkmark-health.svg" width="64" height="64" alt="">
+          <h3>dig et curl</h3>
+          <pre><code># Plain DNS (lab)
+dig @HOST_IP -p 5356 example.com +short          # dns-libre
+dig @HOST_IP -p 5354 example.com +short          # dns-secure
+dig @HOST_IP -p 5354 doubleclick.net +short     # doit être bloqué/NXDOMAIN
+
+# DoH
+curl -sk "https://HOST_IP:8453/dns-query?name=example.com&type=A"
+curl -sk "https://HOST_IP:8444/dns-query?name=example.com&type=A"
+
+# Health global
+bash scripts/health-check.sh</code></pre>
+        </div>
+      </article>
+    </div>
+
+    <h2>UI Blocky (dns-secure)</h2>
+    <div class="steps">
+      <article class="step-card">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>Tableau de bord</h3>
+          <p>Ouvrir dans un navigateur LAN :</p>
+          <pre><code>http://HOST_IP:3080</code></pre>
+          <p>Statistiques de requêtes, listes actives, blocages récents — équivalent local Pi-hole / uBlock via Blocky.</p>
+        </div>
+      </article>
+    </div>
+
+    <h2>Deux personnalités DNS</h2>
+    <div class="mermaid-wrap">
+      <pre class="mermaid">
+flowchart LR
+  q[Requête client]
+  libre[dns-libre uncensored]
+  secure[dns-secure threat-local]
+  up1[UncensoredDNS DG Quad9]
+  up2[Blocky + listes Pi-hole uBlock]
+
+  q -->|port 53 / 8453| libre
+  q -->|port 5354 / 8444| secure
+  libre --> up1
+  secure --> up2
+      </pre>
+    </div>
+
+    <section class="sources-section">
+      <h2>Sources &amp; crédits</h2>
+      <ul>
+        <li><a href="https://github.com/AdguardTeam/dnsproxy">dnsproxy</a> — DoH/DoT/DoQ</li>
+        <li><a href="https://github.com/0xERR0R/blocky">Blocky</a> — filtrage + UI</li>
+        <li>RFC 8484 (DoH) · RFC 7858 (DoT) · RFC 9250 (DoQ)</li>
+        <li><a href="https://blog.uncensoreddns.org/">UncensoredDNS</a> — pin SOS #1</li>
+      </ul>
+      <p class="doc-link">Équivalents Markdown : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/freebox.md">freebox.md</a> · <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/encrypted-dns.md">encrypted-dns.md</a> · <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/dns-pins.md">dns-pins.md</a></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>freebox-dns</strong> — documentation illustrée</div>
+      <nav class="footer-links" aria-label="Pied de page">
+        <a href="../credits.html">Crédits</a>
+        <a href="https://github.com/dlnraja/freebox-dns">GitHub</a>
+        <a href="../credits.html#sources">Sources tierces</a>
+      </nav>
+      <p class="footer-copy">Licence MIT · <a href="https://dlnraja.github.io/freebox-dns/">GitHub Pages</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="../assets/site.js"></script>
+</body>
+</html>

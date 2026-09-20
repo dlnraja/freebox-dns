@@ -1,4 +1,4 @@
-# Anti–DNS menteur (couche locale avant forward)
+﻿# Anti–DNS menteur (couche locale avant forward)
 # Inspiré d’**OONI** (Open Observatory of Network Interference) — la « pieuvre »
 # des mesures de censure réseau : https://ooni.org/
 # Intro FR : https://korben.info/ooni-probe-mesurer-niveau-de-manipulation-surveillance-censure-de-internet.html
@@ -54,3 +54,9 @@ Exposition LAN IPv6 : `docker-compose.ipv6.yml` + `HOST_IP6` dans `.env`.
 - Détecte les **pages de censure HTTP** sur IP stockées (Web Connectivity lite).
 - Ne remplace pas un VPN contre le DPI/SNI.
 - `dns-secure` continue de filtrer ads/trackers/malware **et** anti–anti-adblock **après** résolution vraie.
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>freebox-dns — DNS dual local pour Freebox, Pi et WSL</title>
+  <meta name="description" content="Stack DNS open-source : dns-libre (uncensoring) + dns-secure (Pi-hole/uBlock-like via Blocky) pour Freebox OS VM, Raspberry Pi et WSL.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="#E8F4F2"/><text x="18" y="23" text-anchor="middle" font-family="Georgia,serif" font-size="14" font-weight="700" fill="#0B3D3A">fb</text></svg>
+        <span class="brand-text">freebox-dns</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu">☰</button>
+      <nav id="site-nav" class="site-nav" aria-label="Navigation principale">
+        <ul>
+          <li><a href="index.html" aria-current="page">Accueil</a></li>
+          <li><a href="guides/install.html">Installation</a></li>
+          <li><a href="guides/usage.html">Utilisation</a></li>
+          <li><a href="guides/dhcp-safe.html">DHCP sûr</a></li>
+          <li><a href="credits.html">Crédits</a></li>
+          <li><a href="https://github.com/dlnraja/freebox-dns">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="badge-row">
+        <span class="badge">dns-libre · uncensored</span>
+        <span class="badge">dns-secure · threat-local</span>
+        <span class="badge">DoH · DoT · Docker</span>
+      </div>
+      <h1>freebox-dns</h1>
+      <p class="hero-sub">Deux résolveurs locaux pour votre LAN : sans censure (<strong>dns-libre</strong>) et avec filtrage type Pi-hole / uBlock (<strong>dns-secure</strong> via Blocky).</p>
+      <p class="hero-en">Self-hosted dual DNS for Freebox / Pi / WSL — uncensoring + local filtering, MIT licensed.</p>
+
+      <img class="hero-illus" src="assets/architecture.svg" width="480" height="320" alt="Schéma architecture dual DNS">
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="guides/install.html">Commencer l'installation</a>
+        <a class="btn btn-secondary" href="guides/dhcp-safe.html">DHCP sans casser le LAN</a>
+        <a class="btn btn-secondary" href="https://github.com/dlnraja/freebox-dns">Voir le dépôt</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Guides</h2>
+      <div class="card-grid">
+        <article class="card">
+          <img class="card-icon" src="assets/steps.svg" width="64" height="64" alt="">
+          <h3>Installation</h3>
+          <p>Docker Desktop, WSL2 ou Raspberry Pi — certificats DoH, compose et health-check.</p>
+          <a class="card-link" href="guides/install.html">Guide installation →</a>
+        </article>
+        <article class="card">
+          <img class="card-icon" src="assets/freebox-box.svg" width="80" height="64" alt="">
+          <h3>Freebox OS VM</h3>
+          <p>Import QCOW2 ARM64, cloud-init, déploiement API et phases sûres.</p>
+          <a class="card-link" href="guides/deploy-freebox.html">Déployer sur Freebox →</a>
+        </article>
+        <article class="card">
+          <img class="card-icon" src="assets/pi.svg" width="64" height="64" alt="">
+          <h3>Raspberry Pi</h3>
+          <p>Pi OS 64-bit, cloud-init ou installation manuelle avec compose prod.</p>
+          <a class="card-link" href="guides/deploy-pi.html">Déployer sur Pi →</a>
+        </article>
+        <article class="card">
+          <img class="card-icon" src="assets/wsl-window.svg" width="72" height="64" alt="">
+          <h3>Windows / WSL2</h3>
+          <p>Docker Engine dans WSL, certs PowerShell, mirroring réseau Windows.</p>
+          <a class="card-link" href="guides/deploy-wsl.html">Déployer sur WSL →</a>
+        </article>
+        <article class="card">
+          <img class="card-icon" src="assets/ports-map.svg" width="120" height="75" alt="">
+          <h3>Utilisation</h3>
+          <p>DHCP, clients DoH/DoT, tests dig, UI Blocky et profils générés.</p>
+          <a class="card-link" href="guides/usage.html">Guide utilisation →</a>
+        </article>
+        <article class="card">
+          <img class="card-icon" src="assets/warning-sos.svg" width="64" height="64" alt="">
+          <h3>DHCP sûr</h3>
+          <p>Filet SOS : DNS1 = 91.239.100.100, DNS2 = IP VM. Ne jamais casser Internet.</p>
+          <a class="card-link" href="guides/dhcp-safe.html">Filet de sécurité →</a>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Architecture</h2>
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart TB
+  clients[Clients LAN]
+  browsers[Navigateurs DoH]
+  fb[Freebox DHCP]
+  libre[dns-libre]
+  secure[dns-secure Blocky]
+  upstreams[Amonts DoT]
+  fbdns[Pins FREEBOX_DNS]
+
+  clients --> fb
+  fb -->|UDP 53| libre
+  fb -->|alt| secure
+  browsers -->|:8453 / :8444| libre
+  browsers --> secure
+  libre --> upstreams
+  secure --> upstreams
+  libre -.-> fbdns
+  secure -.-> fbdns
+        </pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>Ports par défaut</h2>
+      <img src="assets/ports-map.svg" width="320" height="200" alt="Carte des ports lab et prod">
+      <table>
+        <thead>
+          <tr><th>Service</th><th>Lab</th><th>Prod</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>dns-libre (plain)</td><td>:5356</td><td>:53</td></tr>
+          <tr><td>dns-secure (Blocky)</td><td>:5354</td><td>:5354</td></tr>
+          <tr><td>DoH libre / secure</td><td colspan="2">:8453 / :8444</td></tr>
+          <tr><td>UI Blocky</td><td colspan="2">:3080</td></tr>
+        </tbody>
+      </table>
+      <p>Tous les ports sont bindés sur <code>HOST_IP</code> uniquement — pas d'exposition Internet.</p>
+    </section>
+
+    <div class="callout-warning">
+      <img class="callout-icon" src="assets/warning-sos.svg" width="48" height="48" alt="">
+      <div>
+        <h3>Règle DHCP</h3>
+        <p>Après health-check VM : <strong>DNS1 = 91.239.100.100</strong> (UncensoredDNS), <strong>DNS2 = IP de la VM</strong>. Ne jamais laisser la seule IP VM sans secondaire.</p>
+        <a href="guides/dhcp-safe.html">Lire le guide DHCP sûr →</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>freebox-dns</strong> — documentation illustrée</div>
+      <nav class="footer-links" aria-label="Pied de page">
+        <a href="credits.html">Crédits</a>
+        <a href="https://github.com/dlnraja/freebox-dns">GitHub</a>
+        <a href="credits.html#sources">Sources tierces</a>
+      </nav>
+      <p class="footer-copy">Licence MIT · <a href="https://dlnraja.github.io/freebox-dns/">GitHub Pages</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="assets/site.js"></script>
+</body>
+</html>

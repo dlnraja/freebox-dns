@@ -1,4 +1,4 @@
-# Identité des 5 DNS épinglés (FREEBOX_DNS_1..5)
+﻿# Identité des 5 DNS épinglés (FREEBOX_DNS_1..5)
 
 Snapshot capturé une fois depuis le LAN Freebox (DHCP Wi‑Fi). **Aucun** polling distant ultérieur.
 
@@ -46,3 +46,9 @@ Lexique fin + dérivation des DNS locaux : **[dns-lexicon.md](dns-lexicon.md)**.
 ## Mettre à jour localement
 
 Éditez `config/freebox-dns-snapshot.json` + `.env`, puis `bash scripts/apply-freebox-snapshot.sh` si disponible. Ne jamais automatiser une relecture distante de votre Freebox depuis le CI.
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

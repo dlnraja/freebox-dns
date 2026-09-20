@@ -1,4 +1,4 @@
-# Freebox OS — checklist DHCP / DNS + VM
+﻿# Freebox OS — checklist DHCP / DNS + VM
 
 ## Prérequis
 
@@ -27,3 +27,9 @@ Fallbacks max : `config/upstreams/uncensoring-catalog.json` → `plain_fallback_
 - `config/freebox/dhcp-dns.json`
 - `packaging/freebox-vm/manifest.json` (images + packages)
 - `docs/upstreams-uncensoring.md`
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

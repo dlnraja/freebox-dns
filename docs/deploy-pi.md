@@ -1,4 +1,4 @@
-# Déploiement Raspberry Pi
+﻿# Déploiement Raspberry Pi
 
 Image complète recommandée : **Raspberry Pi OS 64-bit** (Pi 4/5), ou Debian.
 
@@ -28,3 +28,9 @@ DHCP → DNS primaire = IP du Pi (`dns-libre` :53). Réservez le bail dans Freeb
 DoH : `https://IP_PI:8453/dns-query` (libre) · `https://IP_PI:8444/dns-query` (secure).
 
 Voir aussi [freebox.md](freebox.md) et [dns-analysis.md](dns-analysis.md).
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

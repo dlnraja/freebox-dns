@@ -1,4 +1,4 @@
-# Smart local DNS lists (anti lie / blockpage / gov redirect)
+﻿# Smart local DNS lists (anti lie / blockpage / gov redirect)
 # See docs/anti-lie-dns.md — never stores ANJ/DGCCRF/127.0.0.1
 
 | Fichier | Rôle |
@@ -18,3 +18,9 @@ docker compose up -d --force-recreate dns-libre unbound dns-secure
 ```
 
 Voir aussi [docs/osint-toolkit.md](../../docs/osint-toolkit.md) (Korben OONI + Web-Check).
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

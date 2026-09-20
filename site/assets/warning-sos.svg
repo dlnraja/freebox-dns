@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Alerte SOS DHCP">
+  <rect width="64" height="64" rx="12" fill="#fff5f2" stroke="#E07A5F" stroke-width="2"/>
+  <polygon points="32,10 54,50 10,50" fill="#E07A5F" opacity="0.15" stroke="#E07A5F" stroke-width="2" stroke-linejoin="round"/>
+  <text x="32" y="44" text-anchor="middle" font-family="system-ui,sans-serif" font-size="22" font-weight="800" fill="#E07A5F">!</text>
+  <text x="32" y="58" text-anchor="middle" font-size="8" font-weight="700" fill="#c8654c">SOS</text>
+</svg>

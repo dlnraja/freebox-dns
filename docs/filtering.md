@@ -1,4 +1,4 @@
-# Modèle de filtrage (lexique pins → local)
+﻿# Modèle de filtrage (lexique pins → local)
 
 Voir le glossaire : [dns-lexicon.md](dns-lexicon.md) · catalogue : [`config/blocky/lists/filter-intelligence.json`](../config/blocky/lists/filter-intelligence.json)
 
@@ -34,3 +34,9 @@ Allowlist commune : `config/blocky/lists/allowlist.txt` (GitHub, Freebox, mirror
 **Exclu volontairement** : parental, porn, SafeSearch, listes StevenBlack *gambling/social/porn*, censure nationale, logs cloud.
 
 Les hosts anti-lie (`hosts.generated`) passent **avant** les denylists : on ne remplace jamais une vérité contrôle par une page de censure.
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

@@ -1,4 +1,4 @@
-# Déploiement VM Freebox — mode sûr (ne pas casser Internet)
+﻿# Déploiement VM Freebox — mode sûr (ne pas casser Internet)
 
 ## État de sécurité constaté
 
@@ -36,3 +36,9 @@ python scripts/safe-freebox-vm-deploy.py dhcp-sos   # après auth API
 - Remplacer le DHCP par la seule IP VM sans secondaire.
 - Couper la stack Docker locale pendant un dépannage DNS PC (elle n’est de toute façon pas le DNS système Wi‑Fi ici).
 - Committer `.freebox-token.json` / UID Freebox.
+
+---
+
+## Sources & crédits
+
+Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

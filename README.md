@@ -2,6 +2,9 @@
 
 Stack DNS open-source pour **Freebox** (Delta / Ultra / VM Freebox locale), aussi **Raspberry Pi** et **Windows / WSL2**.
 
+**Guides illustrés (GitHub Pages)** : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/)  
+**Crédits & sources tierces** : [docs/CREDITS.md](docs/CREDITS.md)
+
 Deux personnalités locales, chacune en **DNS classique (UDP/TCP)** et **DoH** (`/dns-query`) :
 
 | Service | Bit (lexique pins) | Filtrage |
@@ -127,6 +130,11 @@ Aucun workflow ne sonde votre Freebox distante (les « menteurs » testés sont 
 ## Licence
 
 MIT — voir [LICENSE](LICENSE).
+
+## Crédits
+
+Ce dépôt orchestre Unbound, dnsproxy, Blocky, listes Pi-hole / uBlock / HaGeZi / Firebog, méthodes OONI, etc.  
+**Attribution complète** : [docs/CREDITS.md](docs/CREDITS.md) · [site crédits](https://dlnraja.github.io/freebox-dns/credits.html).
 
 ## Ouvrir dans Cursor
 
