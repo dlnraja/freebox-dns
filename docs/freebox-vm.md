@@ -27,7 +27,7 @@ Freebox OS accepte une **image disque `.qcow2`** (pas d’OVA).
 3. Freebox OS → **VM** → **Ajouter** → **image de disque existante** → `freebox-dns.qcow2`.
 4. **2 vCPU** · **2048 Mo** · **LAN** · OS **debian**.
 5. Monter **`freebox-dns-cidata.iso`** en **CD-ROM virtuel** (cloud-init 1er boot).
-6. Démarrer → IP LAN → DHCP DNS1 = IP · DNS2 = `9.9.9.10`.
+6. Démarrer → noter l’IP LAN → DHCP Freebox : **DNS1 = `9.9.9.10`**, **DNS2 = IP_VM** (la VM est le résolveur ; le PC Windows ne l’est pas).
 
 Détail : [`packaging/freebox-os-import/IMPORT-FREEBOX-OS.md`](../packaging/freebox-os-import/IMPORT-FREEBOX-OS.md).
 

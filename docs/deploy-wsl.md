@@ -1,4 +1,9 @@
-﻿# Déploiement Windows / WSL2
+﻿# Déploiement Windows / WSL2 — **lab uniquement**
+
+Le résolveur Wi‑Fi du salon = la **VM Freebox**, pas ce PC.  
+Docker / WSL ici sert à tester avant déploiement — **ne jamais** mettre l’IP Windows dans le DHCP Freebox.
+
+Voir [wifi-lan.md](wifi-lan.md) · [safe-freebox-deploy.md](safe-freebox-deploy.md).
 
 Docker Desktop n’est pas obligatoire si vous utilisez **WSL2 + Docker Engine**.
 

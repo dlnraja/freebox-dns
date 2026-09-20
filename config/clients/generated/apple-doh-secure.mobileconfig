@@ -11,10 +11,10 @@
 				<string>HTTPS</string>
 				<key>ServerAddresses</key>
 				<array>
-					<string>192.168.1.15</string>
+					<string>192.168.1.71</string>
 				</array>
 				<key>ServerURL</key>
-				<string>https://192.168.1.15:8444/dns-query</string>
+				<string>https://192.168.1.71:8444/dns-query</string>
 			</dict>
 			<key>PayloadDescription</key>
 			<string>freebox-dns secure DoH</string>
@@ -25,7 +25,7 @@
 			<key>PayloadType</key>
 			<string>com.apple.dnsSettings.managed</string>
 			<key>PayloadUUID</key>
-			<string>FEE9308C-03BC-424D-9F2B-9C6562761115</string>
+			<string>A65D021B-F299-44B6-A925-FDEBD0AB6859</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 			<key>ProhibitDisablement</key>
@@ -43,7 +43,7 @@
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>57113049-7E40-420D-ADB3-B66AFEEC0961</string>
+	<string>1D020234-E3C1-410C-A4F5-6E609A240B27</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>

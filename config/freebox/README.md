@@ -1,35 +1,20 @@
-﻿# Freebox OS — checklist DHCP / DNS + VM
+﻿# Freebox OS — DNS / DHCP (résolveur = VM, pas le PC)
 
-## Prérequis
-
-1. VM Freebox / Pi / PC avec Docker, IP LAN fixe = `HOST_IP`.
-2. Rubrique VM complète : [docs/freebox-vm.md](../../docs/freebox-vm.md).
-3. Paquet : `packaging/freebox-vm/install.sh` ou cloud-init.
-4. Certs DoH + `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
-
-## DHCP Freebox
+1. VM Freebox (recommandé) ou Pi, IP LAN fixe = `HOST_IP` (ex. `192.168.1.71`).
+2. **Ne pas** utiliser l’IP d’un PC Windows comme DNS DHCP du salon.
+3. Après health-check : Freebox OS → DHCP.
 
 | Champ | Valeur |
 | --- | --- |
-| DNS primaire | `HOST_IP` (dns-libre :53) |
-| DNS secondaire | `9.9.9.10` (Quad9 Unsecured SOS) |
+| DNS1 (SOS) | `9.9.9.10` (Quad9 Unsecured) |
+| DNS2 (résolveur) | `HOST_IP` = IP de la **VM** dns-libre `:53` |
+
+Wi‑Fi : [docs/wifi-lan.md](../../docs/wifi-lan.md) · Pages : [wifi-lan.html](https://dlnraja.github.io/freebox-dns/guides/wifi-lan.html)
 
 Fallbacks max : `config/upstreams/uncensoring-catalog.json` → `plain_fallback_order`.
 
-## DoH / UI
+DoH (navigateur / téléphone, toujours vers la VM) :
 
 - Libre : `https://HOST_IP:8453/dns-query`
 - Secure : `https://HOST_IP:8444/dns-query`
 - Blocky : `http://HOST_IP:3080`
-
-## Fichiers
-
-- `config/freebox/dhcp-dns.json`
-- `packaging/freebox-vm/manifest.json` (images + packages)
-- `docs/upstreams-uncensoring.md`
-
----
-
-## Sources & crédits
-
-Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).

@@ -1,143 +1,86 @@
-# Freebox Dual DNS — dns-libre + dns-secure
+# Freebox Dual DNS — le résolveur est la **VM Freebox**, pas votre PC
 
-Stack DNS open-source pour **Freebox** (Delta / Ultra / VM Freebox locale), aussi **Raspberry Pi** et **Windows / WSL2**.
+**Production canonique** : stack Docker sur la **VM Freebox OS** (ARM64).  
+Tous les clients Wi‑Fi / Ethernet du LAN résolvent via le **DHCP Freebox** → IP de cette VM.  
+Votre PC Windows / WSL / Docker Desktop = **lab / développement uniquement** — jamais le DNS système du salon.
 
-**Guides illustrés (GitHub Pages)** : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/)  
-**Crédits & sources tierces** : [docs/CREDITS.md](docs/CREDITS.md)
+**Guides** : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) · **Crédits** : [docs/CREDITS.md](docs/CREDITS.md)
 
-La VM **héberge son DNS** avec **smart spit** : listes locales d’abord, puis forward Unbound. Quatre modes :
+## Qui résout le DNS ?
 
-| Mode | Service | Port lab | DoH | Filtrage |
+| Rôle | Qui | IP typique |
+| --- | --- | --- |
+| **Résolveur LAN (prod)** | VM `freebox-dns` sur Freebox OS | ex. `192.168.1.71` |
+| Filet SOS (si VM down) | Quad9 Unsecured | `9.9.9.10` |
+| PC Windows | Client DHCP / Wi‑Fi | ex. `192.168.1.15` — **pas** un serveur DNS |
+
+DHCP Freebox recommandé : **DNS1 = `9.9.9.10`**, **DNS2 = IP_VM**.  
+Détail Wi‑Fi : [docs/wifi-lan.md](docs/wifi-lan.md) · DHCP sûr : [docs/safe-freebox-deploy.md](docs/safe-freebox-deploy.md).
+
+## Modes (sur la VM)
+
+Smart spit : **hosts locaux → filtre mode → Unbound (local-data / cache → DoT → root)**.
+
+| Mode | Service | Port prod | DoH | Filtrage |
 | --- | --- | --- | --- | --- |
-| **uncensored** | `dns-libre` | `5356` (prod `:53`) | `:8453` | Aucun denylist |
-| **malware** | `dns-malware` | `5357` | `:8445` | Menaces uniquement |
-| **antipub** | `dns-antipub` | `5358` | `:8446` | Pubs + trackers + anti–anti-adblock |
-| **secure** | `dns-secure` | `5354` | `:8444` | antipub + malware |
+| **uncensored** | `dns-libre` | `:53` | `:8453` | Aucun denylist |
+| **malware** | `dns-malware` | `:5357` | `:8445` | Menaces |
+| **antipub** | `dns-antipub` | `:5358` | `:8446` | Pubs + trackers |
+| **secure** | `dns-secure` | `:5354` | `:8444` | antipub + malware |
 
-Détail : [docs/modes.md](docs/modes.md) · lexique : [docs/dns-lexicon.md](docs/dns-lexicon.md).  
-Anti–DNS menteur (OONI) : [docs/anti-lie-dns.md](docs/anti-lie-dns.md) · OSINT : [docs/osint-toolkit.md](docs/osint-toolkit.md) · DoH/DoT/DoQ : [docs/encrypted-dns.md](docs/encrypted-dns.md) · résilience : [docs/resilience.md](docs/resilience.md).
-
-Repli intelligent vers une liste **épinglée une fois** de 5 DNS Freebox/LAN (`FREEBOX_DNS_1..5`). **Aucun sondage distant ultérieur** de votre Freebox.
-
-## English (short)
-
-Self-hosted dual DNS for Freebox / Pi / WSL: **dns-libre** (uncensoring) and **dns-secure** (Pi-hole + uBlock-equivalent + anti–anti-adblock). Docker Compose, DoH + classic DNS, pinned Freebox fallbacks, GitHub Actions for list refresh & health. MIT.
+Docs : [modes](docs/modes.md) · [résilience](docs/resilience.md) · [DoH/DoT](docs/encrypted-dns.md) · [anti-lie](docs/anti-lie-dns.md).
 
 ## Architecture
 
 ```mermaid
 flowchart TB
-  clients[Clients LAN]
-  browsers[Navigateurs / apps DoH]
-  fb[Freebox DHCP]
-  unbound[Unbound]
-  libre[dns-libre dnsproxy]
-  secure[dns-secure Blocky]
-  upstreams[Amonts DoT non censeurs]
-  fbdns[FREEBOX_DNS_1..5 épinglés]
+  wifi[Clients Wi-Fi / Ethernet]
+  dhcp[Freebox DHCP]
+  vm[VM freebox-dns]
+  unbound[Unbound local-first]
+  dot[Amonts DoT]
+  sos[SOS 9.9.9.10]
 
-  clients --> fb
-  fb -->|UDP/TCP 53| libre
-  fb -->|UDP/TCP 53 alt| secure
-  browsers -->|DoH /dns-query| libre
-  browsers -->|DoH /dns-query| secure
-  libre --> unbound
-  unbound --> upstreams
-  secure --> upstreams
-  libre -.->|fallback| fbdns
-  secure -.->|fallback| fbdns
+  wifi --> dhcp
+  dhcp -->|DNS2 = IP VM| vm
+  dhcp -->|DNS1 = SOS| sos
+  vm -->|hosts puis Unbound| unbound
+  unbound -->|si besoin| dot
 ```
 
-## Prérequis
+## Prod — Freebox VM (recommandé)
 
-- Docker Engine + Docker Compose v2 (Docker Desktop, Freebox VM, Pi OS, ou WSL2)
-- Ports libres (lab par défaut) : `5356` / `5354` (DNS), `8453` / `8444` (DoH), `8853` / `8854` (DoT/DoQ), `3080` (UI Blocky)
-- En prod LAN : mappez `53` et éventuellement `443` si rien d’autre ne les occupe
+1. Importer le QCOW2 ARM64 + cloud-init : [packaging/freebox-os-import/](packaging/freebox-os-import/) · [docs/freebox-vm.md](docs/freebox-vm.md)
+2. Attendre health : `dig @IP_VM example.com`
+3. Freebox OS → DHCP : DNS1=`9.9.9.10`, DNS2=`IP_VM`
+4. Renouveler le bail Wi‑Fi des clients (ou redémarrer Wi‑Fi)
 
-## Démarrage rapide
+Guides Pages : [Déployer Freebox](https://dlnraja.github.io/freebox-dns/guides/deploy-freebox.html) · [DHCP sûr](https://dlnraja.github.io/freebox-dns/guides/dhcp-safe.html) · [Wi‑Fi / LAN](https://dlnraja.github.io/freebox-dns/guides/wifi-lan.html)
+
+## Lab — PC / WSL (ne pas pousser en DHCP Freebox)
 
 ```bash
 cp .env.example .env
-# Ajuster HOST_IP = IP LAN de la machine Docker (bind local-only)
-
-# Certificats DoH auto-signés
+# HOST_IP = IP LAN du lab seulement — PAS pour DHCP Freebox
 bash scripts/generate-certs.sh
-# Windows (PowerShell) :
-#   powershell -File scripts\generate-certs.ps1
-
-# Lab (ports 5356/5354 — Windows / WSL)
-docker compose up -d
-
-# Prod Freebox VM / Pi (DNS :53 sur HOST_IP seulement)
-# docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
+docker compose up -d          # ports 5356/5354
 bash scripts/health-check.sh
 ```
 
-Les ports publiés sont bindés sur **`HOST_IP` uniquement** (pas Internet).
+Pi : [docs/deploy-pi.md](docs/deploy-pi.md) · WSL lab : [docs/deploy-wsl.md](docs/deploy-wsl.md)
 
-Tests manuels (lab) :
+## Fallbacks SOS épinglés
 
-```bash
-dig @HOST_IP -p 5356 example.com +short          # dns-libre
-dig @HOST_IP -p 5354 example.com +short          # dns-secure
-curl -sk "https://HOST_IP:8453/dns-query?name=example.com&type=A"
-curl -sk "https://HOST_IP:8444/dns-query?name=example.com&type=A"
-```
-
-UI Blocky : `http://HOST_IP:3080`
-
-## Freebox DHCP
-
-1. Freebox OS → **Paramètres de la Freebox** → **DHCP**.
-2. DNS1 = `9.9.9.10` (Quad9 Unsecured SOS) ; DNS2 = `HOST_IP` (**dns-libre** `:53`).
-3. DoH clients : `https://HOST_IP:8453/dns-query` (libre) · `:8444` (secure). DoT/DoQ : voir [docs/encrypted-dns.md](docs/encrypted-dns.md). Profils app : `python3 scripts/generate-client-profiles.py`.
-
-Confs : [`config/freebox/`](config/freebox/) · **Import Freebox OS (QCOW2 all-in-one)** : [packaging/freebox-os-import/](packaging/freebox-os-import/) · [docs/freebox-vm.md](docs/freebox-vm.md) · amonts : [docs/upstreams-uncensoring.md](docs/upstreams-uncensoring.md).
-
-Docs : [docs/freebox.md](docs/freebox.md), [docs/dns-pins.md](docs/dns-pins.md), [docs/filtering.md](docs/filtering.md), [docs/deploy-pi.md](docs/deploy-pi.md), [docs/deploy-wsl.md](docs/deploy-wsl.md).
-
-## Fallbacks Freebox épinglés
-
-Sur ce dépôt, les 5 DNS ont été **capturés une fois** depuis le LAN (DHCP Windows + `mafreebox.freebox.fr/api_version`) et gravés dans :
-
-- `config/freebox-dns-snapshot.json`
-- `.env.example` (`FREEBOX_DNS_1..5`)
-
-| Variable | Valeur | Identité |
+| Pin | IP | Rôle |
 | --- | --- | --- |
-| FREEBOX_DNS_1 | 9.9.9.10 | Quad9 Unsecured (SOS UDP) |
-| FREEBOX_DNS_2 | 194.242.2.2 | Mullvad Unfiltered |
-| FREEBOX_DNS_3 | 94.140.14.140 | AdGuard Non-filtering |
-| FREEBOX_DNS_4 | 45.90.28.0 | NextDNS anycast |
-| FREEBOX_DNS_5 | 192.168.1.254 | Passerelle Freebox LAN |
+| FREEBOX_DNS_1 | `9.9.9.10` | Quad9 Unsecured — DHCP SOS |
+| FREEBOX_DNS_2 | `194.242.2.2` | Mullvad Unfiltered |
+| FREEBOX_DNS_3 | `94.140.14.140` | AdGuard Non-filtering |
+| FREEBOX_DNS_4 | `45.90.28.0` | NextDNS — lexique secure only |
+| FREEBOX_DNS_5 | `192.168.1.254` | Passerelle Freebox |
 
-Détail : [docs/dns-pins.md](docs/dns-pins.md).
-
-**Politique :** ne jamais re-interroger la Freebox depuis le CI ou un service distant. Pour mettre à jour : éditez le snapshot + `.env` **en local**.
-
-Si vous forkez sans snapshot : laissez les placeholders et renseignez une fois (DHCP client ou Freebox OS → DNS).
-
-## CI (GitHub Actions uniquement)
-
-- `validate-and-health.yml` — compose + confs Freebox + amonts DoT max + blocklists + smoke Docker
-- `freebox-conf-sync.yml` — lint JSON/YAML + catalogue uncensoring + manifeste VM
-- `package-freebox-vm.yml` — tarball sources pour guest
-- `anti-lie-probe.yml` — sonde OONI-like DNS menteur → overrides locaux A/AAAA
-- `build-freebox-os-qcow2.yml` — **QCOW2 + zip all-in-one** à importer dans Freebox OS → VM
-
-Aucun workflow ne sonde votre Freebox distante (les « menteurs » testés sont les résolveurs Free publics + pin gateway documenté).
+UncensoredDNS / Digitale Gesellschaft = **DoT Unbound** (UDP/53 souvent filtré sur Free).
 
 ## Licence
 
 MIT — voir [LICENSE](LICENSE).
-
-## Crédits
-
-Ce dépôt orchestre Unbound, dnsproxy, Blocky, listes Pi-hole / uBlock / HaGeZi / Firebog, méthodes OONI, etc.  
-**Attribution complète** : [docs/CREDITS.md](docs/CREDITS.md) · [site crédits](https://dlnraja.github.io/freebox-dns/credits.html).
-
-## Ouvrir dans Cursor
-
-Voir [OPEN-IN-CURSOR.md](OPEN-IN-CURSOR.md).
-

@@ -2,9 +2,12 @@
 
 ## État de sécurité constaté
 
-- Le **PC Wi‑Fi** utilise les pins SOS plain (Quad9 / Mullvad / AdGuard) — **pas** la stack Docker locale en DNS système.
+- Le **PC Wi‑Fi** est un **client** : il doit recevoir via DHCP Freebox `9.9.9.10` + IP_VM — **pas** Docker Desktop comme DNS système.
+- La stack Docker sur le PC = lab uniquement.
 - Déployer une VM Freebox **ne doit pas** toucher au DHCP tant qu’elle n’est pas saine.
 - **UncensoredDNS / Digitale Gesellschaft** : DoT `:853` OK depuis la Freebox, mais **UDP/53 souvent timeout / refused** → interdits en DHCP SOS.
+
+Voir aussi [wifi-lan.md](wifi-lan.md).
 
 ## Filet SOS (si panne DNS)
 

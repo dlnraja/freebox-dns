@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>freebox-dns — DNS dual local pour Freebox, Pi et WSL</title>
-  <meta name="description" content="Stack DNS open-source : dns-libre (uncensoring) + dns-secure (Pi-hole/uBlock-like via Blocky) pour Freebox OS VM, Raspberry Pi et WSL.">
+  <title>freebox-dns — DNS sur VM Freebox (pas le PC)</title>
+  <meta name="description" content="Résolveur LAN = VM freebox-dns sur Freebox OS. Wi‑Fi via DHCP. Lab WSL/Pi optionnels.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,6 +24,7 @@
           <li><a href="guides/install.html">Installation</a></li>
           <li><a href="guides/usage.html">Utilisation</a></li>
           <li><a href="guides/dhcp-safe.html">DHCP sûr</a></li>
+          <li><a href="guides/wifi-lan.html">Wi‑Fi / LAN</a></li>
           <li><a href="credits.html">Crédits</a></li>
           <li><a href="https://github.com/dlnraja/freebox-dns">GitHub</a></li>
         </ul>
@@ -39,8 +40,8 @@
         <span class="badge">DoH · DoT · Docker</span>
       </div>
       <h1>freebox-dns</h1>
-      <p class="hero-sub">Deux résolveurs locaux pour votre LAN : sans censure (<strong>dns-libre</strong>) et avec filtrage type Pi-hole / uBlock (<strong>dns-secure</strong> via Blocky).</p>
-      <p class="hero-en">Self-hosted dual DNS for Freebox / Pi / WSL — uncensoring + local filtering, MIT licensed.</p>
+      <p class="hero-sub">Le DNS de votre LAN tourne sur la <strong>VM Freebox</strong> — pas sur votre PC. Modes sans censure (<strong>dns-libre</strong>) et filtrés (<strong>dns-secure</strong>).</p>
+      <p class="hero-en">Production resolver = Freebox OS VM. Windows/WSL is lab only.</p>
 
       <img class="hero-illus" src="assets/architecture.svg" width="480" height="320" alt="Schéma architecture dual DNS">
 
@@ -57,7 +58,7 @@
         <article class="card">
           <img class="card-icon" src="assets/steps.svg" width="64" height="64" alt="">
           <h3>Installation</h3>
-          <p>Docker Desktop, WSL2 ou Raspberry Pi — certificats DoH, compose et health-check.</p>
+          <p><strong>Prod = Freebox VM</strong>. Lab Docker / Pi / WSL ensuite.</p>
           <a class="card-link" href="guides/install.html">Guide installation →</a>
         </article>
         <article class="card">
@@ -69,20 +70,26 @@
         <article class="card">
           <img class="card-icon" src="assets/freebox-box.svg" width="80" height="64" alt="">
           <h3>Freebox OS VM</h3>
-          <p>Import QCOW2 ARM64, cloud-init, déploiement API et phases sûres.</p>
+          <p>Résolveur canonique — import QCOW2 ARM64, cloud-init, DHCP sûr.</p>
           <a class="card-link" href="guides/deploy-freebox.html">Déployer sur Freebox →</a>
+        </article>
+        <article class="card">
+          <img class="card-icon" src="assets/warning-sos.svg" width="64" height="64" alt="">
+          <h3>Wi‑Fi / LAN</h3>
+          <p>DHCP Freebox pousse DNS1 SOS + DNS2 = IP VM vers tous les clients Wi‑Fi.</p>
+          <a class="card-link" href="guides/wifi-lan.html">Configurer le Wi‑Fi →</a>
         </article>
         <article class="card">
           <img class="card-icon" src="assets/pi.svg" width="64" height="64" alt="">
           <h3>Raspberry Pi</h3>
-          <p>Pi OS 64-bit, cloud-init ou installation manuelle avec compose prod.</p>
+          <p>Alternative prod si pas de VM Freebox — compose prod sur le Pi.</p>
           <a class="card-link" href="guides/deploy-pi.html">Déployer sur Pi →</a>
         </article>
         <article class="card">
           <img class="card-icon" src="assets/wsl-window.svg" width="72" height="64" alt="">
-          <h3>Windows / WSL2</h3>
-          <p>Docker Engine dans WSL, certs PowerShell, mirroring réseau Windows.</p>
-          <a class="card-link" href="guides/deploy-wsl.html">Déployer sur WSL →</a>
+          <h3>Windows / WSL2 (lab)</h3>
+          <p>Tests locaux uniquement — ne jamais mettre l'IP du PC dans le DHCP Freebox.</p>
+          <a class="card-link" href="guides/deploy-wsl.html">Lab WSL →</a>
         </article>
         <article class="card">
           <img class="card-icon" src="assets/ports-map.svg" width="120" height="75" alt="">
@@ -104,23 +111,16 @@
       <div class="mermaid-wrap">
         <pre class="mermaid">
 flowchart TB
-  clients[Clients LAN]
-  browsers[Navigateurs DoH]
-  fb[Freebox DHCP]
-  libre[dns-libre]
-  secure[dns-secure Blocky]
-  upstreams[Amonts DoT]
-  fbdns[Pins FREEBOX_DNS]
+  wifi[Clients Wi-Fi]
+  dhcp[Freebox DHCP]
+  vm[VM freebox-dns]
+  unbound[Unbound local-first]
+  sos[SOS 9.9.9.10]
 
-  clients --> fb
-  fb -->|UDP 53| libre
-  fb -->|alt| secure
-  browsers -->|:8453 / :8444| libre
-  browsers --> secure
-  libre --> upstreams
-  secure --> upstreams
-  libre -.-> fbdns
-  secure -.-> fbdns
+  wifi --> dhcp
+  dhcp -->|DNS2| vm
+  dhcp -->|DNS1| sos
+  vm --> unbound
         </pre>
       </div>
     </section>
@@ -130,7 +130,7 @@ flowchart TB
       <img src="assets/ports-map.svg" width="320" height="200" alt="Carte des ports lab et prod">
       <table>
         <thead>
-          <tr><th>Service</th><th>Lab</th><th>Prod</th></tr>
+          <tr><th>Service</th><th>Lab</th><th>Prod (VM)</th></tr>
         </thead>
         <tbody>
           <tr><td>dns-libre (plain)</td><td>:5356</td><td>:53</td></tr>
@@ -139,15 +139,17 @@ flowchart TB
           <tr><td>UI Blocky</td><td colspan="2">:3080</td></tr>
         </tbody>
       </table>
-      <p>Tous les ports sont bindés sur <code>HOST_IP</code> uniquement — pas d'exposition Internet.</p>
+      <p><code>HOST_IP</code> = IP LAN de la <strong>VM Freebox</strong> (pas l'IP de votre PC Windows).</p>
     </section>
 
     <div class="callout-warning">
       <img class="callout-icon" src="assets/warning-sos.svg" width="48" height="48" alt="">
       <div>
-        <h3>Règle DHCP</h3>
-        <p>Après health-check VM : <strong>DNS1 = 9.9.9.10</strong> (UncensoredDNS), <strong>DNS2 = IP de la VM</strong>. Ne jamais laisser la seule IP VM sans secondaire.</p>
-        <a href="guides/dhcp-safe.html">Lire le guide DHCP sûr →</a>
+        <h3>Règle DHCP / Wi‑Fi</h3>
+        <p>Après health-check VM : <strong>DNS1 = 9.9.9.10</strong> (Quad9 Unsecured), <strong>DNS2 = IP de la VM</strong>. Le PC n'est pas le résolveur.</p>
+        <a href="guides/wifi-lan.html">Guide Wi‑Fi / LAN →</a>
+        ·
+        <a href="guides/dhcp-safe.html">DHCP sûr →</a>
       </div>
     </div>
   </main>

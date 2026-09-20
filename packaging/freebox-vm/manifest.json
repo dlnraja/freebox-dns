@@ -53,8 +53,9 @@
     "client_profiles": "config/clients/generated/"
   },
   "dhcp_recommended": {
-    "dns1": "HOST_IP",
-    "dns2": "9.9.9.10"
+    "dns1": "9.9.9.10",
+    "dns2": "HOST_IP",
+    "note": "DNS1=SOS Quad9, DNS2=Freebox VM IP — never Windows PC"
   },
   "import_freebox_os": {
     "format": "qcow2",
@@ -65,5 +66,5 @@
     "ui": "Freebox OS → VM → Ajouter → image de disque existante"
   },
   "install_script": "packaging/freebox-vm/install.sh",
-  "docs": ["docs/freebox-vm.md", "docs/freebox.md", "docs/upstreams-uncensoring.md", "packaging/freebox-os-import/IMPORT-FREEBOX-OS.md"]
+  "docs": ["docs/freebox-vm.md", "docs/freebox.md", "docs/wifi-lan.md", "docs/upstreams-uncensoring.md", "packaging/freebox-os-import/IMPORT-FREEBOX-OS.md"]
 }

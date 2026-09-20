@@ -12,7 +12,8 @@ Outputs under config/clients/generated/:
 
 Usage:
   python3 scripts/generate-client-profiles.py
-  HOST_IP=192.168.1.15 python3 scripts/generate-client-profiles.py
+  HOST_IP=192.168.1.71 python3 scripts/generate-client-profiles.py
+  # HOST_IP = Freebox VM LAN IP (never Windows PC for production profiles)
 """
 from __future__ import annotations
 
@@ -202,15 +203,18 @@ Smart split: **local hosts → mode filter → Unbound → world** — see [docs
 
 {chr(10).join(rows)}
 
-## Freebox OS / app
+## Freebox OS / Wi-Fi
 
-1. DHCP (après health VM) : DNS1=`9.9.9.10` (Quad9 Unsecured SOS), DNS2=`{host}` (uncensored `:53` en prod).
+1. DHCP (après health VM) : DNS1=`9.9.9.10` (SOS), DNS2=`{host}` (**VM Freebox** uncensored `:53` — pas le PC).
 2. Choix de mode : coller l’URL DoH du tableau (navigateur / app).
 3. iOS/macOS : `apple-doh-<mode>.mobileconfig`.
 4. Firefox : `firefox-policies-<mode>.json`.
 5. Trust `certs/server.crt` (auto-signé LAN).
 
-Regenerate: `python3 scripts/generate-client-profiles.py`
+Host `{host}` = IP de la **VM freebox-dns** sur Freebox OS.  
+Wi‑Fi : voir docs/wifi-lan.md
+
+Regenerate: `HOST_IP=<vm> python3 scripts/generate-client-profiles.py`
 """
     (OUT / "README.md").write_text(readme, encoding="utf-8")
     print(f"wrote profiles -> {OUT}")

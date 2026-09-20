@@ -4,6 +4,7 @@
 | --- | --- |
 | **Guides illustrés (GitHub Pages)** | [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) |
 | **Modes smart spit** | [modes.md](modes.md) |
+| **Wi‑Fi / LAN (résolveur = VM)** | [wifi-lan.md](wifi-lan.md) |
 | Freebox DHCP / DoH | [freebox.md](freebox.md) |
 | Import VM Freebox (QCOW2) | [freebox-vm.md](freebox-vm.md) |
 | Déploiement sûr | [safe-freebox-deploy.md](safe-freebox-deploy.md) |

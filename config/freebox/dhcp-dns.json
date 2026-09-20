@@ -27,8 +27,8 @@
     }
   },
   "host": {
-    "HOST_IP_placeholder": "192.168.1.50",
-    "note": "IP LAN fixe de la VM / Pi / PC Docker (réserver le bail dans Freebox OS)."
+    "HOST_IP_placeholder": "192.168.1.71",
+    "note": "IP LAN fixe de la VM Freebox freebox-dns (PAS l'IP du PC Windows). Réserver le bail dans Freebox OS."
   },
   "lab_ports": {
     "dns_libre": 5356,

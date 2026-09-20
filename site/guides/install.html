@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Installation — freebox-dns</title>
-  <meta name="description" content="Installer freebox-dns avec Docker Desktop, WSL2 ou Raspberry Pi.">
+  <meta name="description" content="Installer freebox-dns : prod = VM Freebox ; lab = Docker / Pi / WSL.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -37,15 +37,22 @@
     </nav>
 
     <h1>Installation</h1>
-    <p>Démarrage rapide pour Docker Desktop, WSL2 ou Raspberry Pi. Choisissez ensuite le guide de déploiement cible.</p>
+    <p><strong>Production</strong> = VM Freebox OS (résolveur LAN pour tout le Wi‑Fi). Docker Desktop / WSL = <strong>lab uniquement</strong>.</p>
+
+    <div class="callout-warning">
+      <img class="callout-icon" src="../assets/warning-sos.svg" width="48" height="48" alt="">
+      <div>
+        <h3>Qui est le DNS ?</h3>
+        <p>La <strong>VM sur la Freebox</strong>. Pas votre PC. Guide : <a href="wifi-lan.html">Wi‑Fi / LAN</a> · <a href="deploy-freebox.html">Déployer Freebox</a>.</p>
+      </div>
+    </div>
 
     <div class="prereq-box">
       <h3>Prérequis</h3>
       <ul>
-        <li>Docker Engine + Docker Compose v2</li>
-        <li>Ports libres (lab) : <code>5356</code> / <code>5354</code> (DNS), <code>8453</code> / <code>8444</code> (DoH), <code>3080</code> (UI Blocky)</li>
-        <li>En prod LAN : mappez <code>53</code> si rien d'autre ne l'occupe</li>
-        <li><code>HOST_IP</code> = IP LAN de la machine Docker (bind local-only)</li>
+        <li>Prod : Freebox OS + image QCOW2 ARM64 (ou Pi)</li>
+        <li>Lab : Docker Engine + Compose v2</li>
+        <li><code>HOST_IP</code> = IP LAN de la <strong>VM freebox-dns</strong> (ex. <code>192.168.1.71</code>) — pas l'IP du PC Windows</li>
       </ul>
     </div>
 
