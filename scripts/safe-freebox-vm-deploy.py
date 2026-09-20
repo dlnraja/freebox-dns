@@ -427,10 +427,20 @@ def cmd_dhcp_safe() -> int:
     # Freebox PUT often needs full config object
     cfg = dict(cfg)
     cfg["dns"] = dns
-    r = api(s, "PUT", "/dhcp/config/", cfg)
+    try:
+        r = api(s, "PUT", "/dhcp/config/", cfg)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", "replace") if hasattr(e, "read") else ""
+        print(f"DHCP PUT failed HTTP {e.code}: {body[:300]}")
+        if e.code == 403:
+            print("App token lacks 'settings' permission.")
+            print(f"Set manually in Freebox OS → DHCP: DNS1={SOS_DNS[0]} DNS2={ip}")
+            return 2
+        raise
     print(r)
     if not r.get("success"):
         print("Need 'settings' permission on the Freebox app, or set manually in Freebox OS.")
+        print(f"Manual: DNS1={SOS_DNS[0]} DNS2={ip}")
         return 1
     print("DHCP safe applied. DHCP untouched primary = UncensoredDNS.")
     return 0
