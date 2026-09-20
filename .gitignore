@@ -18,3 +18,9 @@ dist/
 .freebox*.json
 secrets/
 
+
+.dhcp-safe-confirm
+
+
+.dhcp-safe-confirm
+
