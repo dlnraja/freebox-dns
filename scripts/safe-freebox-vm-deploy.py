@@ -434,7 +434,7 @@ def cmd_dhcp_safe() -> int:
         print(f"DHCP PUT failed HTTP {e.code}: {body[:300]}")
         if e.code == 403:
             print("App token lacks 'settings' permission.")
-            print(f"Set manually in Freebox OS → DHCP: DNS1={SOS_DNS[0]} DNS2={ip}")
+            print(f"Set manually in Freebox OS -> DHCP: DNS1={SOS_DNS[0]} DNS2={ip}")
             return 2
         raise
     print(r)
