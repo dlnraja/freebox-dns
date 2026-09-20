@@ -77,7 +77,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Cache Debian cloud image downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             /var/tmp/freebox-dns-cloud-cache
