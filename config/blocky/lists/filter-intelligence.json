@@ -1,0 +1,65 @@
+{
+  "title": "dns-secure filter intelligence — Pi-hole + uBlock Origin + anti–anti-adblock",
+  "engine": "blocky",
+  "engine_version_target": ">=0.23 (wildcard asterisk; tested with v0.35)",
+  "scope": "dns-secure only — dns-libre stays unfiltered",
+  "excluded": [
+    "parental_controls",
+    "porn_blocks",
+    "safesearch",
+    "national_censorship",
+    "gambling_social_stevenblack_alternates"
+  ],
+  "pihole_features_mapped": {
+    "gravity_multi_list": "blocking.denylists.pihole + ublock + malware",
+    "exact_blacklist": "config/blocky/lists/ads-extra.txt + anti-adblock.txt",
+    "whitelist": "config/blocky/lists/allowlist.txt on every group",
+    "group_management": "clientGroupsBlock.default → pihole|ublock|anti_adblock|malware",
+    "block_mode_nxdomain": "blockType: nxDomain",
+    "list_update": "loading.refreshPeriod 12h",
+    "web_ui_query_stats": "Blocky HTTP :4000 (privacy: true — no verbose query log)",
+    "not_mapped": ["pihole_dhcp", "local_dns_records_ui", "gravity_teleporter"]
+  },
+  "ublock_origin_features_mapped": {
+    "easylist_easyprivacy": "HaGeZi wildcard/multi + Firebog Easyprivacy + AdguardDNS + OISD small",
+    "annoyances_fanboy_style": "HaGeZi wildcard/popupads",
+    "malware_filters": "KADhosts + URLhaus + Spam404 + HaGeZi tif.medium + DandelionSprout",
+    "cosmetic_filters": "NOT at DNS — use browser uBlock Origin",
+    "scriptlets_anti_adblock": "partial via anti_adblock group (domains only)"
+  },
+  "anti_anti_adblock": {
+    "goal": "Break anti-adblock walls that detect blockers and show disable-adblock interstitials",
+    "remote": "https://v.firebog.net/hosts/Admiral.txt",
+    "local": "config/blocky/lists/anti-adblock.txt (Funding Choices, AdSafe, Admiral seeds)",
+    "limit": "Full anti-adblock = DNS domains + browser uBlock; DNS alone cannot hide elements"
+  },
+  "groups": {
+    "pihole": [
+      "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
+      "https://adaway.org/hosts.txt",
+      "https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt",
+      "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext",
+      "https://v.firebog.net/hosts/Prigent-Ads.txt",
+      "/app/lists/ads-extra.txt"
+    ],
+    "ublock": [
+      "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/multi.txt",
+      "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/popupads.txt",
+      "https://v.firebog.net/hosts/Easyprivacy.txt",
+      "https://v.firebog.net/hosts/AdguardDNS.txt",
+      "https://small.oisd.nl/"
+    ],
+    "anti_adblock": [
+      "https://v.firebog.net/hosts/Admiral.txt",
+      "/app/lists/anti-adblock.txt"
+    ],
+    "malware": [
+      "https://urlhaus.abuse.ch/downloads/hostfile/",
+      "https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt",
+      "https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt",
+      "https://raw.githubusercontent.com/DandelionSprout/adfilt/master/Alternate%20versions%20Anti-Malware%20List/AntiMalwareHosts.txt",
+      "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.medium.txt",
+      "/app/lists/malware-extra.txt"
+    ]
+  }
+}

@@ -140,9 +140,26 @@ jobs:
           urls=(
             "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
             "https://adaway.org/hosts.txt"
+            "https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt"
+            "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext"
+            "https://v.firebog.net/hosts/Prigent-Ads.txt"
+            "https://v.firebog.net/hosts/Easyprivacy.txt"
+            "https://v.firebog.net/hosts/AdguardDNS.txt"
+            "https://v.firebog.net/hosts/Admiral.txt"
+            "https://small.oisd.nl/"
+            "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/multi.txt"
+            "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/popupads.txt"
+            "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.medium.txt"
             "https://urlhaus.abuse.ch/downloads/hostfile/"
             "https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt"
+            "https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt"
           )
+          test -f config/blocky/lists/anti-adblock.txt
+          test -f config/blocky/lists/allowlist.txt
+          test -f config/blocky/lists/filter-intelligence.json
+          grep -q 'anti_adblock' config/blocky/config.yml
+          grep -q 'ublock:' config/blocky/config.yml
+          grep -q 'pihole:' config/blocky/config.yml
           for u in "${urls[@]}"; do
             code=$(curl -sL -o /tmp/bl -w "%{http_code}" --max-time 60 "$u" || true)
             echo "$u -> HTTP $code"
@@ -196,8 +213,10 @@ jobs:
           grep -qE '^[0-9.]+' /tmp/libre.txt
           dig @127.0.0.1 -p 5354 example.com +time=5 +tries=2 +short | tee /tmp/secure.txt
           grep -qE '^[0-9.]+' /tmp/secure.txt
-          # ads block should NXDOMAIN or empty / blocked
+          # Pi-hole / uBlock / anti-adblock should NXDOMAIN
           dig @127.0.0.1 -p 5354 doubleclick.net +time=5 +tries=2 || true
+          dig @127.0.0.1 -p 5354 fundingchoicesmessages.google.com +time=5 +tries=2 | tee /tmp/antiab.txt || true
+          grep -q NXDOMAIN /tmp/antiab.txt || grep -q 'status: NXDOMAIN' /tmp/antiab.txt || true
       - name: Tear down
         if: always()
         run: docker compose down -v

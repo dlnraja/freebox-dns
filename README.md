@@ -7,16 +7,16 @@ Deux personnalités locales, chacune en **DNS classique (UDP/TCP)** et **DoH** (
 | Service | Bit (lexique pins) | Filtrage |
 | --- | --- | --- |
 | **dns-libre** | `uncensored` ← UncensoredDNS + DG + Quad9 Unsecured | Aucun (*keine Sperrlisten*) |
-| **dns-secure** | `threat-local` ← toolkit NextDNS (sans cloud/parental) | Ads + malware **locaux** seulement |
+| **dns-secure** | `threat-local` ← Pi-hole + uBlock + anti–anti-adblock (local) | Ads/trackers/malware + anti-adblock CDNs |
 
 Lexique détaillé : [docs/dns-lexicon.md](docs/dns-lexicon.md).  
-Anti–DNS menteur (OONI) : [docs/anti-lie-dns.md](docs/anti-lie-dns.md) · résilience local-first : [docs/resilience.md](docs/resilience.md) · IPv6 : `docker-compose.ipv6.yml`.
+Anti–DNS menteur (OONI) : [docs/anti-lie-dns.md](docs/anti-lie-dns.md) · OSINT (Web-Check / Korben) : [docs/osint-toolkit.md](docs/osint-toolkit.md) · DNS chiffré (DoH/DoT/DoQ) : [docs/encrypted-dns.md](docs/encrypted-dns.md) · résilience local-first : [docs/resilience.md](docs/resilience.md) · IPv6 : `docker-compose.ipv6.yml`.
 
 Repli intelligent vers une liste **épinglée une fois** de 5 DNS Freebox/LAN (`FREEBOX_DNS_1..5`). **Aucun sondage distant ultérieur** de votre Freebox.
 
 ## English (short)
 
-Self-hosted dual DNS for Freebox / Pi / WSL: **dns-libre** (uncensoring) and **dns-secure** (ads + malware only). Docker Compose, DoH + classic DNS, pinned Freebox fallbacks, GitHub Actions for list refresh & health. MIT.
+Self-hosted dual DNS for Freebox / Pi / WSL: **dns-libre** (uncensoring) and **dns-secure** (Pi-hole + uBlock-equivalent + anti–anti-adblock). Docker Compose, DoH + classic DNS, pinned Freebox fallbacks, GitHub Actions for list refresh & health. MIT.
 
 ## Architecture
 
@@ -46,7 +46,7 @@ flowchart TB
 ## Prérequis
 
 - Docker Engine + Docker Compose v2 (Docker Desktop, Freebox VM, Pi OS, ou WSL2)
-- Ports libres (lab par défaut) : `5356` / `5354` (DNS), `8453` / `8444` (DoH), `3080` (UI Blocky)
+- Ports libres (lab par défaut) : `5356` / `5354` (DNS), `8453` / `8444` (DoH), `8853` / `8854` (DoT/DoQ), `3080` (UI Blocky)
 - En prod LAN : mappez `53` et éventuellement `443` si rien d’autre ne les occupe
 
 ## Démarrage rapide
@@ -87,7 +87,7 @@ UI Blocky : `http://HOST_IP:3080`
 1. Freebox OS → **Paramètres de la Freebox** → **DHCP**.
 2. DNS primaire = `HOST_IP` (**dns-libre** en prod `:53`).
 3. DNS secondaire = `91.239.100.100` (repli UncensoredDNS).
-4. DoH clients : `https://HOST_IP:8453/dns-query` (libre) · `:8444` (secure).
+4. DoH clients : `https://HOST_IP:8453/dns-query` (libre) · `:8444` (secure). DoT/DoQ : voir [docs/encrypted-dns.md](docs/encrypted-dns.md). Profils app : `python3 scripts/generate-client-profiles.py`.
 
 Confs : [`config/freebox/`](config/freebox/) · **Import Freebox OS (QCOW2 all-in-one)** : [packaging/freebox-os-import/](packaging/freebox-os-import/) · [docs/freebox-vm.md](docs/freebox-vm.md) · amonts : [docs/upstreams-uncensoring.md](docs/upstreams-uncensoring.md).
 

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>DNSSettings</key>
+			<dict>
+				<key>DNSProtocol</key>
+				<string>HTTPS</string>
+				<key>ServerAddresses</key>
+				<array>
+					<string>192.168.1.15</string>
+				</array>
+				<key>ServerURL</key>
+				<string>https://192.168.1.15:8444/dns-query</string>
+			</dict>
+			<key>PayloadDescription</key>
+			<string>freebox-dns secure DoH</string>
+			<key>PayloadDisplayName</key>
+			<string>freebox-dns secure</string>
+			<key>PayloadIdentifier</key>
+			<string>fr.freeboxdns.doh.secure</string>
+			<key>PayloadType</key>
+			<string>com.apple.dnsSettings.managed</string>
+			<key>PayloadUUID</key>
+			<string>2ACEBDA0-8D1B-402A-B9C6-445F2028AE80</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>ProhibitDisablement</key>
+			<false/>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Encrypted DNS (DoH) → freebox-dns secure</string>
+	<key>PayloadDisplayName</key>
+	<string>freebox-dns secure DoH</string>
+	<key>PayloadIdentifier</key>
+	<string>fr.freeboxdns.profile.secure</string>
+	<key>PayloadRemovalDisallowed</key>
+	<false/>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>3A57F6D3-AC63-490F-9757-2A57F1D0C35B</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

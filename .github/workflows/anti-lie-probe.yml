@@ -11,6 +11,7 @@ on:
   push:
     paths:
       - "scripts/ooni-like-anti-lie.py"
+      - "scripts/web-connectivity-lite.py"
       - "config/uncensor/**"
       - ".github/workflows/anti-lie-probe.yml"
 
@@ -21,24 +22,31 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dig
         run: sudo apt-get update -y && sudo apt-get install -y dnsutils python3
-      - name: Run OONI-like anti-lie probe
-        run: python3 scripts/ooni-like-anti-lie.py
       - name: Warm critical local seeds
         run: python3 scripts/warm-local-cache.py
+      - name: Run OONI-like anti-lie probe (DNS)
+        run: python3 scripts/ooni-like-anti-lie.py
+      - name: Web Connectivity lite (HTTP blockpage fingerprint)
+        run: python3 scripts/web-connectivity-lite.py
       - name: Show report summary
         run: |
           python3 - <<'PY'
           import json
           r=json.load(open("config/uncensor/last-probe-report.json"))
-          print("corrected", len(r["lies_corrected"]))
-          print("clean", len(r["clean"]))
-          print("unknown", len(r["unknown"]))
-          for e in r["lies_corrected"][:20]:
+          print("verified_stored", len(r.get("verified_stored", [])))
+          print("lies_corrected", len(r.get("lies_corrected", [])))
+          print("rejected_blockpage", len(r.get("rejected_blockpage", [])))
+          print("unknown", len(r.get("unknown", [])))
+          for e in r.get("lies_corrected", [])[:20]:
               print("LIE", e["domain"], "->", e.get("control_a"), e.get("control_aaaa"))
+          w=json.load(open("config/uncensor/last-web-connectivity.json"))
+          print("http_blockpage", len(w.get("http_blockpage", [])))
+          print("stripped", w.get("stripped_from_hosts", 0))
           PY
           test -f config/uncensor/hosts.generated
           test -f config/uncensor/hosts.critical
           test -f config/unbound/a-records.conf
+          test -f config/uncensor/last-web-connectivity.json
           grep -q github.com config/uncensor/hosts.critical
       - name: Commit generated overrides
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -47,6 +55,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add config/uncensor/hosts.generated config/uncensor/hosts.critical \
                   config/uncensor/blocky-custom-dns.yml config/uncensor/last-probe-report.json \
+                  config/uncensor/last-web-connectivity.json \
                   config/unbound/a-records.conf config/unbound/a-records.critical.conf
-          git diff --staged --quiet || git commit -m "chore: refresh local-first DNS seeds + anti-lie overrides"
+          git diff --staged --quiet || git commit -m "chore: refresh local-first DNS + web-connectivity strip"
           git push || true

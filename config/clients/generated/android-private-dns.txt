@@ -1,0 +1,12 @@
+# Android Private DNS
+# Stock Android Private DNS only accepts a hostname (no IP:port).
+# Options:
+#  1) Prod Freebox VM with DoT on :853 + local name freebox-dns.local (trust cert)
+#  2) Use Nebulo / RethinkDNS / Intra with custom DoH:
+#       Libre:  https://192.168.1.15:8453/dns-query
+#       Secure: https://192.168.1.15:8444/dns-query
+#  3) DoT custom apps:
+#       Libre:  192.168.1.15:8853
+#       Secure: 192.168.1.15:8854
+#
+# Freebox mobile app: set DHCP DNS to VM; browsers use DoH URLs above.

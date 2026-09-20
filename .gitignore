@@ -1,4 +1,5 @@
 .env
+.firecrawl/
 *.pem
 *.key
 certs/*.crt

@@ -82,9 +82,9 @@
       "bit": "threat-local",
       "inspired_by": ["FREEBOX_DNS_4"],
       "also_contrasts_with": "Quad9 Secured (remote) — filtering is local instead",
-      "tagline_fr": "Pare-feu DNS local : ads + malware uniquement",
-      "tagline_en": "Local DNS firewall — NextDNS toolkit without cloud/parental",
-      "filtering": "ads+malware denylists only",
+      "tagline_fr": "Pare-feu DNS local : Pi-hole + uBlock + anti–anti-adblock",
+      "tagline_en": "Local DNS firewall — Pi-hole gravity + uBlock-equivalent + anti-adblock",
+      "filtering": "pihole+ublock+anti_adblock+malware denylists",
       "refuse": ["parental", "political censorship", "SafeSearch"]
     },
     "site": {

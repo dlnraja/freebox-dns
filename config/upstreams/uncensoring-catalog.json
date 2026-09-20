@@ -92,6 +92,20 @@
       "note": "AdGuard non-filtering resolvers only"
     }
   ],
+  "doh_uncensoring": [
+    {"id": "mullvad", "url": "https://dns.mullvad.net/dns-query"},
+    {"id": "digitale_gesellschaft", "url": "https://dns.digitale-gesellschaft.ch/dns-query"},
+    {"id": "quad9_unsecured", "url": "https://dns10.quad9.net/dns-query", "note": "Unsecured path — not 9.9.9.9"},
+    {"id": "dns0_open", "url": "https://open.dns0.eu/dns-query"},
+    {"id": "adguard_unfiltered", "url": "https://dns-unfiltered.adguard.com/dns-query"}
+  ],
+  "local_server_transports": {
+    "plain": true,
+    "doh": true,
+    "dot": true,
+    "doq": true,
+    "doc": "docs/encrypted-dns.md"
+  },
   "plain_fallback_order": [
     "91.239.100.100",
     "89.233.43.71",

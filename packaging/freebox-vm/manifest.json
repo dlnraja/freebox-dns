@@ -35,7 +35,7 @@
     {
       "image": "ghcr.io/0xerr0r/blocky:latest",
       "service": "dns-secure",
-      "role": "threat-local ads/malware + DoH"
+      "role": "threat-local Pi-hole+uBlock+anti-adblock + DoH"
     }
   ],
   "compose_files": ["docker-compose.yml", "docker-compose.prod.yml"],
@@ -46,7 +46,11 @@
     "dns_secure": "HOST_IP:5354",
     "doh_libre": "HOST_IP:8453",
     "doh_secure": "HOST_IP:8444",
-    "blocky_ui": "HOST_IP:3080"
+    "dot_libre": "HOST_IP:853 (prod) / 8853 (lab)",
+    "dot_secure": "HOST_IP:8854",
+    "doq_libre": "HOST_IP:853/udp (prod) / 8853/udp (lab)",
+    "blocky_ui": "HOST_IP:3080",
+    "client_profiles": "config/clients/generated/"
   },
   "dhcp_recommended": {
     "dns1": "HOST_IP",

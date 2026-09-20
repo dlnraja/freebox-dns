@@ -1,7 +1,7 @@
 # dns-secure — bit: threat-local
-# Lexicon from FREEBOX_DNS_4 NextDNS toolkit (denylist, ads/trackers, dual profile)
-# WITHOUT NextDNS cloud / parental / SafeSearch — filtering HERE, not Quad9 Secured remote
-# Display: Secure / Threat-local — see docs/dns-lexicon.md
+# Pi-hole gravity + uBlock Origin DNS equivalents + anti–anti-adblock
+# Lexicon: FREEBOX_DNS_4 NextDNS toolkit — WITHOUT cloud / parental / SafeSearch
+# Filtering HERE (Blocky), not Quad9 Secured remote — see docs/filtering.md
 # Max uncensoring DoT upstreams — catalog: config/upstreams/uncensoring-catalog.json
 
 upstreams:
@@ -21,7 +21,6 @@ upstreams:
       - tcp-tls:uncensored.freedns.controld.com
       - tcp-tls:dns-unfiltered.adguard.com
     freebox_fallback:
-      # Max plain fallbacks — uncensoring first, gateway last, NextDNS soft-last
       - 91.239.100.100
       - 89.233.43.71
       - 185.95.218.42
@@ -42,14 +41,13 @@ upstreams:
   strategy: parallel_best
   timeout: 2s
 
-# Dual-stack answers (A + AAAA)
 connectIPVersion: dual
 
 bootstrapDns:
   - tcp+udp:9.9.9.10
   - tcp+udp:91.239.100.100
 
-# Local truthful hosts BEFORE upstream (OONI-like anti-lie + critical seeds)
+# Local truthful hosts BEFORE denylists (anti–DNS menteur / anti-blockpage)
 hostsFile:
   sources:
     - /app/uncensor/hosts.critical
@@ -60,25 +58,59 @@ hostsFile:
 
 blocking:
   denylists:
-    ads:
+    # --- Pi-hole gravity classics (hosts) ---
+    pihole:
       - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
       - https://adaway.org/hosts.txt
+      - https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt
+      - https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext
+      - https://v.firebog.net/hosts/Prigent-Ads.txt
       - /app/lists/ads-extra.txt
+    # --- uBlock Origin intelligence at DNS (HaGeZi wildcard = Blocky v0.23+) ---
+    # multi ≈ uBO EasyList+EasyPrivacy broom; popupads ≈ Fanboy/uBO annoyances
+    ublock:
+      - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/multi.txt
+      - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/popupads.txt
+      - https://v.firebog.net/hosts/Easyprivacy.txt
+      - https://v.firebog.net/hosts/AdguardDNS.txt
+      - https://small.oisd.nl/
+    # --- Anti–anti-adblock (kill Admiral / Funding Choices / detection CDNs) ---
+    anti_adblock:
+      - https://v.firebog.net/hosts/Admiral.txt
+      - /app/lists/anti-adblock.txt
+    # --- Malware / phishing (Pi-hole + uBO malware lists) ---
     malware:
       - https://urlhaus.abuse.ch/downloads/hostfile/
       - https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt
+      - https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt
+      - https://raw.githubusercontent.com/DandelionSprout/adfilt/master/Alternate%20versions%20Anti-Malware%20List/AntiMalwareHosts.txt
+      - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.medium.txt
       - /app/lists/malware-extra.txt
+  allowlists:
+    # Same exceptions for every group (false-positive safety)
+    pihole:
+      - /app/lists/allowlist.txt
+    ublock:
+      - /app/lists/allowlist.txt
+    anti_adblock:
+      - /app/lists/allowlist.txt
+    malware:
+      - /app/lists/allowlist.txt
   clientGroupsBlock:
     default:
-      - ads
+      - pihole
+      - ublock
+      - anti_adblock
       - malware
   blockType: nxDomain
   blockTTL: 6h
   loading:
     refreshPeriod: 12h
     strategy: blocking
+    concurrency: 4
     downloads:
-      timeout: 60s
+      timeout: 120s
+      attempts: 3
 
 caching:
   minTime: 5m
@@ -90,6 +122,7 @@ ports:
   dns: 53
   http: 4000
   https: 443
+  tls: 853
 
 certFile: /app/certs/server.crt
 keyFile: /app/certs/server.key

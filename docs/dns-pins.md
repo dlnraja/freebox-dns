@@ -33,7 +33,7 @@ Lexique fin + dérivation des DNS locaux : **[dns-lexicon.md](dns-lexicon.md)**.
 ## Comment la stack les utilise
 
 1. **dns-libre** : Unbound (DoT complémentaires) ; fallback pins **1 → 2 → 3 → 5**.
-2. **dns-secure** : Blocky + denylists ads/malware ; mêmes DoT uncensoring (filtre local, pas Quad9 Secured).
+2. **dns-secure** : Blocky groupes Pi-hole + uBlock + anti–anti-adblock + malware ; mêmes DoT uncensoring (filtre local, pas Quad9 Secured).
 3. **DHCP Freebox** : DNS1 = `HOST_IP` ; DNS2 = `FREEBOX_DNS_1`.
 
 ## Référence opérateur Free (non utilisée en primaire)

@@ -1,26 +1,36 @@
 # Modèle de filtrage (lexique pins → local)
 
-Voir le glossaire complet : [dns-lexicon.md](dns-lexicon.md).
+Voir le glossaire : [dns-lexicon.md](dns-lexicon.md) · catalogue : [`config/blocky/lists/filter-intelligence.json`](../config/blocky/lists/filter-intelligence.json)
 
 ## dns-libre — bit `uncensored`
 
 Inspiré de **UncensoredDNS** (#1), **Digitale Gesellschaft** (#2), **Quad9 Unsecured** (#3).
 
 - Pas de blocklists (*keine Sperrlisten*).
-- Amonts DoT non censeurs ; réponses *unblocked* (esprit Quad9 `9.9.9.10`, pas `9.9.9.9`).
-- Objectif : éviter les « DNS menteurs » opérateur / politiques (*censurfri*).
+- Amonts DoT non censeurs ; réponses *unblocked*.
+- Objectif : éviter les « DNS menteurs » / pages ANJ·DGCCRF.
 
 ## dns-secure — bit `threat-local`
 
-Inspiré du **toolkit** NextDNS (#4) : *denylist*, *threat model*, *ads & trackers*, dual *configuration* — **sans** cloud ni contrôle parental.
+Pare-feu DNS local façon **Pi-hole + uBlock Origin**, sans cloud NextDNS ni contrôle parental.
 
-Listes **uniquement** :
+### Features mappées intelligemment
 
-- publicité / trackers
-- malware / phishing
+| Source | Au DNS (Blocky) | Hors scope DNS |
+| --- | --- | --- |
+| **Pi-hole** | Gravity multi-listes, blacklist exacte, whitelist, groupes, NXDOMAIN, refresh 12h, UI `:3080` | DHCP Freebox, teleporter |
+| **uBlock Origin** | HaGeZi `wildcard/multi` + `popupads`, EasyPrivacy/AdGuardDNS (Firebog), OISD small, malware | Filtres cosmétiques, scriptlets navigateur |
+| **Anti–anti-adblock** | Firebog **Admiral** + `anti-adblock.txt` (Funding Choices, AdSafe…) | Masquage DOM — garder uBO dans le navigateur |
 
-**Exclu volontairement** (lexique NextDNS qu’on refuse) : parental, porn blocks, SafeSearch, censure nationale, logs cloud.
+### Groupes Blocky
 
-Le malware n’est **pas** délégué à Quad9 Secured distant : le filtre vit **ici** (Blocky), comme un Pi-hole local plutôt qu’un « Pi-hole in the cloud ».
+1. **`pihole`** — StevenBlack, AdAway, anudeepND, yoyo, Prigent-Ads, `ads-extra.txt`
+2. **`ublock`** — HaGeZi multi + popupads (format *wildcard asterisk*, Blocky ≥0.23), EasyPrivacy, AdguardDNS, OISD small
+3. **`anti_adblock`** — Admiral + `lists/anti-adblock.txt`
+4. **`malware`** — URLhaus, Spam404, KADhosts, DandelionSprout, HaGeZi TIF medium
 
-Sources typiques (rafraîchies par Blocky + CI) : StevenBlack hosts, AdAway, URLhaus, Spam404.
+Allowlist commune : `config/blocky/lists/allowlist.txt` (GitHub, Freebox, mirrors…).
+
+**Exclu volontairement** : parental, porn, SafeSearch, listes StevenBlack *gambling/social/porn*, censure nationale, logs cloud.
+
+Les hosts anti-lie (`hosts.generated`) passent **avant** les denylists : on ne remplace jamais une vérité contrôle par une page de censure.

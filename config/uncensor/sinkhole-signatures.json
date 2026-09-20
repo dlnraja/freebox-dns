@@ -1,14 +1,47 @@
 {
-  "title": "DNS menteur / sinkhole signatures (FR ISP style)",
+  "title": "DNS menteur / sinkhole / pages de censure FR",
   "inspired_by": [
     "https://ooni.org/post/2025-france-report/",
-    "Citizen Lab / OONI test-lists (fr.csv)"
+    "https://censxres.fr/technique/",
+    "Citizen Lab / OONI test-lists (fr.csv)",
+    "https://ooni.org/nettest/web-connectivity/",
+    "https://korben.info/ooni-probe-mesurer-niveau-de-manipulation-surveillance-censure-de-internet.html"
   ],
   "lie_answers_ipv4": [
     "127.0.0.1",
     "0.0.0.0",
     "127.0.0.2",
     "::1"
+  ],
+  "government_blockpage_ips": [
+    "145.239.225.117",
+    "146.59.230.139"
+  ],
+  "government_blockpage_names": [
+    "offre-illegale.anj.fr",
+    "blocage.conso.gouv.fr",
+    "www.offre-illegale.anj.fr",
+    "www.blocage.conso.gouv.fr"
+  ],
+  "http_blockpage_markers": [
+    "offre-illegale.anj.fr",
+    "blocage.conso.gouv.fr",
+    "autorit\u00e9 nationale des jeux",
+    "autorite nationale des jeux",
+    "site bloqu",
+    "accès à ce site a été bloqué",
+    "acces a ce site a ete bloque",
+    "dgccrf",
+    "arrêtés de blocage",
+    "arretes de blocage",
+    "illegal gambling",
+    "offre illégale"
+  ],
+  "never_store_ips": [
+    "145.239.225.117",
+    "146.59.230.139",
+    "127.0.0.1",
+    "0.0.0.0"
   ],
   "lie_private_prefixes": [
     "10.",
@@ -37,10 +70,18 @@
   ],
   "control_resolvers": [
     "91.239.100.100",
+    "89.233.43.71",
     "185.95.218.42",
+    "185.95.218.43",
     "9.9.9.10",
+    "149.112.112.10",
     "194.242.2.2",
-    "193.110.81.254"
+    "193.110.81.254",
+    "146.255.56.98",
+    "116.202.176.26",
+    "95.217.25.217",
+    "37.27.125.213",
+    "94.140.14.140"
   ],
-  "notes": "If liar returns sinkhole/NXDOMAIN/private but controls agree on public A/AAAA → write local override."
+  "notes": "Never store sinkhole/blockpage IPs in local lists. Prefer multi-control consensus of public non-blockpage A/AAAA."
 }

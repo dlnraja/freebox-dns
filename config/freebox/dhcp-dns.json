@@ -57,7 +57,18 @@
   },
   "doh_clients": {
     "libre": "https://${HOST_IP}:8453/dns-query",
-    "secure": "https://${HOST_IP}:8444/dns-query"
+    "secure": "https://${HOST_IP}:8444/dns-query",
+    "profiles": "config/clients/generated/",
+    "doc": "docs/encrypted-dns.md"
+  },
+  "dot_clients": {
+    "libre": "tls://${HOST_IP}:8853",
+    "libre_prod": "tls://${HOST_IP}:853",
+    "secure": "tls://${HOST_IP}:8854"
+  },
+  "doq_clients": {
+    "libre": "quic://${HOST_IP}:8853",
+    "libre_prod": "quic://${HOST_IP}:853"
   },
   "freebox_os_path": [
     "Paramètres de la Freebox",

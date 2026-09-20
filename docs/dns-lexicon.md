@@ -21,7 +21,7 @@ Chaque pin DHCP porte un **vocabulaire métier** distinct. Les DNS locaux du pro
 | Quad9 **Unsecured** | Pas de threat-intel Quad9 | dns-libre = réponses intactes |
 | Quad9 **Secured** | Block malware *chez* Quad9 | **Non** — remplacé par filtrage **local** dns-secure |
 | NextDNS *configuration* / *profile* | Plusieurs politiques DNS | Exactement 2 profils locaux fixes |
-| NextDNS *denylist* | Listes de blocage | Blocky `denylists` ads + malware |
+| NextDNS *denylist* | Listes de blocage | Blocky groupes `pihole` + `ublock` + `anti_adblock` + `malware` |
 | NextDNS *firewall* | Contrôle au niveau DNS | dns-secure = pare-feu DNS **LAN**, pas cloud |
 | Gateway | Dernier recours local | Bind `HOST_IP` + pin #5 en fallback ultime |
 
@@ -54,10 +54,10 @@ Inspiré du **toolkit** NextDNS (#4) et du *concept* Quad9 Secured, mais **exéc
 | Service Compose | `dns-secure` |
 | Display name | Secure / Threat-local |
 | Bit | `threat-local` |
-| Tagline FR | Pare-feu DNS local : ads + malware uniquement |
-| Tagline EN | Local DNS firewall — ads & malware denylists only (NextDNS toolkit, not NextDNS cloud) |
+| Tagline FR | Pare-feu DNS local : Pi-hole + uBlock + anti–anti-adblock |
+| Tagline EN | Local DNS firewall — Pi-hole gravity + uBlock-equivalent + anti-adblock (not NextDNS cloud) |
 | Transport | Plain DNS + DoH + UI Blocky (analytics light) |
-| Filtrage | `denylists` **ads** + **malware** seulement |
+| Filtrage | Groupes `pihole` + `ublock` + `anti_adblock` + `malware` (voir `docs/filtering.md`) |
 | Amonts | Mêmes DoT uncensoring que libre (le filtre est **ici**, pas chez Quad9/NextDNS) |
 | Explicitement hors scope | Parental, porn blocks, SafeSearch, TLD bans politiques, logs cloud |
 

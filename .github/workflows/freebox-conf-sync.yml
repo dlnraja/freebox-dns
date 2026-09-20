@@ -63,6 +63,10 @@ jobs:
               assert must in fr, must
           by = (root / "config/blocky/config.yml").read_text(encoding="utf-8")
           assert "denylists" in by
+          assert "pihole:" in by and "ublock:" in by and "anti_adblock:" in by
+          assert (root / "config/blocky/lists/anti-adblock.txt").is_file()
+          assert (root / "config/blocky/lists/allowlist.txt").is_file()
+          assert (root / "config/blocky/lists/filter-intelligence.json").is_file()
           assert "blackLists" not in by
           assert "mullvad" in by
           assert "open.dns0.eu" in by

@@ -1,5 +1,12 @@
-# Extra ad/tracker domains (one per line). Keep small; CI refreshes remote lists.
-# Format: plain domain names (Blocky hostfile-compatible via local path)
+# Extra ad/tracker domains (Pi-hole style exact blacklist)
+# Keep small; remote lists cover the bulk.
 doubleclick.net
 googleadservices.com
 googlesyndication.com
+google-analytics.com
+scorecardresearch.com
+quantserve.com
+hotjar.com
+crazyegg.com
+mouseflow.com
+fullstory.com

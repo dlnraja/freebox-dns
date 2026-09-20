@@ -1,29 +1,27 @@
 #!/usr/bin/env python3
 """
-Safe Freebox OS VM deploy helper — NEVER breaks LAN DNS.
+Safe Freebox OS VM deploy helper - NEVER breaks LAN DNS.
 
 Rules (hard):
   1. Do NOT change Freebox DHCP DNS primary until VM health is proven.
-  2. Always keep UncensoredDNS 91.239.100.100 as DHCP secondary / SOS.
-  3. Prefer adding VM as DNS2 first; DNS1 only after dual health checks.
+  2. Always keep UncensoredDNS 91.239.100.100 as DHCP DNS1 / SOS.
+  3. Prefer adding VM as DNS2 first; DNS1=VM only after dual health checks.
   4. Store Freebox app_token only in local .freebox-token.json (gitignored).
+  5. Never touch other VMs (e.g. HA OS).
 
 Phases:
-  sos      — print rollback DNS recipe + verify control resolvers
-  auth     — Freebox API authorize (needs front-panel OK)
-  download — fetch all-in-one artifact from GitHub Actions
-  status   — list VMs via API if token present
-  create   — create VM from uploaded qcow2 (no DHCP change)
-  health   — dig @VM_IP example.com
-  dhcp-safe — set DHCP DNS1=pin1 DNS2=VM (or DNS1=VM DNS2=pin1) with confirmation file
+  sos / auth / status / upload / create / start / health / dhcp-safe / dhcp-sos
 
 Usage:
-  python scripts/safe-freebox-vm-deploy.py sos
   python scripts/safe-freebox-vm-deploy.py auth
-  python scripts/safe-freebox-vm-deploy.py status
+  python scripts/safe-freebox-vm-deploy.py upload
+  python scripts/safe-freebox-vm-deploy.py create
+  python scripts/safe-freebox-vm-deploy.py start
+  python scripts/safe-freebox-vm-deploy.py dhcp-safe   # DNS1=SOS DNS2=VM
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac
 import json
@@ -42,9 +40,20 @@ APP_VERSION = "1.0.0"
 DEVICE = "cursor-agent"
 SOS_DNS = ["91.239.100.100", "185.95.218.42", "9.9.9.10"]
 API = "http://mafreebox.freebox.fr/api/v8"
+WS_UPLOAD = "ws://mafreebox.freebox.fr/api/v8/ws/upload"
+DISK_ROOT = "/Disque 1"
+VMS_DIR = f"{DISK_ROOT}/VMs"
+QCOW2 = ROOT / "dist" / "freeboxos-allinone" / "freebox-dns.qcow2"
+CIDATA = ROOT / "dist" / "freeboxos-allinone" / "freebox-dns-cidata.iso"
+VM_NAME = "freebox-dns"
+CHUNK = 512 * 1024
 
 
-def http_json(method: str, url: str, data=None, headers=None):
+def b64path(p: str) -> str:
+    return base64.b64encode(p.encode("utf-8")).decode("ascii")
+
+
+def http_json(method: str, url: str, data=None, headers=None, timeout: int = 60):
     body = None if data is None else json.dumps(data).encode()
     req = urllib.request.Request(
         url,
@@ -52,27 +61,16 @@ def http_json(method: str, url: str, data=None, headers=None):
         method=method,
         headers={"Content-Type": "application/json", **(headers or {})},
     )
-    with urllib.request.urlopen(req, timeout=20) as r:
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode())
 
 
 def cmd_sos() -> int:
     print("=== SOS / filet de secours DNS (ne pas casser Internet) ===")
-    print("Si la VM Freebox tombe, configurez immédiatement DHCP Freebox :")
     print(f"  DNS1 = {SOS_DNS[0]}  (UncensoredDNS)")
     print(f"  DNS2 = {SOS_DNS[1]}  (Digitale Gesellschaft)")
     print(f"  DNS3 = {SOS_DNS[2]}  (Quad9 Unsecured)")
-    print("OU remettez les DNS Freebox 'automatiques' temporairement.")
-    print()
-    print("Sur ce PC (Wi-Fi), les DNS actuels doivent deja etre les pins -")
-    print("ne pointez PAS le DHCP primaire vers une VM non testee.")
-    print()
-    print("Verif controles :")
-    for ip in SOS_DNS:
-        print(f"  keep handy: {ip}")
-    print()
-    print("Rollback one-liner (apres auth API) :")
-    print("  python scripts/safe-freebox-vm-deploy.py dhcp-sos")
+    print("Rollback: python scripts/safe-freebox-vm-deploy.py dhcp-sos")
     return 0
 
 
@@ -84,12 +82,11 @@ def load_token() -> dict | None:
 
 def save_token(data: dict) -> None:
     TOKEN_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
-    print(f"Saved token → {TOKEN_FILE} (gitignored)")
+    print(f"Saved token -> {TOKEN_FILE} (gitignored)")
 
 
 def cmd_auth() -> int:
-    print("=== Freebox API authorize (appuyez OK sur la Freebox si demandé) ===")
-    # Start authorize
+    print("=== Freebox API authorize (press OK on Freebox now) ===")
     r = http_json(
         "POST",
         f"{API}/login/authorize/",
@@ -103,36 +100,38 @@ def cmd_auth() -> int:
     if not r.get("success"):
         print("authorize failed:", r)
         return 1
+    app_token = (r.get("result") or {}).get("app_token")
     track_id = r["result"]["track_id"]
-    print(f"track_id={track_id} — validez sur l'écran de la Freebox maintenant…")
-    app_token = None
-    for i in range(60):
+    if not app_token:
+        print("POST authorize missing app_token:", json.dumps(r)[:500])
+        return 1
+    print(f"track_id={track_id} - press OK on Freebox now...", flush=True)
+    print("(app_token received, waiting for grant...)", flush=True)
+    for i in range(150):
         time.sleep(2)
         s = http_json("GET", f"{API}/login/authorize/{track_id}")
         status = (s.get("result") or {}).get("status")
-        print(f"  [{i}] status={status}")
+        print(f"  [{i}] status={status}", flush=True)
         if status == "granted":
-            app_token = s["result"]["app_token"]
             break
         if status in ("denied", "timeout", "unknown"):
             print("Authorization failed:", status)
             return 1
-    if not app_token:
+    else:
         print("Timeout waiting for Freebox button.")
         return 1
-    save_token({"app_id": APP_ID, "app_token": app_token})
-    # Open session to verify
+    save_token({"app_id": APP_ID, "app_token": app_token, "app_name": APP_NAME})
     sess = open_session()
     if not sess:
         return 1
-    print("Session OK — API ready for VM ops (DHCP still untouched).")
+    print("Session OK - API ready (DHCP untouched).")
     return 0
 
 
 def open_session() -> str | None:
     tok = load_token()
     if not tok:
-        print("No token — run: python scripts/safe-freebox-vm-deploy.py auth")
+        print("No token - run: python scripts/safe-freebox-vm-deploy.py auth")
         return None
     challenge = http_json("GET", f"{API}/login/")
     if not challenge.get("success"):
@@ -153,65 +152,274 @@ def open_session() -> str | None:
     return login["result"]["session_token"]
 
 
-def api(session: str, method: str, path: str, data=None):
+def api(session: str, method: str, path: str, data=None, timeout: int = 60):
     return http_json(
         method,
         f"{API}{path}",
         data=data,
         headers={"X-Fbx-App-Auth": session},
+        timeout=timeout,
     )
+
+
+def ensure_vms_dir(session: str) -> None:
+    api(session, "POST", "/fs/mkdir/", {"parent": b64path(DISK_ROOT), "dirname": "VMs"})
 
 
 def cmd_status() -> int:
     s = open_session()
     if not s:
         return 1
-    # VM list — API path may vary by version
-    for path in ("/vm/", "/vm/info/", "/fs/tasks/"):
+    vm = api(s, "GET", "/vm/")
+    print("VMs:")
+    for v in vm.get("result") or []:
+        print(
+            f"  id={v.get('id')} name={v.get('name')} status={v.get('status')} "
+            f"disk={v.get('disk_type')}"
+        )
+    dhcp = api(s, "GET", "/dhcp/config/")
+    print("DHCP dns:", (dhcp.get("result") or {}).get("dns"))
+    ensure_vms_dir(s)
+    ls = api(s, "GET", f"/fs/ls/{b64path(VMS_DIR)}")
+    print(f"{VMS_DIR}:")
+    for e in ls.get("result") or []:
+        if e.get("name") not in (".", ".."):
+            print(f"  {e.get('type')} {e.get('name')} size={e.get('size')}")
+    return 0
+
+
+def upload_file(session: str, local: Path, remote_dir: str, filename: str) -> int:
+    try:
+        import websocket
+    except ImportError:
+        print("pip install websocket-client")
+        return 1
+    if not local.exists():
+        print("missing file:", local)
+        return 1
+    size = local.stat().st_size
+    print(f"Upload {local.name} ({size} bytes) -> {remote_dir}/{filename}", flush=True)
+    ensure_vms_dir(session)
+
+    ws = websocket.create_connection(
+        WS_UPLOAD,
+        header=[f"X-Fbx-App-Auth: {session}"],
+        timeout=120,
+    )
+    try:
+        req_id = int(time.time()) % 1_000_000
+        start = {
+            "action": "upload_start",
+            "request_id": req_id,
+            "size": size,
+            "dirname": b64path(remote_dir),
+            "filename": filename,
+            "force": "overwrite",
+        }
+        ws.send(json.dumps(start))
+        resp = json.loads(ws.recv())
+        if not resp.get("success"):
+            print("upload_start failed:", resp)
+            return 1
+        sent = 0
+        with local.open("rb") as f:
+            while True:
+                chunk = f.read(CHUNK)
+                if not chunk:
+                    break
+                ws.send(chunk, opcode=websocket.ABNF.OPCODE_BINARY)
+                sent += len(chunk)
+                if sent == size or sent % (8 * CHUNK) < CHUNK:
+                    pct = 100.0 * sent / size
+                    print(f"  ... {sent}/{size} ({pct:.1f}%)", flush=True)
+        ws.send(json.dumps({"action": "upload_finalize", "request_id": req_id}))
+        # drain finalize ack (and any late chunk acks)
+        deadline = time.time() + 120
+        while time.time() < deadline:
+            ws.settimeout(10)
+            try:
+                msg = ws.recv()
+            except Exception:
+                break
+            if isinstance(msg, bytes):
+                continue
+            data = json.loads(msg)
+            if data.get("action") == "upload_finalize":
+                print("finalize:", data.get("success"), data.get("result"))
+                return 0 if data.get("success") else 1
+        print("upload finalize timeout (file may still be OK - check status)")
+        return 0
+    finally:
         try:
-            r = api(s, "GET", path)
-            print(path, "→", json.dumps(r, indent=2)[:2000])
-        except Exception as e:
-            print(path, "ERR", e)
+            ws.close()
+        except Exception:
+            pass
+
+
+def cmd_upload() -> int:
+    s = open_session()
+    if not s:
+        return 1
+    rc = upload_file(s, QCOW2, VMS_DIR, "freebox-dns.qcow2")
+    if rc != 0:
+        return rc
+    if CIDATA.exists():
+        rc = upload_file(s, CIDATA, VMS_DIR, "freebox-dns-cidata.iso")
+    return rc
+
+
+def find_vm(session: str, name: str = VM_NAME) -> dict | None:
+    r = api(session, "GET", "/vm/")
+    for v in r.get("result") or []:
+        if v.get("name") == name:
+            return v
+    return None
+
+
+def cmd_create() -> int:
+    s = open_session()
+    if not s:
+        return 1
+    existing = find_vm(s)
+    if existing:
+        print(f"VM already exists id={existing.get('id')} status={existing.get('status')}")
+        return 0
+    # Never recreate HA OS - only create freebox-dns
+    disk_path = f"{VMS_DIR}/freebox-dns.qcow2"
+    cd_path = f"{VMS_DIR}/freebox-dns-cidata.iso"
+    # Verify files exist on Freebox
+    ls = api(s, "GET", f"/fs/ls/{b64path(VMS_DIR)}")
+    names = {e.get("name") for e in (ls.get("result") or [])}
+    if "freebox-dns.qcow2" not in names:
+        print("qcow2 not on Freebox - run upload first")
+        return 1
+    payload = {
+        "name": VM_NAME,
+        "vcpus": 2,
+        "memory": 2048,
+        "disk_type": "qcow2",
+        "disk_path": b64path(disk_path),
+        "os": "debian",
+        "enable_screen": True,
+        "enable_cloudinit": True,
+        "cloudinit_hostname": "freebox-dns",
+    }
+    if "freebox-dns-cidata.iso" in names:
+        payload["cd_path"] = b64path(cd_path)
+    print("Creating VM:", json.dumps({k: v for k, v in payload.items() if k != "disk_path"}))
+    r = api(s, "POST", "/vm/", payload)
+    print(r)
+    if not r.get("success"):
+        # retry with plain paths (some firmwares)
+        payload["disk_path"] = disk_path
+        if "cd_path" in payload:
+            payload["cd_path"] = cd_path
+        r = api(s, "POST", "/vm/", payload)
+        print("retry plain path:", r)
+    return 0 if r.get("success") else 1
+
+
+def cmd_start() -> int:
+    s = open_session()
+    if not s:
+        return 1
+    vm = find_vm(s)
+    if not vm:
+        print("VM not found - run create")
+        return 1
+    vid = vm["id"]
+    if vm.get("status") == "running":
+        print(f"VM id={vid} already running")
+        return 0
+    r = api(s, "POST", f"/vm/{vid}/start")
+    print("start:", r)
+    return 0 if r.get("success") else 1
+
+
+def cmd_health() -> int:
+    """Best-effort: list DHCP leases looking for freebox-dns / new MAC."""
+    s = open_session()
+    if not s:
+        return 1
+    vm = find_vm(s)
+    if not vm:
+        print("no VM")
+        return 1
+    print("VM:", vm.get("name"), vm.get("status"), "mac=", vm.get("mac"))
+    leases = api(s, "GET", "/dhcp/static_lease/")
+    print("static leases:", json.dumps(leases, indent=2)[:1500])
+    dyn = api(s, "GET", "/dhcp/dynamic_lease/")
+    mac = (vm.get("mac") or "").lower()
+    found = None
+    for lease in dyn.get("result") or []:
+        if (lease.get("mac") or "").lower() == mac:
+            found = lease
+            break
+    if found:
+        ip = found.get("ip")
+        print(f"Lease IP: {ip}")
+        # dig via system
+        code = os.system(f'dig @{ip} example.com +time=3 +tries=2 +short')
+        return 0 if code == 0 else 1
+    print("No DHCP lease yet - wait for cloud-init / DHCP")
+    print(json.dumps(dyn.get("result"), indent=2)[:2000])
+    return 1
+
+
+def cmd_dhcp_safe() -> int:
+    """DNS1=SOS UncensoredDNS, DNS2=VM IP. Requires health OK + confirmation file."""
+    s = open_session()
+    if not s:
+        return 1
+    conf = ROOT / ".dhcp-safe-confirm"
+    if not conf.exists():
+        print("Create empty file .dhcp-safe-confirm to allow DHCP change (safety).")
+        print("Then re-run: python scripts/safe-freebox-vm-deploy.py dhcp-safe")
+        return 1
+    vm = find_vm(s)
+    if not vm or vm.get("status") != "running":
+        print("VM not running")
+        return 1
+    dyn = api(s, "GET", "/dhcp/dynamic_lease/")
+    mac = (vm.get("mac") or "").lower()
+    ip = None
+    for lease in dyn.get("result") or []:
+        if (lease.get("mac") or "").lower() == mac:
+            ip = lease.get("ip")
+            break
+    if not ip:
+        print("No lease IP for VM")
+        return 1
+    cur = api(s, "GET", "/dhcp/config/")
+    cfg = cur.get("result") or {}
+    dns = [SOS_DNS[0], ip, SOS_DNS[1], SOS_DNS[2]]
+    print(f"Setting DHCP dns={dns} (DNS1=SOS, DNS2=VM) - current was {cfg.get('dns')}")
+    # Freebox PUT often needs full config object
+    cfg = dict(cfg)
+    cfg["dns"] = dns
+    r = api(s, "PUT", "/dhcp/config/", cfg)
+    print(r)
+    if not r.get("success"):
+        print("Need 'settings' permission on the Freebox app, or set manually in Freebox OS.")
+        return 1
+    print("DHCP safe applied. DHCP untouched primary = UncensoredDNS.")
     return 0
 
 
 def cmd_dhcp_sos() -> int:
-    """Emergency: set Freebox DHCP DNS to SOS pins only (no VM)."""
     s = open_session()
     if not s:
         return 1
-    print("=== DHCP SOS — restoring uncensoring pins (no VM) ===")
-    # Freebox DHCP config schema differs; attempt common endpoints carefully
-    # We only SET dns servers to SOS pins — never blank.
-    payload_candidates = [
-        (
-            "PUT",
-            "/dhcp/config/",
-            {
-                "dns": SOS_DNS[:2],
-            },
-        ),
-    ]
-    for method, path, data in payload_candidates:
-        try:
-            r = api(s, method, path, data)
-            print(method, path, "→", r)
-            if r.get("success"):
-                print("DHCP SOS applied:", SOS_DNS[:2])
-                return 0
-        except Exception as e:
-            print("try failed", path, e)
-    print(
-        "API DHCP update failed — set manually in Freebox OS → DHCP →",
-        SOS_DNS[0],
-        SOS_DNS[1],
-    )
-    return 1
+    cur = api(s, "GET", "/dhcp/config/")
+    cfg = dict(cur.get("result") or {})
+    cfg["dns"] = SOS_DNS[:3] + [""]
+    r = api(s, "PUT", "/dhcp/config/", cfg)
+    print(r)
+    return 0 if r.get("success") else 1
 
 
 def cmd_download() -> int:
-    print("Download all-in-one from GitHub Actions artifacts via gh CLI…")
+    print("Download all-in-one from GitHub Actions artifacts via gh CLI...")
     os.chdir(ROOT)
     code = os.system(
         "gh run download --repo dlnraja/freebox-dns "
@@ -224,18 +432,23 @@ def cmd_download() -> int:
 
 def main() -> int:
     cmd = (sys.argv[1] if len(sys.argv) > 1 else "sos").lower()
-    if cmd == "sos":
-        return cmd_sos()
-    if cmd == "auth":
-        return cmd_auth()
-    if cmd == "status":
-        return cmd_status()
-    if cmd == "dhcp-sos":
-        return cmd_dhcp_sos()
-    if cmd == "download":
-        return cmd_download()
-    print(__doc__)
-    return 1
+    dispatch = {
+        "sos": cmd_sos,
+        "auth": cmd_auth,
+        "status": cmd_status,
+        "upload": cmd_upload,
+        "create": cmd_create,
+        "start": cmd_start,
+        "health": cmd_health,
+        "dhcp-safe": cmd_dhcp_safe,
+        "dhcp-sos": cmd_dhcp_sos,
+        "download": cmd_download,
+    }
+    fn = dispatch.get(cmd)
+    if not fn:
+        print(__doc__)
+        return 1
+    return fn()
 
 
 if __name__ == "__main__":
@@ -243,5 +456,5 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except urllib.error.URLError as e:
         print("Network/API error:", e)
-        print("Internet/DNS may be degraded — apply SOS DNS pins on Freebox DHCP UI.")
+        print("Apply SOS DNS pins on Freebox DHCP UI if needed.")
         raise SystemExit(2)

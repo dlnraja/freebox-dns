@@ -1,11 +1,20 @@
-# Local uncensor / anti–DNS menteur (OONI-inspired)
+# Smart local DNS lists (anti lie / blockpage / gov redirect)
+# See docs/anti-lie-dns.md — never stores ANJ/DGCCRF/127.0.0.1
 
 | Fichier | Rôle |
 | --- | --- |
-| `hosts.local` | Overrides manuels A/AAAA |
-| `hosts.generated` | Rempli par `scripts/ooni-like-anti-lie.py` |
-| `probe-targets.txt` | Domaines à tester |
-| `sinkhole-signatures.json` | Signatures de mensonge (127.0.0.1, NXDOMAIN…) |
-| `last-probe-report.json` | Dernier rapport |
+| `hosts.critical` | Seeds projet (warm-local-cache) |
+| `hosts.local` | Overrides manuels |
+| `hosts.generated` | Consensus multi-contrôles **propres** uniquement |
+| `sinkhole-signatures.json` | 127.0.0.1, ANJ `145.239.225.117`, DGCCRF `146.59.230.139`… |
+| `probe-targets.txt` | Cibles + import Citizen Lab FR (catégories non-gambling) |
 
-Doc : [docs/anti-lie-dns.md](../../docs/anti-lie-dns.md) · OONI : https://ooni.org/
+```bash
+python3 scripts/warm-local-cache.py
+python3 scripts/ooni-like-anti-lie.py
+python3 scripts/web-connectivity-lite.py   # OONI Web Connectivity lite (HTTP ANJ/DGCCRF)
+docker compose up -d --force-recreate dns-libre unbound dns-secure
+# Optionnel OSINT : docker compose --profile osint up -d web-check
+```
+
+Voir aussi [docs/osint-toolkit.md](../../docs/osint-toolkit.md) (Korben OONI + Web-Check).

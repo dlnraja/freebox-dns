@@ -1,9 +1,10 @@
 # dns-libre — bit: uncensoring + RESILIENT (local-first)
+# Transports served: plain DNS · DoH · DoT · DoQ (+ HTTP/3 when supported)
 # Resolution order:
 #   1) hosts.critical / hosts.local / hosts.generated  (project-local)
 #   2) unbound (DoT forward-first, then ROOT recursion + serve-expired cache)
-#   3) fallback plain uncensoring catalog + Freebox pins
-# See docs/resilience.md
+#   3) fallback: encrypted DoH/DoT upstreams then plain catalog + Freebox pins
+# See docs/encrypted-dns.md · docs/resilience.md
 ---
 bootstrap:
   - "9.9.9.10:53"
@@ -16,8 +17,26 @@ listen-addrs:
 listen-ports:
   - 53
 
+# DNS-over-HTTPS (RFC 8484) — container :443 → host DOH_LIBRE_PORT
 https-port:
   - 443
+
+# DNS-over-TLS (RFC 7858) — container :853/tcp → host DOT_LIBRE_PORT
+tls-port:
+  - 853
+
+# DNS-over-QUIC (RFC 9250) — container :853/udp → host DOQ_LIBRE_PORT
+quic-port:
+  - 853
+
+# Prefer HTTP/3 for DoH when client supports it
+http3: true
+
+doh-routes:
+  - /dns-query
+  - /dns-query/
+
+https-server-name: freebox-dns-libre
 
 tls-crt: /opt/dnsproxy/certs/server.crt
 tls-key: /opt/dnsproxy/certs/server.key
@@ -33,8 +52,16 @@ hosts-files:
 upstream:
   - "172.28.0.10:53"
 
-# Online fallbacks if unbound itself is unreachable
+# Encrypted fallbacks first (if unbound unreachable), then plain pins
 fallback:
+  - "https://dns.mullvad.net/dns-query"
+  - "https://dns.digitale-gesellschaft.ch/dns-query"
+  - "https://dns.quad9.net/dns-query"
+  - "tls://dns.mullvad.net"
+  - "tls://dns.digitale-gesellschaft.ch"
+  - "tls://anycast.uncensoreddns.org"
+  - "tls://dns10.quad9.net"
+  - "tls://open.dns0.eu"
   - "91.239.100.100:53"
   - "89.233.43.71:53"
   - "185.95.218.42:53"

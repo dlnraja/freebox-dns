@@ -1,0 +1,35 @@
+# Allowlist — domains that must NEVER be NXDOMAIN'd by denylists
+# (false positives break LAN, GitHub, Freebox, critical infra)
+# One domain per line. Subdomains inherit in Blocky when parent is listed.
+
+# Project / LAN
+freeboxos.fr
+mafreebox.freebox.fr
+free.fr
+
+# Infra used by this stack & CI
+github.com
+githubusercontent.com
+raw.githubusercontent.com
+ghcr.io
+docker.com
+docker.io
+registry-1.docker.io
+jsdelivr.net
+cdn.jsdelivr.net
+codeberg.org
+
+# Uncensoring / health checks
+mullvad.net
+digitale-gesellschaft.ch
+quad9.net
+dns0.eu
+ooni.org
+cloudflare.com
+cloudflare-dns.com
+
+# Package mirrors (avoid breaking updates)
+debian.org
+ubuntu.com
+raspberrypi.com
+alpinelinux.org

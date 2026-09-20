@@ -1,0 +1,601 @@
+{
+  "inspired_by": [
+    "https://ooni.org/nettest/web-connectivity/",
+    "https://korben.info/ooni-probe-mesurer-niveau-de-manipulation-surveillance-censure-de-internet.html"
+  ],
+  "layers": [
+    "dns(local hosts)",
+    "tcp/http fingerprint"
+  ],
+  "clean": [
+    {
+      "domain": "digitale-gesellschaft.ch",
+      "ip": "89.45.227.53",
+      "status": 421
+    },
+    {
+      "domain": "explorer.ooni.org",
+      "ip": "216.150.1.1",
+      "status": 200
+    },
+    {
+      "domain": "www.mediapart.fr",
+      "ip": "151.101.2.132",
+      "status": 200
+    },
+    {
+      "domain": "explorer.ooni.org",
+      "ip": "216.150.16.1",
+      "status": 200
+    },
+    {
+      "domain": "ooni.org",
+      "ip": "76.76.21.21",
+      "status": 200
+    },
+    {
+      "domain": "github.com",
+      "ip": "140.82.121.3",
+      "status": 200
+    },
+    {
+      "domain": "example.com",
+      "ip": "104.20.23.154",
+      "status": 200
+    },
+    {
+      "domain": "mullvad.net",
+      "ip": "45.83.223.209",
+      "status": 200
+    },
+    {
+      "domain": "example.com",
+      "ip": "172.66.147.243",
+      "status": 200
+    },
+    {
+      "domain": "www.mediapart.fr",
+      "ip": "151.101.66.132",
+      "status": 200
+    },
+    {
+      "domain": "fr.wikipedia.org",
+      "ip": "185.15.58.224",
+      "status": 200
+    },
+    {
+      "domain": "www.laquadrature.net",
+      "ip": "185.34.33.4",
+      "status": 200
+    },
+    {
+      "domain": "forbiddenstories.org",
+      "ip": "185.34.35.77",
+      "status": 200
+    },
+    {
+      "domain": "mediapart.fr",
+      "ip": "151.101.66.132",
+      "status": 301
+    },
+    {
+      "domain": "raw.githubusercontent.com",
+      "ip": "185.199.108.133",
+      "status": 301
+    },
+    {
+      "domain": "raw.githubusercontent.com",
+      "ip": "185.199.111.133",
+      "status": 301
+    },
+    {
+      "domain": "ghcr.io",
+      "ip": "140.82.121.33",
+      "status": 301
+    },
+    {
+      "domain": "mediapart.fr",
+      "ip": "151.101.130.132",
+      "status": 301
+    },
+    {
+      "domain": "www.humanite.fr",
+      "ip": "192.0.66.211",
+      "status": 200
+    },
+    {
+      "domain": "wikipedia.org",
+      "ip": "185.15.58.224",
+      "status": 301
+    },
+    {
+      "domain": "nantes.indymedia.org",
+      "ip": "204.13.164.186",
+      "status": 200
+    },
+    {
+      "domain": "francais.rt.com",
+      "ip": "89.191.237.196",
+      "status": 200
+    },
+    {
+      "domain": "osintfr.com",
+      "ip": "54.36.91.62",
+      "status": 200
+    },
+    {
+      "domain": "laquadrature.net",
+      "ip": "185.34.33.4",
+      "status": 301
+    },
+    {
+      "domain": "www.arabnews.fr",
+      "ip": "172.67.73.34",
+      "status": 200
+    },
+    {
+      "domain": "www.arabnews.fr",
+      "ip": "104.26.11.33",
+      "status": 200
+    },
+    {
+      "domain": "www.root-me.org",
+      "ip": "212.129.28.16",
+      "status": 200
+    },
+    {
+      "domain": "www.planning-familial.org",
+      "ip": "51.159.141.197",
+      "status": 200
+    },
+    {
+      "domain": "www.calem.eu",
+      "ip": "146.88.232.72",
+      "status": 421
+    },
+    {
+      "domain": "le-refuge.org",
+      "ip": "162.19.124.254",
+      "status": 421
+    },
+    {
+      "domain": "chretiensinclusifs.org",
+      "ip": "213.186.33.16",
+      "status": 200
+    },
+    {
+      "domain": "www.beit-haverim.com",
+      "ip": "5.135.23.164",
+      "status": 200
+    },
+    {
+      "domain": "www.ligue-cancer.net",
+      "ip": "185.74.9.4",
+      "status": 421
+    },
+    {
+      "domain": "www.sos-homophobie.org",
+      "ip": "104.20.7.50",
+      "status": 200
+    },
+    {
+      "domain": "www.sos-homophobie.org",
+      "ip": "104.20.6.50",
+      "status": 200
+    },
+    {
+      "domain": "www.secourspopulaire.fr",
+      "ip": "145.239.186.97",
+      "status": 200
+    },
+    {
+      "domain": "dioceseparis.fr",
+      "ip": "185.16.44.219",
+      "status": 421
+    },
+    {
+      "domain": "www.santepubliquefrance.fr",
+      "ip": "137.74.140.241",
+      "status": 200
+    },
+    {
+      "domain": "sci-hub.st",
+      "ip": "186.2.163.201",
+      "status": 403
+    },
+    {
+      "domain": "www.bnf.fr",
+      "ip": "194.199.8.10",
+      "status": 200
+    },
+    {
+      "domain": "www.oecd.org",
+      "ip": "104.18.1.146",
+      "status": 403
+    },
+    {
+      "domain": "www.oecd.org",
+      "ip": "104.18.0.146",
+      "status": 403
+    },
+    {
+      "domain": "islam-france.fr",
+      "ip": "193.58.105.135",
+      "status": 200
+    },
+    {
+      "domain": "www.handicap-international.fr",
+      "ip": "104.18.16.192",
+      "status": 200
+    },
+    {
+      "domain": "www.handicap-international.fr",
+      "ip": "104.18.17.192",
+      "status": 200
+    },
+    {
+      "domain": "sci-hub.ee",
+      "ip": "172.67.212.102",
+      "status": 200
+    },
+    {
+      "domain": "sci-hub.ee",
+      "ip": "104.21.69.194",
+      "status": 200
+    },
+    {
+      "domain": "planning-familial.org",
+      "ip": "51.159.141.197",
+      "status": 301
+    },
+    {
+      "domain": "fondationdelislamdefrance.fr",
+      "ip": "104.21.59.122",
+      "status": 200
+    },
+    {
+      "domain": "fondationdelislamdefrance.fr",
+      "ip": "172.67.177.53",
+      "status": 200
+    },
+    {
+      "domain": "grenoble.indymedia.org",
+      "ip": "204.13.164.87",
+      "status": 301
+    },
+    {
+      "domain": "torproject.org",
+      "ip": "116.202.120.165",
+      "status": 421
+    },
+    {
+      "domain": "proton.me",
+      "ip": "185.70.42.45",
+      "status": 200
+    },
+    {
+      "domain": "www.mahj.org",
+      "ip": "37.59.251.196",
+      "status": 200
+    },
+    {
+      "domain": "archive.org",
+      "ip": "207.241.224.2",
+      "status": 200
+    },
+    {
+      "domain": "web.archive.org",
+      "ip": "207.241.237.3",
+      "status": 200
+    },
+    {
+      "domain": "amnesty.org",
+      "ip": "141.193.213.21",
+      "status": 403
+    },
+    {
+      "domain": "amnesty.org",
+      "ip": "141.193.213.20",
+      "status": 403
+    },
+    {
+      "domain": "torrentfreak.com",
+      "ip": "104.26.9.68",
+      "status": 200
+    },
+    {
+      "domain": "torrentfreak.com",
+      "ip": "104.26.8.68",
+      "status": 200
+    },
+    {
+      "domain": "torproject.org",
+      "ip": "204.8.99.146",
+      "status": 421
+    },
+    {
+      "domain": "signal.org",
+      "ip": "104.18.11.47",
+      "status": 200
+    },
+    {
+      "domain": "signal.org",
+      "ip": "104.18.10.47",
+      "status": 200
+    },
+    {
+      "domain": "censxres.fr",
+      "ip": "163.172.32.209",
+      "status": 200
+    },
+    {
+      "domain": "api.github.com",
+      "ip": "140.82.121.5",
+      "status": 200
+    },
+    {
+      "domain": "eff.org",
+      "ip": "173.239.79.200",
+      "status": 421
+    },
+    {
+      "domain": "ivg-contraception-sexualites.org",
+      "ip": "109.234.164.218",
+      "status": 200
+    },
+    {
+      "domain": "registry-1.docker.io",
+      "ip": "3.88.92.19",
+      "status": 404
+    },
+    {
+      "domain": "production.cloudflare.docker.com",
+      "ip": "104.16.101.215",
+      "status": 403
+    },
+    {
+      "domain": "production.cloudflare.docker.com",
+      "ip": "104.16.97.215",
+      "status": 403
+    },
+    {
+      "domain": "rsf.org",
+      "ip": "172.67.66.183",
+      "status": 200
+    },
+    {
+      "domain": "dns.digitale-gesellschaft.ch",
+      "ip": "185.95.218.43",
+      "status": 505
+    },
+    {
+      "domain": "dns10.quad9.net",
+      "ip": "9.9.9.10",
+      "status": 505
+    },
+    {
+      "domain": "dns.digitale-gesellschaft.ch",
+      "ip": "185.95.218.42",
+      "status": 505
+    },
+    {
+      "domain": "anycast.uncensoreddns.org",
+      "ip": "91.239.100.100",
+      "status": 505
+    },
+    {
+      "domain": "rsf.org",
+      "ip": "104.25.93.108",
+      "status": 200
+    },
+    {
+      "domain": "one.one.one.one",
+      "ip": "1.0.0.1",
+      "status": 200
+    },
+    {
+      "domain": "registry-1.docker.io",
+      "ip": "18.215.8.255",
+      "status": 404
+    },
+    {
+      "domain": "dns10.quad9.net",
+      "ip": "149.112.112.10",
+      "status": 505
+    },
+    {
+      "domain": "one.one.one.one",
+      "ip": "1.1.1.1",
+      "status": 200
+    },
+    {
+      "domain": "cloud.debian.org",
+      "ip": "194.71.11.173",
+      "status": 200
+    },
+    {
+      "domain": "cloud.debian.org",
+      "ip": "194.71.11.165",
+      "status": 200
+    },
+    {
+      "domain": "auth.docker.io",
+      "ip": "104.18.43.178",
+      "status": 404
+    },
+    {
+      "domain": "auth.docker.io",
+      "ip": "172.64.144.78",
+      "status": 404
+    },
+    {
+      "domain": "pl.wikipedia.org",
+      "ip": "185.15.58.224",
+      "status": 200
+    },
+    {
+      "domain": "fr.wiktionary.org",
+      "ip": "185.15.58.224",
+      "status": 200
+    },
+    {
+      "domain": "fr.wikisource.org",
+      "ip": "185.15.58.224",
+      "status": 200
+    },
+    {
+      "domain": "arabic.rt.com",
+      "ip": "91.215.41.8",
+      "status": 200
+    },
+    {
+      "domain": "actualidad.rt.com",
+      "ip": "91.215.41.5",
+      "status": 200
+    },
+    {
+      "domain": "de.rt.com",
+      "ip": "185.79.236.191",
+      "status": 200
+    },
+    {
+      "domain": "actualidad.rt.com",
+      "ip": "185.79.236.175",
+      "status": 200
+    },
+    {
+      "domain": "de.rt.com",
+      "ip": "89.191.237.195",
+      "status": 200
+    },
+    {
+      "domain": "rtde.site",
+      "ip": "185.79.236.191",
+      "status": 200
+    },
+    {
+      "domain": "russian.rt.com",
+      "ip": "89.191.237.194",
+      "status": 200
+    },
+    {
+      "domain": "rg.ru",
+      "ip": "185.65.148.114",
+      "status": 401
+    },
+    {
+      "domain": "rtde.site",
+      "ip": "89.191.237.195",
+      "status": 200
+    },
+    {
+      "domain": "a-russia.ru",
+      "ip": "87.236.16.142",
+      "status": 503
+    },
+    {
+      "domain": "iz.ru",
+      "ip": "185.178.208.4",
+      "status": 403
+    },
+    {
+      "domain": "fr.m.wikipedia.org",
+      "ip": "185.15.58.224",
+      "status": 301
+    },
+    {
+      "domain": "fr.m.wikisource.org",
+      "ip": "185.15.58.224",
+      "status": 301
+    },
+    {
+      "domain": "makrea.com",
+      "ip": "62.210.50.235",
+      "status": 200
+    },
+    {
+      "domain": "global.ajplus.net",
+      "ip": "198.185.159.144",
+      "status": 200
+    },
+    {
+      "domain": "tsargrad.tv",
+      "ip": "91.206.127.185",
+      "status": 200
+    },
+    {
+      "domain": "global.ajplus.net",
+      "ip": "198.185.159.145",
+      "status": 200
+    },
+    {
+      "domain": "lat.rt.rs",
+      "ip": "91.215.41.13",
+      "status": 200
+    },
+    {
+      "domain": "ivran.ru",
+      "ip": "212.109.196.149",
+      "status": 200
+    },
+    {
+      "domain": "katehon.com",
+      "ip": "93.88.76.65",
+      "status": 200
+    },
+    {
+      "domain": "sarabic.ae",
+      "ip": "194.190.139.27",
+      "status": 200
+    }
+  ],
+  "http_blockpage": [],
+  "unreachable": [
+    {
+      "domain": "yggtorrent.lol",
+      "ip": "172.67.211.234",
+      "ok": false,
+      "blockpage": null,
+      "status": null,
+      "final_url": null,
+      "error": "http:URLError:<urlopen error [Errno 111] Connection refused>"
+    },
+    {
+      "domain": "yggtorrent.lol",
+      "ip": "104.21.77.219",
+      "ok": false,
+      "blockpage": null,
+      "status": null,
+      "final_url": null,
+      "error": "http:URLError:<urlopen error [Errno 111] Connection refused>"
+    },
+    {
+      "domain": "www.ygg.re",
+      "ip": "103.224.182.253",
+      "ok": false,
+      "blockpage": null,
+      "status": null,
+      "final_url": null,
+      "error": "http:URLError:<urlopen error [Errno 111] Connection refused>"
+    },
+    {
+      "domain": "dns.mullvad.net",
+      "ip": "194.242.2.2",
+      "ok": false,
+      "blockpage": null,
+      "status": null,
+      "final_url": null,
+      "error": "http:URLError:<urlopen error timed out>"
+    },
+    {
+      "domain": "libgen.is",
+      "ip": "193.218.118.42",
+      "ok": false,
+      "blockpage": null,
+      "status": null,
+      "final_url": null,
+      "error": "http:URLError:<urlopen error timed out>"
+    }
+  ],
+  "stripped_from_hosts": 0
+}

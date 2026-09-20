@@ -1,55 +1,30 @@
-# Freebox — configuration DHCP / DNS / DoH
+# Freebox — configuration DHCP / DNS / DoH / DoT
 
-Compatible **Freebox Delta**, **Freebox Ultra**, et **VM Freebox** (Debian/Ubuntu dans la Freebox ou hôte local).
+## DHCP (après health VM uniquement)
 
-Paramètres : [`config/freebox/dhcp-dns.json`](../config/freebox/dhcp-dns.json) · checklist [`config/freebox/README.md`](../config/freebox/README.md) · **rubrique VM entière** [`freebox-vm.md`](freebox-vm.md) · amonts max [`upstreams-uncensoring.md`](upstreams-uncensoring.md).
+Filet SOS recommandé :
 
-## Capturer les DNS une fois (déjà fait ici)
-
-Snapshot : `config/freebox-dns-snapshot.json` (Freebox v9 r1, API 16). Aucun UID / `*.fbxos.fr` / adresse perso.
-
-## VM Freebox OS — import image (all-in-one)
-
-Freebox OS importe du **`.qcow2`** (pas OVA).
-
-1. Télécharger l’artefact CI **`freebox-dns-freeboxos-allinone-*.zip`**.
-2. Copier `freebox-dns.qcow2` + `freebox-dns-cidata.iso` dans **`VMs/`** (FTP).
-3. Freebox OS → **VM** → **image de disque existante** → monter l’ISO en CD.
-4. 2 vCPU · 2048 Mo · LAN · DHCP DNS1 = IP de la VM.
-
-Kit + notice : [`packaging/freebox-os-import/`](../packaging/freebox-os-import/) · doc : [`freebox-vm.md`](freebox-vm.md).
-
-## Pointer le DHCP vers la stack (local-only)
-
-```bash
-cp .env.example .env
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
-
-| Champ Freebox DHCP | Valeur |
+| Priorité | Valeur |
 | --- | --- |
-| DNS 1 | `HOST_IP` (**dns-libre** :53) |
-| DNS 2 | `91.239.100.100` (UncensoredDNS) |
+| DNS1 | `91.239.100.100` (UncensoredDNS) |
+| DNS2 | IP VM freebox-dns |
 
-Fallbacks étendus (si VM down) : voir catalogue — pins 1–3, puis amonts libres, puis gateway, NextDNS soft-last.
+Ne jamais laisser la seule IP VM sans secondaire.
 
-## DoH
+## DoH (navigateurs / Freebox app Web / mobiles)
 
 - Libre : `https://HOST_IP:8453/dns-query`
 - Secure : `https://HOST_IP:8444/dns-query`
-- UI Blocky : `http://HOST_IP:3080`
 
-## VM Freebox OS (rubrique complète)
+Profils prêts à installer : `config/clients/generated/`  
+(`python3 scripts/generate-client-profiles.py`)
 
-→ **[freebox-vm.md](freebox-vm.md)** : création VM, RAM/CPU/disque, packages apt, images Docker, cloud-init, paquet CI `packaging/freebox-vm/`, `install.sh`.
+## DoT / DoQ
 
-Raccourci :
+| | Lab | Prod (compose.prod) |
+| --- | --- | --- |
+| DoT libre | `:8853` | `:853` |
+| DoQ libre | `:8853/udp` | `:853/udp` |
+| DoT secure | `:8854` | `:8854` |
 
-```bash
-# Dans la guest Freebox OS
-curl -fsSL https://raw.githubusercontent.com/dlnraja/freebox-dns/main/packaging/freebox-vm/install.sh | sudo bash
-```
-
-## Sécurité
-
-- Bind `HOST_IP` only · pas de poll distant Freebox depuis le CI.
+Détail : [encrypted-dns.md](encrypted-dns.md).

@@ -53,10 +53,12 @@ write_files:
       sed -i "s/^HOST_IP=.*/HOST_IP=${IP}/" .env
       sed -i 's/^DNS_LIBRE_PORT=.*/DNS_LIBRE_PORT=53/' .env
       bash scripts/generate-certs.sh
+      python3 scripts/generate-client-profiles.py || true
       docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
       docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
       bash scripts/health-check.sh || true
-      echo "OK HOST_IP=${IP}" | tee /var/log/freebox-dns-bootstrap.log
+      echo "OK HOST_IP=${IP} DoH=https://${IP}:8453/dns-query" | tee /var/log/freebox-dns-bootstrap.log
+      echo "Client profiles: /opt/freebox-dns/config/clients/generated/" >> /var/log/freebox-dns-bootstrap.log
 
 runcmd:
   - systemctl enable --now docker
@@ -64,4 +66,9 @@ runcmd:
   - /usr/local/sbin/freebox-dns-bootstrap.sh || true
 
 final_message: |
-  freebox-dns VM ready. Set Freebox DHCP DNS1 to this VM LAN IP, DNS2=91.239.100.100
+  freebox-dns VM ready.
+  DHCP safe: DNS1=91.239.100.100 DNS2=this-VM-IP
+  DoH libre: https://THIS_IP:8453/dns-query
+  DoH secure: https://THIS_IP:8444/dns-query
+  DoT libre: THIS_IP:853  DoT secure: THIS_IP:8854
+  Profiles: /opt/freebox-dns/config/clients/generated/

@@ -1,0 +1,40 @@
+# Anti–anti-adblock — DNS layer (complements browser uBlock Origin)
+# Blocks CDNs / walls that detect adblockers and force "please disable your adblocker".
+# Format: one domain per line (Blocky). Never put gov blockpages or sinkholes here.
+#
+# NOTE: Cosmetic filters / scriptlets stay in the browser. DNS only cuts the domains.
+
+# Google Funding Choices / Ad Traffic Quality (common anti-adblock interstitial)
+fundingchoicesmessages.google.com
+fundingchoices.google.com
+pagead2.googlesyndication.com
+pagead.l.doubleclick.net
+googleads.g.doubleclick.net
+adtrafficquality.google
+ep1.adtrafficquality.google
+ep2.adtrafficquality.google
+www.googletagservices.com
+securepubads.g.doubleclick.net
+pagead46.l.doubleclick.net
+
+# Admiral (commercial anti-adblock) — Firebog Admiral.txt covers more
+getadmiral.com
+admiral.pub
+callofdutyleaguestats.com
+
+# Sourcepoint / Quantcast choice walls often used with anti-adblock
+cdn.privacy-mgmt.com
+cmp.osano.com
+
+# AdSafe / IAS verification used to fingerprint blockers
+static.adsafeprotected.com
+pixel.adsafeprotected.com
+fw.adsafeprotected.com
+dt.adsafeprotected.com
+
+# Common anti-adblock / bait hosts
+blockadblock.com
+pagead2.googleadservices.com
+adservice.google.com
+adservice.google.fr
+adservice.google.co.uk

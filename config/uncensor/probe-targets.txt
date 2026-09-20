@@ -1,27 +1,71 @@
-# Domains probed for ISP DNS lies (OONI-like consistency).
-# Prefer citizen/media/public-interest + resolver health checks.
-# Full FR measurement list: https://github.com/citizenlab/test-lists/blob/master/lists/fr.csv
-# OONI Explorer FR: https://explorer.ooni.org/
+# Domains for smart local DNS lists (anti lie / anti blockpage / anti redirect).
+# Sources: OONI FR, Citizen Lab fr.csv (subset), project infra, public-interest.
+# Full list ref: https://github.com/citizenlab/test-lists/blob/master/lists/fr.csv
 
-# Always-should-resolve controls
+# --- Resolver / project health ---
 example.com
 wikipedia.org
 fr.wikipedia.org
+mullvad.net
+digitale-gesellschaft.ch
+ooni.org
+explorer.ooni.org
+github.com
+raw.githubusercontent.com
+ghcr.io
+
+# --- Media / droits / intérêt public (souvent tests OONI) ---
 mediapart.fr
 www.mediapart.fr
 laquadrature.net
 www.laquadrature.net
-ooni.org
-explorer.ooni.org
-mullvad.net
-digitale-gesellschaft.ch
-
-# Often subject to FR DNS interference (OONI / Citizen Lab FR) — probe only
-# Probe writes truthful consensus to hosts.generated when ISP lies.
-francais.rt.com
-nantes.indymedia.org
 forbiddenstories.org
 www.humanite.fr
+nantes.indymedia.org
+grenoble.indymedia.org
+francais.rt.com
+www.arabnews.fr
+osintfr.com
+www.root-me.org
+
+# --- Santé / associations / LGBT / culture (Citizen Lab FR) ---
 planning-familial.org
+www.planning-familial.org
+ivg-contraception-sexualites.org
 www.sos-homophobie.org
 le-refuge.org
+www.calem.eu
+www.beit-haverim.com
+chretiensinclusifs.org
+www.ligue-cancer.net
+www.santepubliquefrance.fr
+www.secourspopulaire.fr
+www.handicap-international.fr
+www.bnf.fr
+www.oecd.org
+www.mahj.org
+dioceseparis.fr
+islam-france.fr
+fondationdelislamdefrance.fr
+
+# --- Domaines souvent victimes de DNS menteur FR (OONI) — on stocke la VÉRITÉ contrôle ---
+# (pas la page ANJ / 127.0.0.1 / NXDOMAIN)
+sci-hub.st
+sci-hub.ee
+sci-hub.se
+fr.annas-archive.org
+annas-archive.org
+yggtorrent.lol
+www.ygg.re
+libgen.rs
+libgen.is
+archive.org
+web.archive.org
+torrentfreak.com
+proton.me
+signal.org
+torproject.org
+eff.org
+amnesty.org
+rsf.org
+censxres.fr

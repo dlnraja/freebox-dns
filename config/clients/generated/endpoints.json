@@ -1,0 +1,33 @@
+{
+  "host_ip": "192.168.1.15",
+  "personalities": {
+    "libre": {
+      "bit": "uncensored",
+      "plain": "192.168.1.15:5356",
+      "doh": "https://192.168.1.15:8453/dns-query",
+      "dot": "tls://192.168.1.15:8853",
+      "doq": "quic://192.168.1.15:8853",
+      "note": "No ads filter \u2014 anti-censure + anti-lie hosts"
+    },
+    "secure": {
+      "bit": "threat-local",
+      "plain": "192.168.1.15:5354",
+      "doh": "https://192.168.1.15:8444/dns-query",
+      "dot": "tls://192.168.1.15:8854",
+      "doq": null,
+      "note": "Pi-hole + uBlock + anti-adblock + malware"
+    }
+  },
+  "sos_plain": [
+    "91.239.100.100",
+    "185.95.218.42",
+    "9.9.9.10"
+  ],
+  "cert": "certs/server.crt (self-signed \u2014 install/trust on clients for DoH/DoT)",
+  "freebox_os": {
+    "dhcp_dns1_sos": "91.239.100.100",
+    "dhcp_dns2_vm": "192.168.1.15",
+    "app_doh_libre": "https://192.168.1.15:8453/dns-query",
+    "app_doh_secure": "https://192.168.1.15:8444/dns-query"
+  }
+}

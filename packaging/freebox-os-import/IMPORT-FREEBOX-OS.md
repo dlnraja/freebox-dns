@@ -7,12 +7,14 @@ Le package all-in-one ajoute aussi un **CD cloud-init** (`.iso`) que Freebox OS 
 
 | Fichier | Rôle |
 | --- | --- |
-| `freebox-dns.qcow2` | Disque Debian 12 cloud (16 Go) — **à importer** |
+| `freebox-dns.qcow2` | Disque Debian 12 cloud **arm64** (16 Go) — **à importer** |
 | `freebox-dns-cidata.iso` | Cloud-init NoCloud — **monter en CD-ROM virtuel** |
 | `freebox-os-vm.json` | Paramètres VM (2 vCPU, 2048 Mo, debian…) |
 | `cloudinit-userdata.yaml` | User-data (référence / API) |
 | `SHA256SUMS` | Intégrité |
 | `IMPORT-FREEBOX-OS.md` | Cette notice |
+
+> **Arch :** Freebox OS (Delta / Pop / Ultra) = **ARM64**. Une image amd64 ne boote pas (boucle PXE).
 
 ## Import en 6 étapes
 
@@ -23,7 +25,7 @@ Le package all-in-one ajoute aussi un **CD cloud-init** (`.iso`) que Freebox OS 
 3. Freebox OS → **VM** → **Ajouter une VM** → **Sélectionner une image de disque existante** → `freebox-dns.qcow2`.
 4. Régler : **2 vCPU**, **2048 Mo RAM**, réseau **LAN**, OS **debian**, écran virtuel OK.
 5. **CD-ROM virtuel** → monter `freebox-dns-cidata.iso` (cloud-init au 1er boot).
-6. Démarrer → attendre 2–5 min (Docker + stack) → noter l’**IP LAN** → DHCP : DNS1 = IP, DNS2 = `91.239.100.100`.
+6. Démarrer → attendre 2–5 min (Docker + stack) → noter l’**IP LAN** → DHCP **sûr** : DNS1 = `91.239.100.100`, DNS2 = IP_VM.
 
 ## Vérification
 

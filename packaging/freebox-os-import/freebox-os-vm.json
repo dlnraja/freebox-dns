@@ -22,7 +22,9 @@
     "network": "LAN bridge"
   },
   "guest": {
-    "os_image_base": "Debian 12 cloud (amd64)",
+    "os_image_base": "Debian 12 cloud (arm64 / aarch64 — Freebox VM)",
+    "arch": "aarch64",
+    "note": "Freebox OS VMs are ARM64. amd64 images only PXE-loop.",
     "disk_gb": 16,
     "services": ["unbound", "dns-libre", "dns-secure"],
     "ports": {
@@ -34,8 +36,9 @@
     }
   },
   "dhcp_after_import": {
-    "dns_primary": "IP_LAN_DE_LA_VM",
-    "dns_secondary": "91.239.100.100"
+    "dns_primary": "91.239.100.100",
+    "dns_secondary": "IP_LAN_DE_LA_VM",
+    "note": "DNS1=SOS UncensoredDNS, DNS2=VM only after health OK"
   },
   "package_files": [
     "freebox-dns.qcow2",
