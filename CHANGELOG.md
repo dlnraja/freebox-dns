@@ -5,6 +5,12 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- CI: Blocky YAML CRLF drift on Linux runners (`.gitattributes` eol=lf)
+- CI: lychee v0.24 — `--include-mail=false` (was `--exclude-mail`)
+- CI: static job `permissions` (dynamic `&&`/`||` expressions rejected by Actions)
+
 ## [1.3.0] — 2026-09-20
 
 ### Added

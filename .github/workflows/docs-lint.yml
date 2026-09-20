@@ -43,7 +43,7 @@ jobs:
             --max-concurrency 4
             --timeout 25
             --accept 200,204,206,429,403
-            --exclude-mail
+            --include-mail=false
             --exclude 'localhost|127\.0\.0\.1|192\.168\.|HOST_IP|example\.com|mafreebox'
             README.md
             'docs/**/*.md'

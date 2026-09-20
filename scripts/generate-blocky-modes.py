@@ -173,7 +173,7 @@ def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     for mode, meta in MODES.items():
         path = OUT / meta["file"]
-        path.write_text(render(mode, meta) + "\n", encoding="utf-8")
+        path.write_bytes((render(mode, meta) + "\n").encode("utf-8"))
         print("wrote", path.relative_to(ROOT), "groups=", meta["groups"])
     catalog = {
         "title": "Smart spit — 4 DNS modes",
@@ -242,7 +242,7 @@ def main() -> int:
     }
     import json
 
-    (OUT / "modes.json").write_text(json.dumps(catalog, indent=2) + "\n", encoding="utf-8")
+    (OUT / "modes.json").write_bytes((json.dumps(catalog, indent=2) + "\n").encode("utf-8"))
     print("wrote", (OUT / "modes.json").relative_to(ROOT))
     return 0
 

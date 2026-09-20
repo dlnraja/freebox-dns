@@ -53,7 +53,7 @@ jobs:
           fi
           docker compose -f docker-compose.yml config --services | grep -E 'unbound|dns-libre|dns-malware|dns-antipub|dns-secure'
           python3 scripts/generate-blocky-modes.py
-          git diff --exit-code -- config/blocky/config.yml config/blocky/config-malware.yml config/blocky/config-antipub.yml config/blocky/modes.json \
+          git diff --exit-code --ignore-cr-at-eol -- config/blocky/config.yml config/blocky/config-malware.yml config/blocky/config-antipub.yml config/blocky/modes.json \
             || (echo "Blocky configs drifted — run: python3 scripts/generate-blocky-modes.py && commit"; exit 1)
           grep -q '172.28.0.10' config/blocky/config.yml
           grep -q 'queryLog:' config/blocky/config.yml
@@ -162,9 +162,10 @@ jobs:
   blocklist-refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # write only used by gated create-pull-request step (schedule/dispatch)
     permissions:
-      contents: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'write' || 'read' }}
-      pull-requests: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'write' || 'read' }}
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Probe blocklist URLs

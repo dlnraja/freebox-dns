@@ -32,9 +32,10 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # write only used by gated create-pull-request step (schedule/dispatch)
     permissions:
-      contents: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'write' || 'read' }}
-      pull-requests: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'write' || 'read' }}
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Install dig

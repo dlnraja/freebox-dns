@@ -77,8 +77,9 @@ jobs:
       (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'))
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    # write only used by gated release upload step
     permissions:
-      contents: ${{ github.event_name == 'release' && 'write' || 'read' }}
+      contents: write
     steps:
       - uses: actions/checkout@v4
 

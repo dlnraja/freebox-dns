@@ -46,8 +46,9 @@ jobs:
   package:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # write only used by gated release upload step
     permissions:
-      contents: ${{ github.event_name == 'release' && 'write' || 'read' }}
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Validate manifest + packages + product

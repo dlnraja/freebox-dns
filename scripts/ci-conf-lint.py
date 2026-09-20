@@ -119,6 +119,7 @@ def main() -> int:
             "git",
             "diff",
             "--exit-code",
+            "--ignore-cr-at-eol",
             "--",
             "config/blocky/config.yml",
             "config/blocky/config-malware.yml",

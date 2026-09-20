@@ -1,0 +1,12 @@
+# Force LF for CI-critical paths (Windows checkouts must not store CRLF)
+* text=auto eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.conf text eol=lf
+*.ps1 text eol=lf
+*.tpl text eol=lf
