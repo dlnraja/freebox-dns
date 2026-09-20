@@ -75,8 +75,11 @@ write_files:
       esac
       docker compose $COMPOSE_FILES pull
       docker compose $COMPOSE_FILES up -d
+      python3 scripts/warm-local-cache.py || true
+      bash scripts/warm-unbound-runtime.sh || true
       bash scripts/health-check.sh || true
       echo "OK HOST_IP=${IP} DoH=https://${IP}:8453/dns-query"
+      echo "LOCAL FIRST: hosts + Unbound local-data/cache, then DoT forwards"
       echo "Client profiles: /opt/freebox-dns/config/clients/generated/"
 
 runcmd:

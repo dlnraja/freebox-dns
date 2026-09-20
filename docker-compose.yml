@@ -17,6 +17,8 @@ services:
     volumes:
       - ./config/unbound/forward-records.conf:/opt/unbound/etc/unbound/forward-records.conf:ro
       - ./config/unbound/a-records.conf:/opt/unbound/etc/unbound/a-records.conf:ro
+      - ./config/unbound/a-records.critical.conf:/opt/unbound/etc/unbound/a-records.critical.conf:ro
+      - unbound-cache:/opt/unbound/etc/unbound/var
     networks:
       dnsnet:
         ipv4_address: 172.28.0.10
@@ -154,4 +156,8 @@ networks:
     ipam:
       config:
         - subnet: 172.28.0.0/24
+
+volumes:
+  unbound-cache:
+    name: freebox-dns-unbound-cache
 

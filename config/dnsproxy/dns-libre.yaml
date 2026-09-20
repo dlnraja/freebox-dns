@@ -1,9 +1,9 @@
 # dns-libre — bit: uncensoring + RESILIENT (local-first)
 # Transports served: plain DNS · DoH · DoT · DoQ (+ HTTP/3 when supported)
-# Resolution order:
-#   1) hosts.critical / hosts.local / hosts.generated  (project-local)
-#   2) unbound (DoT forward-first, then ROOT recursion + serve-expired cache)
-#   3) fallback: encrypted DoH/DoT upstreams then plain catalog + Freebox pins
+# Resolution order (STRICT):
+#   1) hosts.critical / hosts.local / hosts.generated  (LOCAL — no network)
+#   2) unbound 172.28.0.10 (local-data → serve-expired → DoT → root)
+#   3) fallback ONLY if Unbound process unreachable (encrypted then plain SOS)
 # See docs/encrypted-dns.md · docs/resilience.md
 #
 # Plain UDP SOS: Quad9 / Mullvad / AdGuard (reachable on FR Free ISP).
@@ -51,16 +51,15 @@ hosts-files:
   - /opt/dnsproxy/uncensor/hosts.local
   - /opt/dnsproxy/uncensor/hosts.generated
 
-# Primary: resilient unbound only
+# Primary: resilient unbound (local-data + serve-expired + DoT)
 upstream:
   - "172.28.0.10:53"
 
-# Encrypted fallbacks first (if unbound unreachable), then plain UDP-reachable pins
+# ONLY if Unbound is unreachable — encrypted then plain SOS
 fallback:
   - "https://dns.mullvad.net/dns-query"
   - "https://dns10.quad9.net/dns-query"
   - "https://dns-unfiltered.adguard.com/dns-query"
-  - "https://dns.digitale-gesellschaft.ch/dns-query"
   - "tls://dns.mullvad.net"
   - "tls://dns10.quad9.net"
   - "tls://dns-unfiltered.adguard.com"

@@ -17,6 +17,7 @@ La VM **héberge son propre DNS**. Chaque mode applique le même **smart split**
 | **secure** | `dns-secure` | `5354` | `:8444` | antipub **+** malware |
 
 DHCP Freebox recommandé : DNS1 = SOS `9.9.9.10` (Quad9 Unsecured), DNS2 = IP VM (**uncensored** `:53`).  
+Chaîne sur la VM : **hosts locaux → Unbound local-data/cache → DoT → root** (voir [resilience.md](resilience.md)).  
 UncensoredDNS / DG = DoT Unbound seulement (UDP/53 souvent bloqué sur Free).  
 Les autres modes se choisissent par **port** ou URL **DoH** (téléphone / navigateur / profil généré).
 

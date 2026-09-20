@@ -263,19 +263,26 @@ def main() -> int:
         keep.append(line)
     if not any("serve-expired-ttl:" in x for x in keep):
         keep = [
-            "# Included INSIDE mvance unbound server: block",
+            "# Included INSIDE mvance/knfrmity unbound server: block",
+            "# LOCAL FIRST: critical include -> local-data -> serve-expired -> DoT -> root",
+            "serve-expired: yes",
             "serve-expired-ttl: 259200",
-            "serve-expired-client-timeout: 1800",
+            "serve-expired-client-timeout: 0",
             "serve-expired-reply-ttl: 30",
             "serve-expired-ttl-reset: yes",
+            "prefetch: yes",
+            "prefetch-key: yes",
+            "",
+            "include: /opt/unbound/etc/unbound/a-records.critical.conf",
             "",
         ]
+    # Ensure critical include always present in header
+    if not any("a-records.critical.conf" in x for x in keep):
+        keep.append("include: /opt/unbound/etc/unbound/a-records.critical.conf")
+        keep.append("")
     unbound_lines = list(keep)
-    crit = ROOT / "config" / "unbound" / "a-records.critical.conf"
-    if crit.exists():
-        for line in crit.read_text(encoding="utf-8").splitlines():
-            if line.strip().startswith("local-data:"):
-                unbound_lines.append(line)
+    # Critical seeds: a-records.critical.conf (mounted + include) — not duplicated here
+
 
     blocky_map: dict[str, str] = {}
     stored_domains: set[str] = set()
