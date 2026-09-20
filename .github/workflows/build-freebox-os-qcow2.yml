@@ -61,7 +61,7 @@ jobs:
           (cd "$STAGE" && zip -9 "../freebox-dns-freeboxos-kit-${VER}.zip" ./*)
           ls -lh dist/freebox-dns-freeboxos-kit-*.zip
       - name: Upload kit artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: freebox-dns-freeboxos-kit
           path: dist/freebox-dns-freeboxos-kit-*.zip
@@ -112,7 +112,7 @@ jobs:
         run: bash scripts/package-freebox-os-allinone.sh "${GITHUB_SHA::7}"
 
       - name: Upload all-in-one artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: freebox-dns-freeboxos-allinone
           path: |
