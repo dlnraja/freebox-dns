@@ -141,15 +141,18 @@ def invariants() -> list[dict]:
         ),
         "forward include must be uncommented",
     )
-    a_recs = (ROOT / "config/unbound/a-records.conf").read_text(encoding="utf-8")
+    # unused after serve-expired moved to unbound.conf — keep file readable for future checks
+    _ = (ROOT / "config/unbound/a-records.conf").read_text(encoding="utf-8")
     ub_conf = (ROOT / "config/unbound/unbound.conf").read_text(encoding="utf-8")
     ok("serve_expired_explicit", "serve-expired: yes" in ub_conf, "")
     ok("serve_expired_client_timeout_0", "serve-expired-client-timeout: 0" in ub_conf, "")
     # local-data include must precede forward-zone include (forward-zone closes server:)
+    a_inc = ub_conf.find("include: /opt/unbound/etc/unbound/a-records.conf")
+    fwd_inc = ub_conf.find("include: /opt/unbound/etc/unbound/forward-records.conf")
     ok(
         "local_before_forward_include",
-        ub_conf.find("a-records.conf") < ub_conf.find("forward-records.conf"),
-        "",
+        a_inc != -1 and fwd_inc != -1 and a_inc < fwd_inc,
+        f"a@{a_inc} fwd@{fwd_inc}",
     )
     crit = (ROOT / "config/unbound/a-records.critical.conf").read_text(encoding="utf-8")
     ok("critical_zones_static", 'local-zone:' in crit and "static" in crit and "typetransparent" not in crit, "")
