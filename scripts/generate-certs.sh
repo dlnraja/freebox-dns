@@ -57,5 +57,6 @@ openssl req -x509 -newkey rsa:2048 -sha256 -days 825 -nodes \
 
 rm -f "${TMP_CFG}"
 chmod 644 "${CERT_DIR}/server.crt"
-chmod 600 "${CERT_DIR}/server.key"
+# Blocky/dnsproxy containers run non-root and need to read the key (LAN self-signed only).
+chmod 644 "${CERT_DIR}/server.key"
 echo "Wrote ${CERT_DIR}/server.crt and server.key (SAN includes ${HOST_IP})"

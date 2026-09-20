@@ -189,29 +189,40 @@ jobs:
           cp .env.example .env
           # CI has no LAN Freebox IP — bind to 127.0.0.1 for smoke
           sed -i 's/^HOST_IP=.*/HOST_IP=127.0.0.1/' .env
+          mkdir -p certs
           openssl req -x509 -newkey rsa:2048 -keyout certs/server.key -out certs/server.crt \
-            -days 1 -nodes -subj "/CN=freebox-dns-ci" 2>/dev/null || \
-            (mkdir -p certs && openssl req -x509 -newkey rsa:2048 -keyout certs/server.key -out certs/server.crt -days 1 -nodes -subj "/CN=freebox-dns-ci")
+            -days 1 -nodes -subj "/CN=freebox-dns-ci"
+          # Blocky runs non-root; key must be world-readable inside the container
+          chmod 644 certs/server.crt certs/server.key
+          bash scripts/generate-client-profiles.py || python3 scripts/generate-client-profiles.py || true
       - name: Start stack
         run: docker compose up -d
       - name: Wait healthy
         run: |
-          for i in $(seq 1 40); do
-            docker compose ps
-            if docker compose ps | grep -q unbound && docker inspect -f '{{.State.Health.Status}}' dns-unbound 2>/dev/null | grep -q healthy; then
+          for i in $(seq 1 60); do
+            docker compose ps || true
+            unbound_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-unbound 2>/dev/null || echo starting)
+            libre_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-libre 2>/dev/null || echo starting)
+            secure_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-secure 2>/dev/null || echo starting)
+            echo "try=$i unbound=$unbound_ok libre=$libre_ok secure=$secure_ok"
+            if [ "$unbound_ok" = healthy ] && [ "$secure_ok" = healthy ]; then
               break
+            fi
+            # dump blocky crash early
+            if [ "$secure_ok" = unhealthy ] || [ "$secure_ok" = starting ]; then
+              docker logs dns-secure --tail=20 2>&1 || true
             fi
             sleep 5
           done
-          sleep 15
           docker compose ps
-          docker compose logs --tail=40
+          docker compose logs --tail=80
+          docker inspect -f '{{.Name}} {{.State.Status}} {{.State.Health.Status}}' dns-unbound dns-libre dns-secure
       - name: Query dns-libre + dns-secure
         run: |
           set -e
-          dig @127.0.0.1 -p 5356 example.com +time=5 +tries=2 +short | tee /tmp/libre.txt
+          dig @127.0.0.1 -p 5356 example.com +time=5 +tries=3 +short | tee /tmp/libre.txt
           grep -qE '^[0-9.]+' /tmp/libre.txt
-          dig @127.0.0.1 -p 5354 example.com +time=5 +tries=2 +short | tee /tmp/secure.txt
+          dig @127.0.0.1 -p 5354 example.com +time=5 +tries=3 +short | tee /tmp/secure.txt
           grep -qE '^[0-9.]+' /tmp/secure.txt
           # Pi-hole / uBlock / anti-adblock should NXDOMAIN
           dig @127.0.0.1 -p 5354 doubleclick.net +time=5 +tries=2 || true

@@ -45,8 +45,15 @@ DISK_ROOT = "/Disque 1"
 VMS_DIR = f"{DISK_ROOT}/VMs"
 QCOW2 = ROOT / "dist" / "freeboxos-allinone" / "freebox-dns.qcow2"
 CIDATA = ROOT / "dist" / "freeboxos-allinone" / "freebox-dns-cidata.iso"
+USERDATA = ROOT / "packaging" / "freebox-os-import" / "cloudinit-userdata.yaml"
 VM_NAME = "freebox-dns"
 CHUNK = 512 * 1024
+
+
+def load_userdata() -> str:
+    if USERDATA.exists():
+        return USERDATA.read_text(encoding="utf-8")
+    return "#cloud-config\nhostname: freebox-dns\n"
 
 
 def b64path(p: str) -> str:
@@ -303,6 +310,7 @@ def cmd_create() -> int:
         "enable_screen": True,
         "enable_cloudinit": True,
         "cloudinit_hostname": "freebox-dns",
+        "cloudinit_userdata": load_userdata(),
     }
     if "freebox-dns-cidata.iso" in names:
         payload["cd_path"] = b64path(cd_path)
@@ -358,12 +366,34 @@ def cmd_health() -> int:
     if found:
         ip = found.get("ip")
         print(f"Lease IP: {ip}")
-        # dig via system
-        code = os.system(f'dig @{ip} example.com +time=3 +tries=2 +short')
-        return 0 if code == 0 else 1
+        ok = dns_probe(ip, "example.com", 53) and dns_probe(ip, "example.com", 5354)
+        print("DNS health:", "OK" if ok else "WAIT (cloud-init/docker still booting?)")
+        return 0 if ok else 1
     print("No DHCP lease yet - wait for cloud-init / DHCP")
     print(json.dumps(dyn.get("result"), indent=2)[:2000])
     return 1
+
+
+def dns_probe(host: str, qname: str, port: int = 53, timeout: float = 3.0) -> bool:
+    """Cross-platform UDP DNS A query (no dig required)."""
+    import socket
+    import struct
+
+    tid = 0xC0DE
+    q = b"".join(bytes([len(p)]) + p.encode() for p in qname.split(".")) + b"\x00"
+    pkt = struct.pack("!HHHHHH", tid, 0x0100, 1, 0, 0, 0) + q + struct.pack("!HH", 1, 1)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.settimeout(timeout)
+    try:
+        sock.sendto(pkt, (host, port))
+        data, _ = sock.recvfrom(4096)
+        # QR bit set + at least header
+        return len(data) >= 12 and (data[2] & 0x80) != 0
+    except OSError as e:
+        print(f"  probe @{host}:{port} {qname}: {e}")
+        return False
+    finally:
+        sock.close()
 
 
 def cmd_dhcp_safe() -> int:
