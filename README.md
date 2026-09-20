@@ -82,6 +82,7 @@ bash scripts/health-check.sh
 | [docs/resilience.md](docs/resilience.md) | Local-first Unbound |
 | [docs/anti-lie-dns.md](docs/anti-lie-dns.md) | Anti–DNS menteur |
 | [docs/encrypted-dns.md](docs/encrypted-dns.md) | DoH / DoT / DoQ |
+| [docs/ci.md](docs/ci.md) | GitHub Actions automation |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribuer |
 | [SECURITY.md](SECURITY.md) | Sécurité |
 

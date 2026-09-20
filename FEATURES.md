@@ -16,6 +16,7 @@ Checklist of product goals delivered since the start of the project.
 - [x] Wi‑Fi / LAN operator guide
 - [x] Client profiles (Firefox / Apple / Android / Windows DoH)
 - [x] CI validate + list health + anti-lie probe + Pages deploy
+- [x] Automated CI: regen PRs, release tags, Dependabot, docs-ci, weekly qcow2
 
 ## Pi-hole-like (Blocky)
 

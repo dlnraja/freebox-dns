@@ -1,12 +1,23 @@
 name: build-freebox-os-qcow2
 
-# Build freebox-dns.qcow2 + all-in-one zip for Freebox OS → VM → import disk image.
-# Never polls a live Freebox. Artifact is large (Debian cloud + packages).
+# Build freebox-dns.qcow2 + all-in-one zip for Freebox OS VM import.
+# Never polls a live Freebox.
 
 on:
   workflow_dispatch:
+  schedule:
+    # Weekly Sunday 03:15 UTC — catch Debian cloud bitrot
+    - cron: "15 3 * * 0"
   push:
     branches: [main, master]
+    paths:
+      - "packaging/freebox-os-import/**"
+      - "packaging/freebox-vm/**"
+      - "scripts/build-freebox-qcow2.sh"
+      - "scripts/package-freebox-os-allinone.sh"
+      - "cloud-init/freebox-vm-user-data.yaml"
+      - ".github/workflows/build-freebox-os-qcow2.yml"
+  pull_request:
     paths:
       - "packaging/freebox-os-import/**"
       - "packaging/freebox-vm/**"
@@ -17,22 +28,72 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: qcow2-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  kit-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Zip import kit (no disk image)
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          VER="${GITHUB_SHA::7}"
+          STAGE=dist/kit-stage
+          rm -rf "$STAGE" && mkdir -p "$STAGE"
+          cp packaging/freebox-os-import/* "$STAGE/"
+          cp packaging/freebox-vm/manifest.json "$STAGE/vm-manifest.json"
+          cp packaging/freebox-vm/packages.txt "$STAGE/"
+          cp packaging/freebox-vm/install.sh "$STAGE/"
+          (cd "$STAGE" && zip -9 "../freebox-dns-freeboxos-kit-${VER}.zip" ./*)
+          ls -lh dist/freebox-dns-freeboxos-kit-*.zip
+      - name: Upload kit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: freebox-dns-freeboxos-kit
+          path: dist/freebox-dns-freeboxos-kit-*.zip
+          retention-days: 14
+          if-no-files-found: error
+
   build-qcow2:
+    # Full image: schedule, dispatch, release, or push to main (not every PR)
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      github.event_name == 'release' ||
+      (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'))
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache Debian cloud image downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            /var/tmp/freebox-dns-cloud-cache
+            dist/.cloud-cache
+          key: cloud-img-${{ runner.os }}-${{ hashFiles('scripts/build-freebox-qcow2.sh') }}
+          restore-keys: cloud-img-${{ runner.os }}-
+
       - name: Install qemu + cloud-init tools
         run: |
-          set -e
+          set -euo pipefail
           sudo apt-get update -y
           sudo apt-get install -y qemu-utils cloud-image-utils genisoimage curl zip ca-certificates
 
       - name: Build qcow2 + cidata ISO
         run: |
-          set -e
+          set -euo pipefail
           chmod +x scripts/build-freebox-qcow2.sh scripts/package-freebox-os-allinone.sh packaging/freebox-vm/install.sh
           bash scripts/build-freebox-qcow2.sh
           test -f dist/freebox-dns.qcow2
@@ -61,33 +122,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -e
+          set -euo pipefail
           gh release upload "${{ github.event.release.tag_name }}" \
             dist/freebox-dns-freeboxos-allinone-*.zip \
             dist/freebox-dns.qcow2 \
             dist/freebox-dns-cidata.iso \
             --clobber
-
-  kit-only:
-    # Lightweight kit without qcow2 (JSON + cloud-init) — always available
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Zip import kit (no disk image)
-        run: |
-          set -e
-          mkdir -p dist
-          VER="${GITHUB_SHA::7}"
-          STAGE=dist/kit-stage
-          rm -rf "$STAGE" && mkdir -p "$STAGE"
-          cp packaging/freebox-os-import/* "$STAGE/"
-          cp packaging/freebox-vm/manifest.json "$STAGE/vm-manifest.json"
-          cp packaging/freebox-vm/packages.txt "$STAGE/"
-          cp packaging/freebox-vm/install.sh "$STAGE/"
-          (cd "$STAGE" && zip -9 "../freebox-dns-freeboxos-kit-${VER}.zip" ./*)
-          ls -lh dist/freebox-dns-freeboxos-kit-*.zip
-      - name: Upload kit artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: freebox-dns-freeboxos-kit
-          path: dist/freebox-dns-freeboxos-kit-*.zip

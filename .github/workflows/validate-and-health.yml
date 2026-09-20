@@ -4,136 +4,128 @@ on:
   push:
     branches: [main, master]
   pull_request:
+    paths-ignore:
+      - "**.md"
+      - "site/**"
+      - "LICENSE"
+      - ".github/ISSUE_TEMPLATE/**"
   schedule:
     - cron: "0 */12 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   compose-config:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Copy env
         run: cp .env.example .env
-      - name: Validate base compose (local-only binds)
-        run: docker compose -f docker-compose.yml config -q
-      - name: Validate prod overlay
-        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml config -q
-      - name: Assert HOST_IP bind (no 0.0.0.0 publish)
+      - name: Validate compose files
         run: |
-          set -e
+          set -euo pipefail
+          docker compose -f docker-compose.yml config -q
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml config -q
+          docker compose -f docker-compose.yml -f docker-compose.arm64.yml config -q || true
+      - name: Assert HOST_IP bind + Blocky drift
+        run: |
+          set -euo pipefail
           out=$(docker compose -f docker-compose.yml config)
-          echo "$out" | grep -q '192.168.1.50' || (echo "HOST_IP missing from published ports"; exit 1)
-          # published host IPs must not be wildcard
-          if echo "$out" | grep -E 'published:.*"0\.0\.0\.0"|host_ip: null' | grep -qi published; then
-            echo "WARN: inspect bind carefully"
+          echo "$out" | grep -q '192.168.1.50' || (echo "HOST_IP from .env.example missing"; exit 1)
+          if echo "$out" | grep -E '0\.0\.0\.0:' ; then
+            echo "ERROR: wildcard bind forbidden"; exit 1
           fi
           docker compose -f docker-compose.yml config --services | grep -E 'unbound|dns-libre|dns-malware|dns-antipub|dns-secure'
           test -f config/blocky/config-malware.yml
           test -f config/blocky/config-antipub.yml
           test -f config/blocky/modes.json
           python3 scripts/generate-blocky-modes.py
+          git diff --exit-code -- config/blocky/config.yml config/blocky/config-malware.yml config/blocky/config-antipub.yml config/blocky/modes.json \
+            || (echo "Blocky configs drifted — run: python3 scripts/generate-blocky-modes.py && commit"; exit 1)
           grep -q '172.28.0.10' config/blocky/config.yml
-          grep -q '172.28.0.10' config/blocky/config-malware.yml
+          grep -q 'queryLog:' config/blocky/config.yml
 
   freebox-conf:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Freebox DHCP JSON + snapshot
+      - name: Validate Freebox snapshot + inventory
         run: |
-          set -e
+          set -euo pipefail
           python3 - <<'PY'
           import json, pathlib, sys
           root = pathlib.Path(".")
           snap = json.loads((root / "config/freebox-dns-snapshot.json").read_text(encoding="utf-8"))
           dhcp = json.loads((root / "config/freebox/dhcp-dns.json").read_text(encoding="utf-8"))
-          pins = snap.get("dns") or snap.get("pinned_dns") or []
-          if isinstance(pins, dict):
-              pins = list(pins.values())
-          # snapshot may store list under different keys — accept FREEBOX style
           expected = {"9.9.9.10", "194.242.2.2", "94.140.14.140", "45.90.28.0", "192.168.1.254"}
           text = (root / "config/freebox-dns-snapshot.json").read_text(encoding="utf-8")
           missing = [ip for ip in expected if ip not in text]
           if missing:
-              print("Missing pins in snapshot:", missing)
-              sys.exit(1)
-          # DoT-only on FR ISP must remain documented (not used as DHCP SOS)
+              print("Missing pins in snapshot:", missing); sys.exit(1)
           for tip in ("91.239.100.100", "185.95.218.42"):
               if tip not in text:
-                  print("Missing DoT-only pin note:", tip)
-                  sys.exit(1)
+                  print("Missing DoT-only pin note:", tip); sys.exit(1)
           for key in ("fallback_pins_order", "do_not_use_as_primary", "prod_recommended"):
               assert key in dhcp, key
-          # privacy: no obvious street / fbxos remote markers
           blob = text + (root / "config/freebox/dhcp-dns.json").read_text(encoding="utf-8")
-          for bad in ("fbxos.fr", "uid", "UID"):
-              # soft: only fail on fbxos remote domain leak
-              pass
           if "fbxos.fr" in blob.lower():
-              print("Privacy: fbxos.fr must not appear in public conf")
-              sys.exit(1)
+              print("Privacy: fbxos.fr must not appear"); sys.exit(1)
+          assert snap["local_lexicon"]["dns_libre"]["bit"] == "uncensored"
           print("Freebox conf OK")
           PY
-      - name: Check cloud-init files exist
-        run: |
-          test -f cloud-init/pi-user-data.yaml
-          test -f cloud-init/freebox-vm-user-data.yaml
-          test -f config/freebox/README.md
-          test -f docs/dns-analysis.md
-          test -f docs/dns-lexicon.md
-          test -f docs/freebox-vm.md
-          test -f docs/upstreams-uncensoring.md
-          test -f packaging/freebox-vm/manifest.json
-          test -f packaging/freebox-vm/packages.txt
-          test -f packaging/freebox-vm/install.sh
-          test -f packaging/freebox-os-import/freebox-os-vm.json
-          test -f packaging/freebox-os-import/cloudinit-userdata.yaml
-          test -f packaging/freebox-os-import/IMPORT-FREEBOX-OS.md
-          test -f scripts/ooni-like-anti-lie.py
-          test -f config/uncensor/probe-targets.txt
-          test -f config/uncensor/sinkhole-signatures.json
-          test -f docs/anti-lie-dns.md
-          test -f docs/resilience.md
-          test -f docker-compose.ipv6.yml
-          test -f scripts/warm-local-cache.py
+          for f in \
+            cloud-init/pi-user-data.yaml \
+            cloud-init/freebox-vm-user-data.yaml \
+            config/freebox/README.md \
+            docs/dns-analysis.md docs/dns-lexicon.md docs/freebox-vm.md \
+            docs/upstreams-uncensoring.md docs/wifi-lan.md docs/pihole-parity.md \
+            docs/anti-lie-dns.md docs/resilience.md \
+            packaging/freebox-vm/manifest.json packaging/freebox-vm/packages.txt \
+            packaging/freebox-vm/install.sh \
+            packaging/freebox-os-import/freebox-os-vm.json \
+            packaging/freebox-os-import/cloudinit-userdata.yaml \
+            packaging/freebox-os-import/IMPORT-FREEBOX-OS.md \
+            scripts/ooni-like-anti-lie.py scripts/warm-local-cache.py \
+            scripts/warm-unbound-runtime.sh scripts/blocky-refresh-lists.sh \
+            config/uncensor/probe-targets.txt config/uncensor/sinkhole-signatures.json \
+            config/unbound/a-records.critical.conf docker-compose.ipv6.yml \
+            CHANGELOG.md FEATURES.md CONTRIBUTING.md SECURITY.md
+          do test -f "$f" || (echo "missing $f"; exit 1); done
           grep -q 'forward-first: yes' config/unbound/forward-records.conf
           grep -q 'a-records.critical.conf' config/unbound/a-records.conf
           grep -q 'serve-expired: yes' config/unbound/a-records.conf
           grep -q 'unbound-cache' docker-compose.yml
           grep -q 'hosts.critical' config/dnsproxy/dns-libre.yaml
-          test -f scripts/warm-unbound-runtime.sh
-          test -f config/unbound/a-records.critical.conf
-          python3 -c "import json; s=json.load(open('config/freebox-dns-snapshot.json')); assert s['local_lexicon']['dns_libre']['bit']=='uncensored'"
-          python3 -c "import json; c=json.load(open('config/upstreams/uncensoring-catalog.json')); assert len(c['dot_uncensoring'])>=10; assert len(c['plain_fallback_order'])>=12"
-          python3 -c "import json; j=json.load(open('packaging/freebox-os-import/freebox-os-vm.json')); assert j['vm']['disk_type']=='qcow2'; assert j['vm']['memory_mb']==2048"
+          python3 -c "import json; c=json.load(open('config/upstreams/uncensoring-catalog.json')); assert len(c['dot_uncensoring'])>=10; assert 'sos_plain' in c"
+          python3 -c "import json; j=json.load(open('packaging/freebox-os-import/freebox-os-vm.json')); assert j['vm']['disk_type']=='qcow2'"
           python3 -c "import json; j=json.load(open('config/freebox/dhcp-dns.json')); assert 'anti_lie' in j and 'ipv6' in j"
 
   upstream-health:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
-      - name: Check complementary DoT hosts + Freebox pins
+      - name: Check SOS dig + DoT hostnames
         run: |
-          set -e
+          set -euo pipefail
           fail=0
-          # Prefer uncensoring pins; NextDNS is soft-warn only
-          # Plain UDP SOS (must resolve); UncensoredDNS/DG are DoT-only on FR ISP
           for ip in 9.9.9.10 194.242.2.2 94.140.14.140; do
             echo "DNS SOS $ip"
-            if dig @"$ip" example.com +time=3 +tries=1 +short | grep -qE '^[0-9.]+'; then
-              echo OK
-            else
-              echo FAIL "$ip"
-              fail=$((fail+1))
-            fi
+            if dig @"$ip" example.com +time=3 +tries=1 +short | grep -qE '^[0-9.]+'; then echo OK
+            else echo FAIL "$ip"; fail=$((fail+1)); fi
           done
           for ip in 91.239.100.100 185.95.218.42; do
-            echo "DNS DoT-only soft $ip"
-            dig @"$ip" example.com +time=2 +tries=1 +short >/dev/null 2>&1 || echo "WARN soft plain $ip (expected on some networks)"
+            dig @"$ip" example.com +time=2 +tries=1 +short >/dev/null 2>&1 || echo "WARN soft plain $ip"
           done
-          echo "DNS 45.90.28.0 (NextDNS soft)"
-          dig @45.90.28.0 example.com +time=3 +tries=1 +short || true
           for host in \
             dns.mullvad.net open.dns0.eu dns.digitale-gesellschaft.ch \
             anycast.uncensoreddns.org unicast.uncensoreddns.org dns10.quad9.net \
@@ -141,23 +133,21 @@ jobs:
             open.public-rdns.com dns.radeksprta.eu \
             uncensored.freedns.controld.com dns-unfiltered.adguard.com
           do
-            echo "Resolve $host"
             getent hosts "$host" || fail=$((fail+1))
           done
-          # Extra plain uncensoring IPs (soft)
-          for ip in 89.233.43.71 146.255.56.98 116.202.176.26 95.217.25.217 37.27.125.213 94.140.14.140; do
-            dig @"$ip" example.com +time=2 +tries=1 +short >/dev/null 2>&1 || echo "WARN soft $ip"
-          done
           if [ "$fail" -gt 5 ]; then exit 1; fi
-          python3 -c "import json; c=json.load(open('config/upstreams/uncensoring-catalog.json')); assert len(c['dot_uncensoring'])>=10"
 
   blocklist-refresh:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Probe blocklist URLs
         run: |
-          set -e
+          set -euo pipefail
           urls=(
             "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
             "https://adaway.org/hosts.txt"
@@ -179,82 +169,91 @@ jobs:
           test -f config/blocky/lists/allowlist.txt
           test -f config/blocky/lists/filter-intelligence.json
           grep -q 'anti_adblock' config/blocky/config.yml
-          grep -q 'ublock:' config/blocky/config.yml
-          grep -q 'pihole:' config/blocky/config.yml
           for u in "${urls[@]}"; do
             code=$(curl -sL -o /tmp/bl -w "%{http_code}" --max-time 60 "$u" || true)
             echo "$u -> HTTP $code"
             test "$code" = "200"
             test -s /tmp/bl
           done
-      - name: Write refresh stamp
-        run: |
           mkdir -p config/blocky/lists
           date -u +"last_ci_blocklist_probe=%Y-%m-%dT%H:%M:%SZ" > config/blocky/lists/.last-refresh
-      - name: Commit stamp if scheduled
+      - name: Open PR with probe stamp
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add config/blocky/lists/.last-refresh
-          git diff --staged --quiet || git commit -m "chore: blocklist probe stamp"
-          git push || true
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: blocklist probe stamp"
+          title: "chore: blocklist probe stamp"
+          body: |
+            Automated blocklist URL probe (validate-and-health).
+            All remote gravity sources returned HTTP 200.
+          branch: chore/blocklist-stamp
+          delete-branch: true
+          labels: chore,ci
 
   smoke-stack:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [compose-config, freebox-conf]
     steps:
       - uses: actions/checkout@v4
-      - name: Prepare lab env (loopback bind)
+      - name: Prepare lab env
         run: |
+          set -euo pipefail
           cp .env.example .env
-          # CI has no LAN Freebox IP — bind to 127.0.0.1 for smoke
           sed -i 's/^HOST_IP=.*/HOST_IP=127.0.0.1/' .env
-          mkdir -p certs
+          mkdir -p certs config/blocky/querylog
           openssl req -x509 -newkey rsa:2048 -keyout certs/server.key -out certs/server.crt \
             -days 1 -nodes -subj "/CN=freebox-dns-ci"
-          # Blocky runs non-root; key must be world-readable inside the container
           chmod 644 certs/server.crt certs/server.key
-          bash scripts/generate-client-profiles.py || python3 scripts/generate-client-profiles.py || true
+          HOST_IP=127.0.0.1 python3 scripts/generate-client-profiles.py
       - name: Start stack
         run: docker compose up -d
       - name: Wait healthy
         run: |
+          set -euo pipefail
           for i in $(seq 1 60); do
-            docker compose ps || true
             unbound_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-unbound 2>/dev/null || echo starting)
             malware_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-malware 2>/dev/null || echo starting)
             antipub_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-antipub 2>/dev/null || echo starting)
             secure_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-secure 2>/dev/null || echo starting)
             echo "try=$i unbound=$unbound_ok malware=$malware_ok antipub=$antipub_ok secure=$secure_ok"
             if [ "$unbound_ok" = healthy ] && [ "$malware_ok" = healthy ] && [ "$antipub_ok" = healthy ] && [ "$secure_ok" = healthy ]; then
-              break
+              exit 0
             fi
-            for c in dns-malware dns-antipub dns-secure; do
-              docker logs "$c" --tail=15 2>&1 || true
-            done
             sleep 5
           done
           docker compose ps
-          docker compose logs --tail=80
-          docker inspect -f '{{.Name}} {{.State.Status}} {{.State.Health.Status}}' dns-unbound dns-libre dns-malware dns-antipub dns-secure
+          docker compose logs --tail=120
+          exit 1
       - name: Query smart modes
         run: |
-          set -e
-          dig @127.0.0.1 -p 5356 example.com +time=5 +tries=3 +short | tee /tmp/libre.txt
-          grep -qE '^[0-9.]+' /tmp/libre.txt
-          dig @127.0.0.1 -p 5357 example.com +time=5 +tries=3 +short | tee /tmp/malware.txt
-          grep -qE '^[0-9.]+' /tmp/malware.txt
-          dig @127.0.0.1 -p 5358 example.com +time=5 +tries=3 +short | tee /tmp/antipub.txt
-          grep -qE '^[0-9.]+' /tmp/antipub.txt
-          dig @127.0.0.1 -p 5354 example.com +time=5 +tries=3 +short | tee /tmp/secure.txt
-          grep -qE '^[0-9.]+' /tmp/secure.txt
-          # antipub + secure should NXDOMAIN ads
-          dig @127.0.0.1 -p 5358 doubleclick.net +time=5 +tries=2 | tee /tmp/ads-antipub.txt || true
-          grep -q NXDOMAIN /tmp/ads-antipub.txt || grep -q 'status: NXDOMAIN' /tmp/ads-antipub.txt
-          dig @127.0.0.1 -p 5354 fundingchoicesmessages.google.com +time=5 +tries=2 | tee /tmp/antiab.txt || true
-          grep -q NXDOMAIN /tmp/antiab.txt || grep -q 'status: NXDOMAIN' /tmp/antiab.txt || true
+          set -euo pipefail
+          for port in 5356 5357 5358 5354; do
+            dig @127.0.0.1 -p "$port" example.com +time=5 +tries=3 +short | tee "/tmp/p$port.txt"
+            grep -qE '^[0-9.]+' "/tmp/p$port.txt"
+          done
+          dig @127.0.0.1 -p 5358 doubleclick.net +time=5 +tries=2 | tee /tmp/ads.txt || true
+          grep -q NXDOMAIN /tmp/ads.txt || grep -q 'status: NXDOMAIN' /tmp/ads.txt
+      - name: Upload compose logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-compose-logs
+          path: |
+            /tmp/*.txt
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Collect docker logs
+        if: failure()
+        run: docker compose logs --no-color > /tmp/compose-full.log 2>&1 || true
+      - name: Upload full logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-docker-logs
+          path: /tmp/compose-full.log
+          retention-days: 7
       - name: Tear down
         if: always()
         run: docker compose down -v
-

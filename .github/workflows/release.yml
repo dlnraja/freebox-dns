@@ -1,0 +1,80 @@
+name: release
+
+# Create a GitHub Release from tag vX.Y.Z (pushed) or workflow_dispatch.
+# qcow2 + package-vm attach assets on the `release` event.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to create/release (e.g. v1.2.0)"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Resolve tag
+        id: meta
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          case "$TAG" in v*.*.*) ;; *) echo "Tag must match vX.Y.Z"; exit 1 ;; esac
+          VER="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "ver=$VER" >> "$GITHUB_OUTPUT"
+      - name: Build release notes from CHANGELOG
+        env:
+          VER: ${{ steps.meta.outputs.ver }}
+          TAG: ${{ steps.meta.outputs.tag }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, os
+          text = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          ver, tag = os.environ["VER"], os.environ["TAG"]
+          m = re.search(rf"## \[{re.escape(ver)}\].*?(?=\n## |\Z)", text, re.S)
+          body = (m.group(0).strip() if m else f"## {tag}\n\nSee CHANGELOG.md and FEATURES.md.")
+          body += "\n\n---\nDocs: https://dlnraja.github.io/freebox-dns/\n"
+          Path("/tmp/release-notes.md").write_text(body, encoding="utf-8")
+          print(body[:800])
+          PY
+      - name: Ensure tag exists (dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.meta.outputs.tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "$TAG" 2>/dev/null || git tag "$TAG" || true
+          git push origin "$TAG"
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.meta.outputs.tag }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file /tmp/release-notes.md
+          else
+            gh release create "$TAG" --title "$TAG" --notes-file /tmp/release-notes.md
+          fi

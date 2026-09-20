@@ -1,0 +1,77 @@
+name: docs-ci
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "site/**"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "FEATURES.md"
+      - "CONTRIBUTING.md"
+      - "SECURITY.md"
+      - ".github/workflows/docs-ci.yml"
+  push:
+    branches: [main, master]
+    paths:
+      - "docs/**"
+      - "site/**"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "FEATURES.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Required docs present
+        run: |
+          set -euo pipefail
+          for f in \
+            README.md CHANGELOG.md FEATURES.md CONTRIBUTING.md SECURITY.md \
+            docs/README.md docs/pihole-parity.md docs/wifi-lan.md docs/filtering.md \
+            docs/resilience.md docs/CREDITS.md docs/modes.md \
+            site/index.html site/guides/wifi-lan.html site/guides/filtering.html
+          do test -f "$f"; done
+      - name: README links to Pages + Pi-hole parity
+        run: |
+          set -euo pipefail
+          grep -q 'dlnraja.github.io/freebox-dns' README.md
+          grep -q 'pihole-parity' README.md
+          grep -q 'CHANGELOG' README.md
+      - name: Site local link check
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root = Path("site")
+          missing = []
+          for f in root.rglob("*.html"):
+              text = f.read_text(encoding="utf-8", errors="ignore")
+              for m in re.finditer(r'href="([^"#?]+)"', text):
+                  href = m.group(1)
+                  if href.startswith(("http://", "https://", "mailto:", "//")):
+                      continue
+                  target = (f.parent / href).resolve()
+                  try:
+                      target.relative_to(root.resolve())
+                  except ValueError:
+                      continue
+                  if not target.exists():
+                      missing.append(f"{f}: broken {href}")
+          if missing:
+              print("\n".join(missing))
+              raise SystemExit(1)
+          print("site links OK")
+          PY

@@ -3,6 +3,7 @@
 | Ressource | Lien |
 | --- | --- |
 | **Guides illustrés (GitHub Pages)** | [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) |
+| **CI / GitHub Actions** | [ci.md](ci.md) |
 | **Features livrées** | [../FEATURES.md](../FEATURES.md) |
 | **Changelog** | [../CHANGELOG.md](../CHANGELOG.md) |
 | **Modes smart spit** | [modes.md](modes.md) |

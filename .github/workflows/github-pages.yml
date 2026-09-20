@@ -7,6 +7,11 @@ on:
       - "site/**"
       - "docs/CREDITS.md"
       - ".github/workflows/github-pages.yml"
+  pull_request:
+    paths:
+      - "site/**"
+      - "docs/CREDITS.md"
+      - ".github/workflows/github-pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -19,7 +24,51 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync CREDITS + basic site checks
+        run: |
+          set -euo pipefail
+          cp docs/CREDITS.md site/CREDITS.md
+          test -f site/index.html
+          test -f site/guides/wifi-lan.html
+          test -f site/guides/filtering.html
+          test -f site/guides/dhcp-safe.html
+          test -f site/guides/deploy-freebox.html
+          grep -q 'freebox-dns' site/index.html
+          grep -q '9.9.9.10' site/guides/dhcp-safe.html
+          # Broken relative links (simple)
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root = Path("site")
+          html = list(root.rglob("*.html"))
+          missing = []
+          for f in html:
+              text = f.read_text(encoding="utf-8", errors="ignore")
+              for m in re.finditer(r'href="([^"#?]+)"', text):
+                  href = m.group(1)
+                  if href.startswith(("http://", "https://", "mailto:", "//")):
+                      continue
+                  target = (f.parent / href).resolve()
+                  try:
+                      target.relative_to(root.resolve())
+                  except ValueError:
+                      continue
+                  if not target.exists():
+                      missing.append(f"{f}: {href}")
+          if missing:
+              print("\n".join(missing[:50]))
+              raise SystemExit(f"{len(missing)} broken local link(s)")
+          print(f"OK {len(html)} html files")
+          PY
+
   deploy:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: check
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -27,9 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Sync CREDITS into site
-        run: |
-          cp docs/CREDITS.md site/CREDITS.md
-          # Keep HTML credits as primary; markdown available for raw viewers
+        run: cp docs/CREDITS.md site/CREDITS.md
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
@@ -39,3 +86,18 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify Pages live
+        if: success()
+        run: |
+          set -euo pipefail
+          url="${{ steps.deployment.outputs.page_url }}"
+          url="${url:-https://dlnraja.github.io/freebox-dns/}"
+          for i in 1 2 3 4 5; do
+            code=$(curl -sL -o /tmp/pages.html -w "%{http_code}" --max-time 30 "$url" || true)
+            echo "try=$i HTTP $code"
+            if [ "$code" = "200" ] && grep -qi freebox /tmp/pages.html; then
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 1

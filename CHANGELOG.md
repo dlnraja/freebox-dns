@@ -10,6 +10,19 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/).
 - GitHub Pages Wi‑Fi / LAN guide; Freebox VM as canonical resolver
 - Pi-hole parity map (`docs/pihole-parity.md`)
 - CONTRIBUTING, SECURITY, issue templates
+- CI docs (`docs/ci.md`) — automated workflows
+
+### CI / Automation
+
+- Harden all workflows: `permissions`, `concurrency`, timeouts, path filters
+- Blocky generator **drift gate**; smoke artifacts on failure
+- Anti-lie + blocklist stamp open **PRs** (no silent `git push || true`)
+- Pages PR link-check + post-deploy curl verify
+- Weekly qcow2 schedule + cloud image cache; kit on every packaging PR
+- Nightly `ci-regen` (Blocky + client profiles → PR)
+- `release.yml` from `v*.*.*` tags + CHANGELOG notes
+- Dependabot for GitHub Actions
+- `docs-ci.yml` for README/docs/site gates
 
 ## [1.2.0] — 2026-09-20
 

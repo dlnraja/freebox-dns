@@ -1,0 +1,47 @@
+name: ci-regen
+
+# Nightly: regenerate Blocky modes + client profile examples; open PR if drift.
+# Also stamps that generators still run cleanly.
+
+on:
+  schedule:
+    - cron: "40 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ci-regen
+  cancel-in-progress: true
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Regenerate Blocky + example client profiles
+        run: |
+          set -euo pipefail
+          python3 scripts/generate-blocky-modes.py
+          # Example profiles use documented VM placeholder (not a live PC)
+          HOST_IP=192.168.1.71 python3 scripts/generate-client-profiles.py
+          test -f config/blocky/config.yml
+          test -f config/clients/generated/endpoints.json
+          grep -q '192.168.1.71' config/clients/generated/endpoints.json
+          grep -q 'queryLog:' config/blocky/config.yml
+      - name: Open PR if generators drifted
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: regenerate Blocky modes and client profiles"
+          title: "chore: regenerate Blocky modes and client profiles"
+          body: |
+            Nightly CI regen (`ci-regen` workflow).
+            - `python3 scripts/generate-blocky-modes.py`
+            - `HOST_IP=192.168.1.71 python3 scripts/generate-client-profiles.py`
+          branch: chore/ci-regen
+          delete-branch: true
+          labels: chore,ci

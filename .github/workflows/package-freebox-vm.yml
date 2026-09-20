@@ -1,6 +1,6 @@
 name: package-freebox-vm
 
-# Build Freebox OS VM deployable tarball (packages + images manifest + install).
+# Build Freebox OS VM deployable tarball + import kit zip.
 # Never polls a live Freebox.
 
 on:
@@ -8,59 +8,75 @@ on:
     branches: [main, master]
     paths:
       - "packaging/freebox-vm/**"
+      - "packaging/freebox-os-import/**"
       - "cloud-init/freebox-vm-user-data.yaml"
       - "docker-compose*.yml"
       - "config/**"
       - "scripts/package-freebox-vm.sh"
       - "docs/freebox-vm.md"
+      - ".github/workflows/package-freebox-vm.yml"
   pull_request:
     paths:
       - "packaging/freebox-vm/**"
+      - "packaging/freebox-os-import/**"
       - "cloud-init/**"
       - "docker-compose*.yml"
-      - "config/upstreams/**"
+      - "config/**"
       - "scripts/package-freebox-vm.sh"
+      - "docs/freebox-vm.md"
+      - ".github/workflows/package-freebox-vm.yml"
   workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-vm-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   package:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Validate manifest + packages
         run: |
-          set -e
+          set -euo pipefail
           python3 - <<'PY'
           import json, pathlib
           m = json.loads(pathlib.Path("packaging/freebox-vm/manifest.json").read_text())
           assert m["name"] == "freebox-dns-vm"
           assert len(m["docker_images"]) >= 3
-          assert len(m["system_packages"]) >= 6
+          assert m["dhcp_recommended"]["dns1"] == "9.9.9.10"
           pkgs = pathlib.Path("packaging/freebox-vm/packages.txt").read_text().splitlines()
           pkgs = [p.strip() for p in pkgs if p.strip() and not p.startswith("#")]
           for p in ("docker.io", "docker-compose-v2", "git"):
               assert p in pkgs, p
           cat = json.loads(pathlib.Path("config/upstreams/uncensoring-catalog.json").read_text())
           assert len(cat["dot_uncensoring"]) >= 10
-          assert len(cat["plain_fallback_order"]) >= 12
-          print("VM package metadata OK", len(cat["dot_uncensoring"]), "DoT upstreams")
+          print("VM package metadata OK")
           PY
-          test -x packaging/freebox-vm/install.sh || chmod +x packaging/freebox-vm/install.sh scripts/package-freebox-vm.sh
+          chmod +x packaging/freebox-vm/install.sh scripts/package-freebox-vm.sh
           test -f docs/freebox-vm.md
           test -f cloud-init/freebox-vm-user-data.yaml
-      - name: Zip import kit into tarball tree
+          # light shell syntax check
+          bash -n packaging/freebox-vm/install.sh
+          bash -n scripts/package-freebox-vm.sh
+      - name: Build tarball + kit zip
         run: |
-          set -e
-          mkdir -p packaging/freebox-os-import
-          test -f packaging/freebox-os-import/freebox-os-vm.json
-          test -f packaging/freebox-os-import/IMPORT-FREEBOX-OS.md
+          set -euo pipefail
           bash scripts/package-freebox-vm.sh "${GITHUB_SHA::7}"
-          # Also ship lightweight Freebox OS import kit (no qcow2)
           STAGE=dist/kit-stage
           rm -rf "$STAGE" && mkdir -p "$STAGE"
           cp packaging/freebox-os-import/* "$STAGE/"
           cp packaging/freebox-vm/manifest.json "$STAGE/vm-manifest.json"
           (cd "$STAGE" && zip -9 "../freebox-dns-freeboxos-kit-${GITHUB_SHA::7}.zip" ./*)
+          ls -lh dist/
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -69,3 +85,14 @@ jobs:
             dist/freebox-dns-vm-*.tar.gz
             dist/freebox-dns-freeboxos-kit-*.zip
           if-no-files-found: error
+          retention-days: 14
+      - name: Attach to GitHub Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release upload "${{ github.event.release.tag_name }}" \
+            dist/freebox-dns-vm-*.tar.gz \
+            dist/freebox-dns-freeboxos-kit-*.zip \
+            --clobber

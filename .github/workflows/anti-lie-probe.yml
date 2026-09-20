@@ -1,8 +1,6 @@
 name: anti-lie-probe
 
-# OONI-inspired DNS consistency probe — detect Free/gateway lying DNS and
-# refresh local A/AAAA overrides served before upstream forward.
-# Never polls the user's Freebox remotely; uses public Free ISP resolvers + pins.
+# OONI-inspired DNS consistency probe — never polls the user's Freebox remotely.
 
 on:
   schedule:
@@ -12,24 +10,44 @@ on:
     paths:
       - "scripts/ooni-like-anti-lie.py"
       - "scripts/web-connectivity-lite.py"
+      - "scripts/warm-local-cache.py"
       - "config/uncensor/**"
       - ".github/workflows/anti-lie-probe.yml"
+  pull_request:
+    paths:
+      - "scripts/ooni-like-anti-lie.py"
+      - "scripts/web-connectivity-lite.py"
+      - "scripts/warm-local-cache.py"
+      - "config/uncensor/**"
+      - ".github/workflows/anti-lie-probe.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: anti-lie-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 
 jobs:
   probe:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Install dig
-        run: sudo apt-get update -y && sudo apt-get install -y dnsutils python3
+        run: sudo apt-get update -y && sudo apt-get install -y dnsutils
       - name: Warm critical local seeds
         run: python3 scripts/warm-local-cache.py
-      - name: Run OONI-like anti-lie probe (DNS)
+      - name: Run OONI-like anti-lie probe
         run: python3 scripts/ooni-like-anti-lie.py
-      - name: Web Connectivity lite (HTTP blockpage fingerprint)
+      - name: Web Connectivity lite
         run: python3 scripts/web-connectivity-lite.py
       - name: Show report summary
         run: |
+          set -euo pipefail
           python3 - <<'PY'
           import json
           r=json.load(open("config/uncensor/last-probe-report.json"))
@@ -46,16 +64,34 @@ jobs:
           test -f config/uncensor/hosts.generated
           test -f config/uncensor/hosts.critical
           test -f config/unbound/a-records.conf
-          test -f config/uncensor/last-web-connectivity.json
           grep -q github.com config/uncensor/hosts.critical
-      - name: Commit generated overrides
+      - name: Upload probe reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: anti-lie-reports
+          path: |
+            config/uncensor/last-probe-report.json
+            config/uncensor/last-web-connectivity.json
+          retention-days: 14
+      - name: Open PR with refreshed overrides
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add config/uncensor/hosts.generated config/uncensor/hosts.critical \
-                  config/uncensor/blocky-custom-dns.yml config/uncensor/last-probe-report.json \
-                  config/uncensor/last-web-connectivity.json \
-                  config/unbound/a-records.conf config/unbound/a-records.critical.conf
-          git diff --staged --quiet || git commit -m "chore: refresh local-first DNS + web-connectivity strip"
-          git push || true
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: refresh local-first DNS + web-connectivity strip"
+          title: "chore: refresh anti-lie local DNS overrides"
+          body: |
+            Automated OONI-like probe + web-connectivity strip.
+            Updates `hosts.*`, Unbound `a-records*.conf`, and probe reports.
+          branch: chore/anti-lie-refresh
+          delete-branch: true
+          labels: chore,dns,anti-lie
+          add-paths: |
+            config/uncensor/hosts.generated
+            config/uncensor/hosts.critical
+            config/uncensor/blocky-custom-dns.yml
+            config/uncensor/last-probe-report.json
+            config/uncensor/last-web-connectivity.json
+            config/unbound/a-records.conf
+            config/unbound/a-records.critical.conf
