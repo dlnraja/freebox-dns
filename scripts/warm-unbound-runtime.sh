@@ -4,11 +4,15 @@ set -eu
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+HOST_IP="${HOST_IP:-127.0.0.1}"
+# Optional .env HOST_IP (ignore BOM / exotic chars — do not `source`)
 if [[ -f .env ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  source .env || true
-  set +a
+  line="$(grep -E '^HOST_IP=' .env | tail -1 | tr -d '\r' || true)"
+  if [[ -n "$line" ]]; then
+    HOST_IP="${line#HOST_IP=}"
+    HOST_IP="${HOST_IP%%#*}"
+    HOST_IP="$(echo "$HOST_IP" | tr -d '[:space:]\"' )"
+  fi
 fi
 HOST_IP="${HOST_IP:-127.0.0.1}"
 
