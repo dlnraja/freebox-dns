@@ -1,0 +1,45 @@
+{
+  "smart_split": [
+    "1_local_hosts_uncensor",
+    "2_blocky_mode_groups",
+    "3_unbound_forward_first_dot",
+    "4_root_or_serve_expired"
+  ],
+  "modes": {
+    "uncensored": {
+      "engine": "dnsproxy",
+      "service": "dns-libre",
+      "filter": [],
+      "note": "No denylist \u2014 local hosts then Unbound"
+    },
+    "malware": {
+      "engine": "blocky",
+      "service": "dns-malware",
+      "config": "config/blocky/config-malware.yml",
+      "filter": [
+        "malware"
+      ]
+    },
+    "antipub": {
+      "engine": "blocky",
+      "service": "dns-antipub",
+      "config": "config/blocky/config-antipub.yml",
+      "filter": [
+        "pihole",
+        "ublock",
+        "anti_adblock"
+      ]
+    },
+    "secure": {
+      "engine": "blocky",
+      "service": "dns-secure",
+      "config": "config/blocky/config.yml",
+      "filter": [
+        "pihole",
+        "ublock",
+        "anti_adblock",
+        "malware"
+      ]
+    }
+  }
+}

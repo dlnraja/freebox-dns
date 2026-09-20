@@ -1,6 +1,7 @@
-# Production overlay — classic DNS :53 on HOST_IP (local LAN only)
+# Production overlay — classic DNS :53 = uncensored (dns-libre) on HOST_IP
 # Usage:
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ARM64 Freebox / Pi also add: -f docker-compose.arm64.yml
 
 services:
   dns-libre:
@@ -10,6 +11,20 @@ services:
       - "${HOST_IP}:${DOH_LIBRE_PORT:-8453}:443/tcp"
       - "${HOST_IP}:${DOT_LIBRE_PORT:-853}:853/tcp"
       - "${HOST_IP}:${DOQ_LIBRE_PORT:-853}:853/udp"
+
+  dns-malware:
+    ports:
+      - "${HOST_IP}:${DNS_MALWARE_PORT:-5355}:53/udp"
+      - "${HOST_IP}:${DNS_MALWARE_PORT:-5355}:53/tcp"
+      - "${HOST_IP}:${DOH_MALWARE_PORT:-8445}:443/tcp"
+      - "${HOST_IP}:${DOT_MALWARE_PORT:-8855}:853/tcp"
+
+  dns-antipub:
+    ports:
+      - "${HOST_IP}:${DNS_ANTIPUB_PORT:-5358}:53/udp"
+      - "${HOST_IP}:${DNS_ANTIPUB_PORT:-5358}:53/tcp"
+      - "${HOST_IP}:${DOH_ANTIPUB_PORT:-8446}:443/tcp"
+      - "${HOST_IP}:${DOT_ANTIPUB_PORT:-8856}:853/tcp"
 
   dns-secure:
     ports:

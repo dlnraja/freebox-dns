@@ -26,14 +26,19 @@
     "arch": "aarch64",
     "note": "Freebox OS VMs are ARM64. amd64 images only PXE-loop.",
     "disk_gb": 16,
-    "services": ["unbound", "dns-libre", "dns-secure"],
+    "services": ["unbound", "dns-libre", "dns-malware", "dns-antipub", "dns-secure"],
     "ports": {
-      "dns_libre": 53,
+      "dns_uncensored": 53,
+      "dns_malware": 5355,
+      "dns_antipub": 5358,
       "dns_secure": 5354,
-      "doh_libre": 8453,
+      "doh_uncensored": 8453,
+      "doh_malware": 8445,
+      "doh_antipub": 8446,
       "doh_secure": 8444,
       "blocky_ui": 3080
-    }
+    },
+    "modes_doc": "docs/modes.md"
   },
   "dhcp_after_import": {
     "dns_primary": "91.239.100.100",

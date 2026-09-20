@@ -1,6 +1,11 @@
-# Freebox dual-DNS — local-only LAN exposure (dns-libre + dns-secure)
-# Binds published ports to HOST_IP only (not 0.0.0.0 / not the public Internet).
-# Transports: plain DNS · DoH · DoT · DoQ (libre) · DoH+DoT (secure)
+# Freebox smart DNS — 4 modes on HOST_IP (local-only, never 0.0.0.0)
+#
+#   uncensored  dns-libre    :5356 / DoH :8453  → hosts → Unbound → world
+#   malware     dns-malware  :5355 / DoH :8445  → hosts → malware lists → Unbound
+#   antipub     dns-antipub  :5358 / DoH :8446  → hosts → ads+uBO+anti-adblock → Unbound
+#   secure      dns-secure   :5354 / DoH :8444  → hosts → antipub+malware → Unbound
+#
+# Smart split: LOCAL lists first, then forward via shared Unbound (DoT uncensoring).
 
 name: freebox-dns
 
@@ -50,10 +55,67 @@ services:
       retries: 1
       start_period: 10s
 
+  dns-malware:
+    image: ghcr.io/0xerr0r/blocky:latest
+    container_name: dns-malware
+    restart: unless-stopped
+    depends_on:
+      unbound:
+        condition: service_healthy
+    ports:
+      - "${HOST_IP}:${DNS_MALWARE_PORT:-5355}:53/udp"
+      - "${HOST_IP}:${DNS_MALWARE_PORT:-5355}:53/tcp"
+      - "${HOST_IP}:${DOH_MALWARE_PORT:-8445}:443/tcp"
+      - "${HOST_IP}:${DOT_MALWARE_PORT:-8855}:853/tcp"
+    volumes:
+      - ./config/blocky/config-malware.yml:/app/config.yml:ro
+      - ./config/blocky/lists:/app/lists:ro
+      - ./config/uncensor:/app/uncensor:ro
+      - ./certs:/app/certs:ro
+    networks:
+      dnsnet:
+        ipv4_address: 172.28.0.31
+    healthcheck:
+      test: ["CMD", "/app/blocky", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  dns-antipub:
+    image: ghcr.io/0xerr0r/blocky:latest
+    container_name: dns-antipub
+    restart: unless-stopped
+    depends_on:
+      unbound:
+        condition: service_healthy
+    ports:
+      - "${HOST_IP}:${DNS_ANTIPUB_PORT:-5358}:53/udp"
+      - "${HOST_IP}:${DNS_ANTIPUB_PORT:-5358}:53/tcp"
+      - "${HOST_IP}:${DOH_ANTIPUB_PORT:-8446}:443/tcp"
+      - "${HOST_IP}:${DOT_ANTIPUB_PORT:-8856}:853/tcp"
+    volumes:
+      - ./config/blocky/config-antipub.yml:/app/config.yml:ro
+      - ./config/blocky/lists:/app/lists:ro
+      - ./config/uncensor:/app/uncensor:ro
+      - ./certs:/app/certs:ro
+    networks:
+      dnsnet:
+        ipv4_address: 172.28.0.32
+    healthcheck:
+      test: ["CMD", "/app/blocky", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
   dns-secure:
     image: ghcr.io/0xerr0r/blocky:latest
     container_name: dns-secure
     restart: unless-stopped
+    depends_on:
+      unbound:
+        condition: service_healthy
     ports:
       - "${HOST_IP}:${DNS_SECURE_PORT:-5354}:53/udp"
       - "${HOST_IP}:${DNS_SECURE_PORT:-5354}:53/tcp"
@@ -73,9 +135,8 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 25s
+      start_period: 40s
 
-  # Optional OSINT radiography (Korben / Lissy93 Web-Check) — profile: osint
   web-check:
     profiles: ["osint"]
     image: lissy93/web-check:latest

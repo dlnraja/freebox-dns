@@ -28,7 +28,13 @@ jobs:
           if echo "$out" | grep -E 'published:.*"0\.0\.0\.0"|host_ip: null' | grep -qi published; then
             echo "WARN: inspect bind carefully"
           fi
-          docker compose -f docker-compose.yml config --services | grep -E 'unbound|dns-libre|dns-secure'
+          docker compose -f docker-compose.yml config --services | grep -E 'unbound|dns-libre|dns-malware|dns-antipub|dns-secure'
+          test -f config/blocky/config-malware.yml
+          test -f config/blocky/config-antipub.yml
+          test -f config/blocky/modes.json
+          python3 scripts/generate-blocky-modes.py
+          grep -q '172.28.0.10' config/blocky/config.yml
+          grep -q '172.28.0.10' config/blocky/config-malware.yml
 
   freebox-conf:
     runs-on: ubuntu-latest
@@ -202,30 +208,35 @@ jobs:
           for i in $(seq 1 60); do
             docker compose ps || true
             unbound_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-unbound 2>/dev/null || echo starting)
-            libre_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-libre 2>/dev/null || echo starting)
+            malware_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-malware 2>/dev/null || echo starting)
+            antipub_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-antipub 2>/dev/null || echo starting)
             secure_ok=$(docker inspect -f '{{.State.Health.Status}}' dns-secure 2>/dev/null || echo starting)
-            echo "try=$i unbound=$unbound_ok libre=$libre_ok secure=$secure_ok"
-            if [ "$unbound_ok" = healthy ] && [ "$secure_ok" = healthy ]; then
+            echo "try=$i unbound=$unbound_ok malware=$malware_ok antipub=$antipub_ok secure=$secure_ok"
+            if [ "$unbound_ok" = healthy ] && [ "$malware_ok" = healthy ] && [ "$antipub_ok" = healthy ] && [ "$secure_ok" = healthy ]; then
               break
             fi
-            # dump blocky crash early
-            if [ "$secure_ok" = unhealthy ] || [ "$secure_ok" = starting ]; then
-              docker logs dns-secure --tail=20 2>&1 || true
-            fi
+            for c in dns-malware dns-antipub dns-secure; do
+              docker logs "$c" --tail=15 2>&1 || true
+            done
             sleep 5
           done
           docker compose ps
           docker compose logs --tail=80
-          docker inspect -f '{{.Name}} {{.State.Status}} {{.State.Health.Status}}' dns-unbound dns-libre dns-secure
-      - name: Query dns-libre + dns-secure
+          docker inspect -f '{{.Name}} {{.State.Status}} {{.State.Health.Status}}' dns-unbound dns-libre dns-malware dns-antipub dns-secure
+      - name: Query smart modes
         run: |
           set -e
           dig @127.0.0.1 -p 5356 example.com +time=5 +tries=3 +short | tee /tmp/libre.txt
           grep -qE '^[0-9.]+' /tmp/libre.txt
+          dig @127.0.0.1 -p 5355 example.com +time=5 +tries=3 +short | tee /tmp/malware.txt
+          grep -qE '^[0-9.]+' /tmp/malware.txt
+          dig @127.0.0.1 -p 5358 example.com +time=5 +tries=3 +short | tee /tmp/antipub.txt
+          grep -qE '^[0-9.]+' /tmp/antipub.txt
           dig @127.0.0.1 -p 5354 example.com +time=5 +tries=3 +short | tee /tmp/secure.txt
           grep -qE '^[0-9.]+' /tmp/secure.txt
-          # Pi-hole / uBlock / anti-adblock should NXDOMAIN
-          dig @127.0.0.1 -p 5354 doubleclick.net +time=5 +tries=2 || true
+          # antipub + secure should NXDOMAIN ads
+          dig @127.0.0.1 -p 5358 doubleclick.net +time=5 +tries=2 | tee /tmp/ads-antipub.txt || true
+          grep -q NXDOMAIN /tmp/ads-antipub.txt || grep -q 'status: NXDOMAIN' /tmp/ads-antipub.txt
           dig @127.0.0.1 -p 5354 fundingchoicesmessages.google.com +time=5 +tries=2 | tee /tmp/antiab.txt || true
           grep -q NXDOMAIN /tmp/antiab.txt || grep -q 'status: NXDOMAIN' /tmp/antiab.txt || true
       - name: Tear down

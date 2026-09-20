@@ -1,21 +1,38 @@
 {
   "host_ip": "192.168.1.15",
+  "smart_split": "local_hosts \u2192 mode_filter \u2192 unbound_forward \u2192 world",
   "personalities": {
-    "libre": {
+    "uncensored": {
       "bit": "uncensored",
       "plain": "192.168.1.15:5356",
       "doh": "https://192.168.1.15:8453/dns-query",
       "dot": "tls://192.168.1.15:8853",
-      "doq": "quic://192.168.1.15:8853",
-      "note": "No ads filter \u2014 anti-censure + anti-lie hosts"
+      "note": "No denylist \u2014 local hosts then Unbound (anti-censure)",
+      "doq": "quic://192.168.1.15:8853"
+    },
+    "malware": {
+      "bit": "malware-free",
+      "plain": "192.168.1.15:5355",
+      "doh": "https://192.168.1.15:8445/dns-query",
+      "dot": "tls://192.168.1.15:8855",
+      "note": "Malware/phishing only \u2014 ads still resolve",
+      "doq": null
+    },
+    "antipub": {
+      "bit": "ads-free",
+      "plain": "192.168.1.15:5358",
+      "doh": "https://192.168.1.15:8446/dns-query",
+      "dot": "tls://192.168.1.15:8856",
+      "note": "Pi-hole + uBlock DNS + anti\u2013anti-adblock (intelligent)",
+      "doq": null
     },
     "secure": {
       "bit": "threat-local",
       "plain": "192.168.1.15:5354",
       "doh": "https://192.168.1.15:8444/dns-query",
       "dot": "tls://192.168.1.15:8854",
-      "doq": null,
-      "note": "Pi-hole + uBlock + anti-adblock + malware"
+      "note": "Full: antipub + malware",
+      "doq": null
     }
   },
   "sos_plain": [
@@ -26,8 +43,7 @@
   "cert": "certs/server.crt (self-signed \u2014 install/trust on clients for DoH/DoT)",
   "freebox_os": {
     "dhcp_dns1_sos": "91.239.100.100",
-    "dhcp_dns2_vm": "192.168.1.15",
-    "app_doh_libre": "https://192.168.1.15:8453/dns-query",
-    "app_doh_secure": "https://192.168.1.15:8444/dns-query"
+    "dhcp_dns2_vm_uncensored": "192.168.1.15",
+    "modes_doc": "docs/modes.md"
   }
 }

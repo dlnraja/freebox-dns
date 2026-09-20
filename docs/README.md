@@ -3,7 +3,7 @@
 | Ressource | Lien |
 | --- | --- |
 | **Guides illustrés (GitHub Pages)** | [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/) |
-| **Crédits / citations / sources** | [CREDITS.md](CREDITS.md) |
+| **Modes smart spit** | [modes.md](modes.md) |
 | Freebox DHCP / DoH | [freebox.md](freebox.md) |
 | Import VM Freebox (QCOW2) | [freebox-vm.md](freebox-vm.md) |
 | Déploiement sûr | [safe-freebox-deploy.md](safe-freebox-deploy.md) |

@@ -86,135 +86,136 @@ def apple_mobileconfig(name: str, doh_url: str, server_addrs: list[str]) -> byte
 
 def main() -> int:
     host = load_host_ip()
-    doh_libre = env_int("DOH_LIBRE_PORT", 8453)
-    doh_secure = env_int("DOH_SECURE_PORT", 8444)
-    dot_libre = env_int("DOT_LIBRE_PORT", 8853)
-    dot_secure = env_int("DOT_SECURE_PORT", 8854)
-    doq_libre = env_int("DOQ_LIBRE_PORT", 8853)
-    dns_libre = env_int("DNS_LIBRE_PORT", 5356)
-    dns_secure = env_int("DNS_SECURE_PORT", 5354)
-
-    libre_doh = f"https://{host}:{doh_libre}/dns-query"
-    secure_doh = f"https://{host}:{doh_secure}/dns-query"
-    # Android Private DNS needs a hostname:port is NOT supported — document IP:port via apps
-    # that support custom DoT (Intra, Nebulo) or use :853 in prod
-    libre_dot = f"{host}:{dot_libre}"
-    secure_dot = f"{host}:{dot_secure}"
-    libre_doq = f"quic://{host}:{doq_libre}"
+    modes = {
+        "uncensored": {
+            "bit": "uncensored",
+            "dns": env_int("DNS_LIBRE_PORT", 5356),
+            "doh": env_int("DOH_LIBRE_PORT", 8453),
+            "dot": env_int("DOT_LIBRE_PORT", 8853),
+            "doq": env_int("DOQ_LIBRE_PORT", 8853),
+            "note": "No denylist — local hosts then Unbound (anti-censure)",
+        },
+        "malware": {
+            "bit": "malware-free",
+            "dns": env_int("DNS_MALWARE_PORT", 5355),
+            "doh": env_int("DOH_MALWARE_PORT", 8445),
+            "dot": env_int("DOT_MALWARE_PORT", 8855),
+            "doq": None,
+            "note": "Malware/phishing only — ads still resolve",
+        },
+        "antipub": {
+            "bit": "ads-free",
+            "dns": env_int("DNS_ANTIPUB_PORT", 5358),
+            "doh": env_int("DOH_ANTIPUB_PORT", 8446),
+            "dot": env_int("DOT_ANTIPUB_PORT", 8856),
+            "doq": None,
+            "note": "Pi-hole + uBlock DNS + anti–anti-adblock (intelligent)",
+        },
+        "secure": {
+            "bit": "threat-local",
+            "dns": env_int("DNS_SECURE_PORT", 5354),
+            "doh": env_int("DOH_SECURE_PORT", 8444),
+            "dot": env_int("DOT_SECURE_PORT", 8854),
+            "doq": None,
+            "note": "Full: antipub + malware",
+        },
+    }
 
     OUT.mkdir(parents=True, exist_ok=True)
 
+    personalities = {}
+    for name, m in modes.items():
+        doh = f"https://{host}:{m['doh']}/dns-query"
+        entry = {
+            "bit": m["bit"],
+            "plain": f"{host}:{m['dns']}",
+            "doh": doh,
+            "dot": f"tls://{host}:{m['dot']}",
+            "note": m["note"],
+        }
+        if m.get("doq"):
+            entry["doq"] = f"quic://{host}:{m['doq']}"
+        else:
+            entry["doq"] = None
+        personalities[name] = entry
+
     catalog = {
         "host_ip": host,
-        "personalities": {
-            "libre": {
-                "bit": "uncensored",
-                "plain": f"{host}:{dns_libre}",
-                "doh": libre_doh,
-                "dot": f"tls://{libre_dot}",
-                "doq": libre_doq,
-                "note": "No ads filter — anti-censure + anti-lie hosts",
-            },
-            "secure": {
-                "bit": "threat-local",
-                "plain": f"{host}:{dns_secure}",
-                "doh": secure_doh,
-                "dot": f"tls://{secure_dot}",
-                "doq": None,
-                "note": "Pi-hole + uBlock + anti-adblock + malware",
-            },
-        },
+        "smart_split": "local_hosts → mode_filter → unbound_forward → world",
+        "personalities": personalities,
         "sos_plain": ["91.239.100.100", "185.95.218.42", "9.9.9.10"],
         "cert": "certs/server.crt (self-signed — install/trust on clients for DoH/DoT)",
         "freebox_os": {
             "dhcp_dns1_sos": "91.239.100.100",
-            "dhcp_dns2_vm": host,
-            "app_doh_libre": libre_doh,
-            "app_doh_secure": secure_doh,
+            "dhcp_dns2_vm_uncensored": host,
+            "modes_doc": "docs/modes.md",
         },
     }
     (OUT / "endpoints.json").write_text(json.dumps(catalog, indent=2) + "\n", encoding="utf-8")
 
-    # Firefox enterprise policies (about:policies)
-    firefox = {
-        "policies": {
-            "DNSOverHTTPS": {
-                "Enabled": True,
-                "ProviderURL": libre_doh,
-                "Locked": False,
-                "Fallback": True,
+    for name, m in modes.items():
+        doh = f"https://{host}:{m['doh']}/dns-query"
+        firefox = {
+            "policies": {
+                "DNSOverHTTPS": {
+                    "Enabled": True,
+                    "ProviderURL": doh,
+                    "Locked": False,
+                    "Fallback": True,
+                }
             }
         }
-    }
-    (OUT / "firefox-policies-libre.json").write_text(json.dumps(firefox, indent=2) + "\n", encoding="utf-8")
-    firefox_sec = {
-        "policies": {
-            "DNSOverHTTPS": {
-                "Enabled": True,
-                "ProviderURL": secure_doh,
-                "Locked": False,
-                "Fallback": True,
-            }
-        }
-    }
-    (OUT / "firefox-policies-secure.json").write_text(
-        json.dumps(firefox_sec, indent=2) + "\n", encoding="utf-8"
-    )
+        (OUT / f"firefox-policies-{name}.json").write_text(
+            json.dumps(firefox, indent=2) + "\n", encoding="utf-8"
+        )
+        (OUT / f"apple-doh-{name}.mobileconfig").write_bytes(
+            apple_mobileconfig(name, doh, [host])
+        )
 
-    (OUT / "apple-doh-libre.mobileconfig").write_bytes(
-        apple_mobileconfig("libre", libre_doh, [host])
-    )
-    (OUT / "apple-doh-secure.mobileconfig").write_bytes(
-        apple_mobileconfig("secure", secure_doh, [host])
-    )
+    lines = [
+        "# Android / custom DoH apps (Nebulo, Intra, RethinkDNS)",
+        f"# Host VM: {host}",
+        "",
+    ]
+    for name, m in modes.items():
+        lines.append(f"# {name} ({m['bit']}): https://{host}:{m['doh']}/dns-query")
+        lines.append(f"#   plain {host}:{m['dns']}  DoT {host}:{m['dot']}")
+    lines.append("")
+    lines.append("# Stock Android Private DNS needs a hostname — prefer custom DoH apps on LAN.")
+    (OUT / "android-private-dns.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    android = f"""# Android Private DNS
-# Stock Android Private DNS only accepts a hostname (no IP:port).
-# Options:
-#  1) Prod Freebox VM with DoT on :853 + local name freebox-dns.local (trust cert)
-#  2) Use Nebulo / RethinkDNS / Intra with custom DoH:
-#       Libre:  {libre_doh}
-#       Secure: {secure_doh}
-#  3) DoT custom apps:
-#       Libre:  {libre_dot}
-#       Secure: {secure_dot}
-#
-# Freebox mobile app: set DHCP DNS to VM; browsers use DoH URLs above.
-"""
-    (OUT / "android-private-dns.txt").write_text(android, encoding="utf-8")
-
-    win = f"""# Windows 11 DoH (Admin PowerShell) — libre personality
-# Requires trusting certs/server.crt in "Trusted Root" for the LAN IP.
-$doh = '{libre_doh}'
+    unc = personalities["uncensored"]
+    win = f"""# Windows 11 DoH (Admin PowerShell) — uncensored by default
+$doh = '{unc["doh"]}'
 Add-DnsClientDohServerAddress -ServerAddress '{host}' -DohTemplate $doh -AllowFallbackToUdp $true -AutoUpgrade $true
-Set-DnsClientServerAddress -InterfaceAlias (Get-NetAdapter | ? Status -eq 'Up' | select -First 1 -ExpandProperty Name) -ServerAddresses '{host}'
-# Secure personality template: {secure_doh}
+# Other modes: malware={personalities['malware']['doh']} antipub={personalities['antipub']['doh']} secure={personalities['secure']['doh']}
 """
     (OUT / "windows-doh.ps1").write_text(win, encoding="utf-8")
 
+    rows = ["| Mode | Plain | DoH | DoT |", "| --- | --- | --- | --- |"]
+    for name, p in personalities.items():
+        rows.append(f"| **{name}** | `{p['plain']}` | `{p['doh']}` | `{p['dot']}` |")
     readme = f"""# Client encrypted DNS profiles (generated)
 
-Host: `{host}`
+Host: `{host}`  
+Smart split: **local hosts → mode filter → Unbound → world** — see [docs/modes.md](../../../docs/modes.md)
 
-| Personality | Plain | DoH | DoT | DoQ |
-| --- | --- | --- | --- | --- |
-| **libre** | `{host}:{dns_libre}` | `{libre_doh}` | `tls://{libre_dot}` | `{libre_doq}` |
-| **secure** | `{host}:{dns_secure}` | `{secure_doh}` | `tls://{secure_dot}` | — |
+{chr(10).join(rows)}
 
 ## Freebox OS / app
 
-1. DHCP (après health VM) : DNS1=`91.239.100.100`, DNS2=`{host}` (ou inverse seulement si double check OK).
-2. Navigateurs / Freebox app Web : coller l’URL DoH **libre** ou **secure**.
-3. iOS/macOS : installer `apple-doh-libre.mobileconfig` (Réglages → Profil).
-4. Firefox : `about:policies` ← `firefox-policies-libre.json`.
+1. DHCP (après health VM) : DNS1=`91.239.100.100`, DNS2=`{host}` (uncensored `:53` en prod).
+2. Choix de mode : coller l’URL DoH du tableau (navigateur / app).
+3. iOS/macOS : `apple-doh-<mode>.mobileconfig`.
+4. Firefox : `firefox-policies-<mode>.json`.
 5. Trust `certs/server.crt` (auto-signé LAN).
 
 Regenerate: `python3 scripts/generate-client-profiles.py`
 """
     (OUT / "README.md").write_text(readme, encoding="utf-8")
     print(f"wrote profiles -> {OUT}")
-    print(f"  DoH libre  {libre_doh}")
-    print(f"  DoH secure {secure_doh}")
+    for name, p in personalities.items():
+        print(f"  {name:12} {p['doh']}")
     return 0
 
 

@@ -1,18 +1,28 @@
 ﻿# Modèle de filtrage (lexique pins → local)
 
-Voir le glossaire : [dns-lexicon.md](dns-lexicon.md) · catalogue : [`config/blocky/lists/filter-intelligence.json`](../config/blocky/lists/filter-intelligence.json)
+Voir le glossaire : [dns-lexicon.md](dns-lexicon.md) · **modes smart spit** : [modes.md](modes.md) · catalogue : [`config/blocky/lists/filter-intelligence.json`](../config/blocky/lists/filter-intelligence.json)
 
-## dns-libre — bit `uncensored`
+Chaîne commune : **hosts locaux → filtre du mode → Unbound (DoT) → monde**.
+
+## uncensored — `dns-libre`
 
 Inspiré de **UncensoredDNS** (#1), **Digitale Gesellschaft** (#2), **Quad9 Unsecured** (#3).
 
 - Pas de blocklists (*keine Sperrlisten*).
-- Amonts DoT non censeurs ; réponses *unblocked*.
+- Amonts DoT non censeurs via Unbound ; réponses *unblocked*.
 - Objectif : éviter les « DNS menteurs » / pages ANJ·DGCCRF.
 
-## dns-secure — bit `threat-local`
+## malware — `dns-malware`
 
-Pare-feu DNS local façon **Pi-hole + uBlock Origin**, sans cloud NextDNS ni contrôle parental.
+Menaces / phishing uniquement (groupe Blocky `malware`). Les pubs restent résolues.
+
+## antipub — `dns-antipub`
+
+Pare-feu pubs/trackers intelligent (**Pi-hole + uBlock Origin DNS + anti–anti-adblock**), sans listes malware.
+
+## secure — `dns-secure` — bit `threat-local`
+
+antipub **+** malware, sans cloud NextDNS ni contrôle parental.
 
 ### Features mappées intelligemment
 

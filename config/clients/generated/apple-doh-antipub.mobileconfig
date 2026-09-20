@@ -14,18 +14,18 @@
 					<string>192.168.1.15</string>
 				</array>
 				<key>ServerURL</key>
-				<string>https://192.168.1.15:8444/dns-query</string>
+				<string>https://192.168.1.15:8446/dns-query</string>
 			</dict>
 			<key>PayloadDescription</key>
-			<string>freebox-dns secure DoH</string>
+			<string>freebox-dns antipub DoH</string>
 			<key>PayloadDisplayName</key>
-			<string>freebox-dns secure</string>
+			<string>freebox-dns antipub</string>
 			<key>PayloadIdentifier</key>
-			<string>fr.freeboxdns.doh.secure</string>
+			<string>fr.freeboxdns.doh.antipub</string>
 			<key>PayloadType</key>
 			<string>com.apple.dnsSettings.managed</string>
 			<key>PayloadUUID</key>
-			<string>CBE9C388-E1F3-459D-9C17-7FA1D4B80051</string>
+			<string>6E521755-B82C-4922-851E-2511E358F645</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 			<key>ProhibitDisablement</key>
@@ -33,17 +33,17 @@
 		</dict>
 	</array>
 	<key>PayloadDescription</key>
-	<string>Encrypted DNS (DoH) → freebox-dns secure</string>
+	<string>Encrypted DNS (DoH) → freebox-dns antipub</string>
 	<key>PayloadDisplayName</key>
-	<string>freebox-dns secure DoH</string>
+	<string>freebox-dns antipub DoH</string>
 	<key>PayloadIdentifier</key>
-	<string>fr.freeboxdns.profile.secure</string>
+	<string>fr.freeboxdns.profile.antipub</string>
 	<key>PayloadRemovalDisallowed</key>
 	<false/>
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>D1F23F90-FDEA-4B06-9659-AD35521EC583</string>
+	<string>B6398DAD-805C-4409-9213-6BE09A664E79</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>

@@ -5,15 +5,17 @@ Stack DNS open-source pour **Freebox** (Delta / Ultra / VM Freebox locale), auss
 **Guides illustrés (GitHub Pages)** : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/)  
 **Crédits & sources tierces** : [docs/CREDITS.md](docs/CREDITS.md)
 
-Deux personnalités locales, chacune en **DNS classique (UDP/TCP)** et **DoH** (`/dns-query`) :
+La VM **héberge son DNS** avec **smart spit** : listes locales d’abord, puis forward Unbound. Quatre modes :
 
-| Service | Bit (lexique pins) | Filtrage |
-| --- | --- | --- |
-| **dns-libre** | `uncensored` ← UncensoredDNS + DG + Quad9 Unsecured | Aucun (*keine Sperrlisten*) |
-| **dns-secure** | `threat-local` ← Pi-hole + uBlock + anti–anti-adblock (local) | Ads/trackers/malware + anti-adblock CDNs |
+| Mode | Service | Port lab | DoH | Filtrage |
+| --- | --- | --- | --- | --- |
+| **uncensored** | `dns-libre` | `5356` (prod `:53`) | `:8453` | Aucun denylist |
+| **malware** | `dns-malware` | `5355` | `:8445` | Menaces uniquement |
+| **antipub** | `dns-antipub` | `5358` | `:8446` | Pubs + trackers + anti–anti-adblock |
+| **secure** | `dns-secure` | `5354` | `:8444` | antipub + malware |
 
-Lexique détaillé : [docs/dns-lexicon.md](docs/dns-lexicon.md).  
-Anti–DNS menteur (OONI) : [docs/anti-lie-dns.md](docs/anti-lie-dns.md) · OSINT (Web-Check / Korben) : [docs/osint-toolkit.md](docs/osint-toolkit.md) · DNS chiffré (DoH/DoT/DoQ) : [docs/encrypted-dns.md](docs/encrypted-dns.md) · résilience local-first : [docs/resilience.md](docs/resilience.md) · IPv6 : `docker-compose.ipv6.yml`.
+Détail : [docs/modes.md](docs/modes.md) · lexique : [docs/dns-lexicon.md](docs/dns-lexicon.md).  
+Anti–DNS menteur (OONI) : [docs/anti-lie-dns.md](docs/anti-lie-dns.md) · OSINT : [docs/osint-toolkit.md](docs/osint-toolkit.md) · DoH/DoT/DoQ : [docs/encrypted-dns.md](docs/encrypted-dns.md) · résilience : [docs/resilience.md](docs/resilience.md).
 
 Repli intelligent vers une liste **épinglée une fois** de 5 DNS Freebox/LAN (`FREEBOX_DNS_1..5`). **Aucun sondage distant ultérieur** de votre Freebox.
 
