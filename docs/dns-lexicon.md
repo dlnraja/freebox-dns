@@ -6,11 +6,13 @@ Chaque pin DHCP porte un **vocabulaire métier** distinct. Les DNS locaux du pro
 
 | Pin | IP | Nom | Lexique officiel / bits | Ce qu’on **prend** | Ce qu’on **refuse** |
 | --- | --- | --- | --- | --- | --- |
-| **FREEBOX_DNS_1** | `91.239.100.100` | **UncensoredDNS** | *uncensored*, *censurfri* (DK), anycast/unicast, free, no political filter, DoT/DoH | Anti-censure explicite, résolution complète | Rien à filtrer « pour le bien » |
-| **FREEBOX_DNS_2** | `185.95.218.42` | **Digitale Gesellschaft** | *Privatsphäre*, *kein Logging*, *keine Sperrlisten*, *freier Zugang*, DNSSEC, best-effort associatif, transparency | No-log spirit, pas de Sperrliste amont, chiffrement DoT/DoH, DNSSEC | Garantie SLA commerciale |
-| **FREEBOX_DNS_3** | `9.9.9.10` | **Quad9 Unsecured** (+ ECS) | Quad9 nomme officiellement ce service **Unsecured** / unblocked ; opposé à **Secured** (`9.9.9.9`) ; ECS ; DNSSEC ; anycast | Chemin *unblocked* = réponses non amputées ; vitesse anycast | **Secured** distant (malware chez Quad9) — le filtrage malware se fait **chez nous** |
+| **FREEBOX_DNS_1** | `9.9.9.10` | **Quad9 Unsecured** (+ ECS) | Quad9 **Unsecured** / unblocked ; opposé à **Secured** (`9.9.9.9`) ; ECS ; DNSSEC ; anycast | Chemin *unblocked* + **SOS UDP** joignable sur Free | **Secured** distant — malware filtré **chez nous** |
+| **FREEBOX_DNS_2** | `194.242.2.2` | **Mullvad Unfiltered** | unfiltered, privacy, DoT/DoH (pas adblock/family) | Privacy + réponses intactes | Profils adblock/family Mullvad |
+| **FREEBOX_DNS_3** | `94.140.14.140` | **AdGuard Non-filtering** | non-filtering / unfiltered (≠ dns.adguard.com) | SOS #3 plain UDP | AdGuard « default » filtré |
 | **FREEBOX_DNS_4** | `45.90.28.0` | **NextDNS** | *firewall for the modern Internet*, threat model, denylist/allowlist, configs/profiles, ads & trackers, analytics, block page, « Pi-hole in the cloud » | Dual-profil, denylist ads/malware, UI/analytics locale, modèle *threat* | Parental / porn / SafeSearch / censure morale / cloud obligatoire / logs longs |
 | **FREEBOX_DNS_5** | `192.168.1.254` | **Passerelle Freebox** | gateway, LAN, toujours joignable, dernier hop site | *local-only*, repli LAN, résilience site | DNS FAI comme vérité primaire (« DNS menteur ») |
+
+> **DoT-only sur Free ISP** : UncensoredDNS `91.239.100.100` et Digitale Gesellschaft `185.95.218.42` restent dans le catalogue Unbound DoT (UDP/53 souvent timeout / refused).
 
 ### Glossaire croisé
 
@@ -76,12 +78,13 @@ Inspiré de **#5**.
 ## Mapping opérationnel
 
 ```text
-FREEBOX_DNS_1 UncensoredDNS  ──lexique──►  dns-libre.bit = uncensoring
-FREEBOX_DNS_2 Digitale Ges.  ──lexique──►  no-log / no Sperrliste / DoT privacy
-FREEBOX_DNS_3 Quad9 Unsecured ──lexique──►  unblocked answers (libre path)
-FREEBOX_DNS_4 NextDNS        ──lexique──►  dns-secure = dual profile + denylist
+FREEBOX_DNS_1 Quad9 Unsecured ──lexique──►  dns-libre.bit = uncensoring + SOS UDP
+FREEBOX_DNS_2 Mullvad Unfilt. ──lexique──►  privacy / unfiltered DoT
+FREEBOX_DNS_3 AdGuard NF      ──lexique──►  unfiltered SOS #3
+FREEBOX_DNS_4 NextDNS         ──lexique──►  dns-secure = dual profile + denylist
                                            (sans cloud / parental)
-FREEBOX_DNS_5 Freebox GW     ──lexique──►  local-only bind + ultimate LAN fallback
+FREEBOX_DNS_5 Freebox GW      ──lexique──►  local-only bind + ultimate LAN fallback
+DoT-only: UncensoredDNS + Digitale Gesellschaft ──► Unbound catalogue
 ```
 
 Fichiers liés : `config/freebox-dns-snapshot.json` → `local_lexicon`, `config/freebox/dhcp-dns.json`, Compose `dns-libre` / `dns-secure`.

@@ -4,7 +4,8 @@ Safe Freebox OS VM deploy helper - NEVER breaks LAN DNS.
 
 Rules (hard):
   1. Do NOT change Freebox DHCP DNS primary until VM health is proven.
-  2. Always keep UncensoredDNS 91.239.100.100 as DHCP DNS1 / SOS.
+  2. Always keep a plain-UDP-reachable SOS as DHCP DNS1 (Quad9 Unsecured).
+     UncensoredDNS/DG stay DoT-only — UDP/53 often timed out / refused on FR ISP.
   3. Prefer adding VM as DNS2 first; DNS1=VM only after dual health checks.
   4. Store Freebox app_token only in local .freebox-token.json (gitignored).
   5. Never touch other VMs (e.g. HA OS).
@@ -38,7 +39,9 @@ APP_ID = "fr.freeboxdns.safe.deploy"
 APP_NAME = "freebox-dns-safe-deploy"
 APP_VERSION = "1.0.0"
 DEVICE = "cursor-agent"
-SOS_DNS = ["91.239.100.100", "185.95.218.42", "9.9.9.10"]
+# Plain UDP/53 SOS only (probed from Freebox LAN). DoT-only resolvers are not listed here.
+SOS_DNS = ["9.9.9.10", "194.242.2.2", "94.140.14.140"]
+SOS_LABELS = ["Quad9 Unsecured", "Mullvad Unfiltered", "AdGuard Non-filtering"]
 API = "http://mafreebox.freebox.fr/api/v8"
 WS_UPLOAD = "ws://mafreebox.freebox.fr/api/v8/ws/upload"
 DISK_ROOT = "/Disque 1"
@@ -74,9 +77,9 @@ def http_json(method: str, url: str, data=None, headers=None, timeout: int = 60)
 
 def cmd_sos() -> int:
     print("=== SOS / filet de secours DNS (ne pas casser Internet) ===")
-    print(f"  DNS1 = {SOS_DNS[0]}  (UncensoredDNS)")
-    print(f"  DNS2 = {SOS_DNS[1]}  (Digitale Gesellschaft)")
-    print(f"  DNS3 = {SOS_DNS[2]}  (Quad9 Unsecured)")
+    for i, (ip, label) in enumerate(zip(SOS_DNS, SOS_LABELS), start=1):
+        print(f"  DNS{i} = {ip}  ({label})")
+    print("Note: UncensoredDNS / Digitale Gesellschaft = DoT :853 only (UDP/53 often blocked).")
     print("Rollback: python scripts/safe-freebox-vm-deploy.py dhcp-sos")
     return 0
 
@@ -397,7 +400,7 @@ def dns_probe(host: str, qname: str, port: int = 53, timeout: float = 3.0) -> bo
 
 
 def cmd_dhcp_safe() -> int:
-    """DNS1=SOS UncensoredDNS, DNS2=VM IP. Requires health OK + confirmation file."""
+    """DNS1=SOS Quad9 Unsecured, DNS2=VM IP. Requires health OK + confirmation file."""
     s = open_session()
     if not s:
         return 1
@@ -442,7 +445,7 @@ def cmd_dhcp_safe() -> int:
         print("Need 'settings' permission on the Freebox app, or set manually in Freebox OS.")
         print(f"Manual: DNS1={SOS_DNS[0]} DNS2={ip}")
         return 1
-    print("DHCP safe applied. DHCP untouched primary = UncensoredDNS.")
+    print(f"DHCP safe applied. Primary SOS = {SOS_DNS[0]} ({SOS_LABELS[0]}).")
     return 0
 
 

@@ -12,12 +12,21 @@
     "family.dns.mullvad.net",
     "adblock.dns.mullvad.net"
   ],
+  "sos_plain": {
+    "note": "UDP/53 reachable on FR Free ISP (probed). Use for DHCP SOS / bootstrap.",
+    "order": ["9.9.9.10", "194.242.2.2", "94.140.14.140"],
+    "labels": ["Quad9 Unsecured", "Mullvad Unfiltered", "AdGuard Non-filtering"]
+  },
+  "dot_only_on_fr_isp": {
+    "note": "TCP/UDP 53 often timed out or refused from Freebox LAN; DoT :853 OK — keep in Unbound DoT, not DHCP SOS.",
+    "ipv4": ["91.239.100.100", "89.233.43.71", "185.95.218.42", "185.95.218.43"]
+  },
   "dot_uncensoring": [
     {
       "id": "mullvad",
       "tls_name": "dns.mullvad.net",
       "ipv4": ["194.242.2.2"],
-      "note": "Unfiltered Mullvad (not adblock/family)"
+      "note": "Unfiltered Mullvad (not adblock/family) — also SOS plain #2"
     },
     {
       "id": "dns0_open",
@@ -29,25 +38,25 @@
       "id": "digitale_gesellschaft",
       "tls_name": "dns.digitale-gesellschaft.ch",
       "ipv4": ["185.95.218.42", "185.95.218.43"],
-      "note": "FREEBOX_DNS_2 — keine Sperrlisten"
+      "note": "DoT/DoH only on FR ISP — keine Sperrlisten"
     },
     {
       "id": "uncensoreddns_anycast",
       "tls_name": "anycast.uncensoreddns.org",
       "ipv4": ["91.239.100.100"],
-      "note": "FREEBOX_DNS_1"
+      "note": "DoT/DoH only on FR ISP — not DHCP SOS"
     },
     {
       "id": "uncensoreddns_unicast",
       "tls_name": "unicast.uncensoreddns.org",
       "ipv4": ["89.233.43.71"],
-      "note": "Copenhagen unicast backup"
+      "note": "Copenhagen unicast backup — DoT preferred"
     },
     {
       "id": "quad9_unsecured",
       "tls_name": "dns10.quad9.net",
       "ipv4": ["9.9.9.10", "149.112.112.10"],
-      "note": "FREEBOX_DNS_3 — Quad9 Unsecured (not 9.9.9.9)"
+      "note": "FREEBOX_DNS_1 — Quad9 Unsecured (not 9.9.9.9) — SOS plain #1"
     },
     {
       "id": "applied_privacy",
@@ -89,15 +98,15 @@
       "id": "adguard_unfiltered",
       "tls_name": "dns-unfiltered.adguard.com",
       "ipv4": ["94.140.14.140", "94.140.14.141"],
-      "note": "AdGuard non-filtering resolvers only"
+      "note": "FREEBOX_DNS_3 — AdGuard non-filtering — SOS plain #3"
     }
   ],
   "doh_uncensoring": [
     {"id": "mullvad", "url": "https://dns.mullvad.net/dns-query"},
-    {"id": "digitale_gesellschaft", "url": "https://dns.digitale-gesellschaft.ch/dns-query"},
     {"id": "quad9_unsecured", "url": "https://dns10.quad9.net/dns-query", "note": "Unsecured path — not 9.9.9.9"},
-    {"id": "dns0_open", "url": "https://open.dns0.eu/dns-query"},
-    {"id": "adguard_unfiltered", "url": "https://dns-unfiltered.adguard.com/dns-query"}
+    {"id": "adguard_unfiltered", "url": "https://dns-unfiltered.adguard.com/dns-query"},
+    {"id": "digitale_gesellschaft", "url": "https://dns.digitale-gesellschaft.ch/dns-query"},
+    {"id": "dns0_open", "url": "https://open.dns0.eu/dns-query"}
   ],
   "local_server_transports": {
     "plain": true,
@@ -107,13 +116,11 @@
     "doc": "docs/encrypted-dns.md"
   },
   "plain_fallback_order": [
-    "91.239.100.100",
-    "89.233.43.71",
-    "185.95.218.42",
-    "185.95.218.43",
     "9.9.9.10",
     "149.112.112.10",
     "194.242.2.2",
+    "94.140.14.140",
+    "94.140.14.141",
     "193.110.81.254",
     "146.255.56.98",
     "116.202.176.26",
@@ -121,7 +128,6 @@
     "37.27.125.213",
     "80.211.208.74",
     "76.76.2.5",
-    "94.140.14.140",
     "192.168.1.254"
   ],
   "soft_last_resort": [

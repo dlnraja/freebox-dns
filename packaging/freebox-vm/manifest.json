@@ -54,7 +54,7 @@
   },
   "dhcp_recommended": {
     "dns1": "HOST_IP",
-    "dns2": "91.239.100.100"
+    "dns2": "9.9.9.10"
   },
   "import_freebox_os": {
     "format": "qcow2",

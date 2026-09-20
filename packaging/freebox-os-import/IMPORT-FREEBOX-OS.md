@@ -1,4 +1,4 @@
-﻿# Importer freebox-dns dans Freebox OS (all-in-one)
+# Importer freebox-dns dans Freebox OS (all-in-one)
 
 Freebox OS n’importe **pas** d’OVA : il faut une image disque **`.qcow2`**.  
 Le package all-in-one ajoute aussi un **CD cloud-init** (`.iso`) que Freebox OS peut monter.
@@ -25,7 +25,7 @@ Le package all-in-one ajoute aussi un **CD cloud-init** (`.iso`) que Freebox OS 
 3. Freebox OS → **VM** → **Ajouter une VM** → **Sélectionner une image de disque existante** → `freebox-dns.qcow2`.
 4. Régler : **2 vCPU**, **2048 Mo RAM**, réseau **LAN**, OS **debian**, écran virtuel OK.
 5. **CD-ROM virtuel** → monter `freebox-dns-cidata.iso` (cloud-init au 1er boot).
-6. Démarrer → attendre 2–5 min (Docker + stack) → noter l’**IP LAN** → DHCP **sûr** : DNS1 = `91.239.100.100`, DNS2 = IP_VM.
+6. Démarrer → attendre 2–5 min (Docker + stack) → noter l’**IP LAN** → DHCP **sûr** : DNS1 = `9.9.9.10`, DNS2 = IP_VM.
 
 ## Vérification
 

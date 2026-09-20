@@ -52,12 +52,17 @@ jobs:
           if isinstance(pins, dict):
               pins = list(pins.values())
           # snapshot may store list under different keys — accept FREEBOX style
-          expected = {"91.239.100.100", "185.95.218.42", "9.9.9.10", "45.90.28.0", "192.168.1.254"}
+          expected = {"9.9.9.10", "194.242.2.2", "94.140.14.140", "45.90.28.0", "192.168.1.254"}
           text = (root / "config/freebox-dns-snapshot.json").read_text(encoding="utf-8")
           missing = [ip for ip in expected if ip not in text]
           if missing:
               print("Missing pins in snapshot:", missing)
               sys.exit(1)
+          # DoT-only on FR ISP must remain documented (not used as DHCP SOS)
+          for tip in ("91.239.100.100", "185.95.218.42"):
+              if tip not in text:
+                  print("Missing DoT-only pin note:", tip)
+                  sys.exit(1)
           for key in ("fallback_pins_order", "do_not_use_as_primary", "prod_recommended"):
               assert key in dhcp, key
           # privacy: no obvious street / fbxos remote markers
@@ -108,14 +113,19 @@ jobs:
           set -e
           fail=0
           # Prefer uncensoring pins; NextDNS is soft-warn only
-          for ip in 91.239.100.100 185.95.218.42 9.9.9.10; do
-            echo "DNS $ip"
+          # Plain UDP SOS (must resolve); UncensoredDNS/DG are DoT-only on FR ISP
+          for ip in 9.9.9.10 194.242.2.2 94.140.14.140; do
+            echo "DNS SOS $ip"
             if dig @"$ip" example.com +time=3 +tries=1 +short | grep -qE '^[0-9.]+'; then
               echo OK
             else
-              echo WARN "$ip"
+              echo FAIL "$ip"
               fail=$((fail+1))
             fi
+          done
+          for ip in 91.239.100.100 185.95.218.42; do
+            echo "DNS DoT-only soft $ip"
+            dig @"$ip" example.com +time=2 +tries=1 +short >/dev/null 2>&1 || echo "WARN soft plain $ip (expected on some networks)"
           done
           echo "DNS 45.90.28.0 (NextDNS soft)"
           dig @45.90.28.0 example.com +time=3 +tries=1 +short || true

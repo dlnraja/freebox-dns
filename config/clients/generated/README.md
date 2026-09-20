@@ -12,7 +12,7 @@ Smart split: **local hosts → mode filter → Unbound → world** — see [docs
 
 ## Freebox OS / app
 
-1. DHCP (après health VM) : DNS1=`91.239.100.100`, DNS2=`192.168.1.15` (uncensored `:53` en prod).
+1. DHCP (après health VM) : DNS1=`9.9.9.10` (Quad9 Unsecured SOS), DNS2=`192.168.1.15` (uncensored `:53` en prod).
 2. Choix de mode : coller l’URL DoH du tableau (navigateur / app).
 3. iOS/macOS : `apple-doh-<mode>.mobileconfig`.
 4. Firefox : `firefox-policies-<mode>.json`.

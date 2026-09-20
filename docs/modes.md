@@ -16,7 +16,8 @@ La VM **héberge son propre DNS**. Chaque mode applique le même **smart split**
 | **antipub** | `dns-antipub` | `5358` | `:8446` | Pubs + trackers + anti–anti-adblock |
 | **secure** | `dns-secure` | `5354` | `:8444` | antipub **+** malware |
 
-DHCP Freebox recommandé : DNS1 = SOS `91.239.100.100`, DNS2 = IP VM (**uncensored** `:53`).  
+DHCP Freebox recommandé : DNS1 = SOS `9.9.9.10` (Quad9 Unsecured), DNS2 = IP VM (**uncensored** `:53`).  
+UncensoredDNS / DG = DoT Unbound seulement (UDP/53 souvent bloqué sur Free).  
 Les autres modes se choisissent par **port** ou URL **DoH** (téléphone / navigateur / profil généré).
 
 ## Antipub intelligent

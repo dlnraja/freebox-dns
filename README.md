@@ -1,4 +1,4 @@
-﻿# Freebox Dual DNS — dns-libre + dns-secure
+# Freebox Dual DNS — dns-libre + dns-secure
 
 Stack DNS open-source pour **Freebox** (Delta / Ultra / VM Freebox locale), aussi **Raspberry Pi** et **Windows / WSL2**.
 
@@ -90,9 +90,8 @@ UI Blocky : `http://HOST_IP:3080`
 ## Freebox DHCP
 
 1. Freebox OS → **Paramètres de la Freebox** → **DHCP**.
-2. DNS primaire = `HOST_IP` (**dns-libre** en prod `:53`).
-3. DNS secondaire = `91.239.100.100` (repli UncensoredDNS).
-4. DoH clients : `https://HOST_IP:8453/dns-query` (libre) · `:8444` (secure). DoT/DoQ : voir [docs/encrypted-dns.md](docs/encrypted-dns.md). Profils app : `python3 scripts/generate-client-profiles.py`.
+2. DNS1 = `9.9.9.10` (Quad9 Unsecured SOS) ; DNS2 = `HOST_IP` (**dns-libre** `:53`).
+3. DoH clients : `https://HOST_IP:8453/dns-query` (libre) · `:8444` (secure). DoT/DoQ : voir [docs/encrypted-dns.md](docs/encrypted-dns.md). Profils app : `python3 scripts/generate-client-profiles.py`.
 
 Confs : [`config/freebox/`](config/freebox/) · **Import Freebox OS (QCOW2 all-in-one)** : [packaging/freebox-os-import/](packaging/freebox-os-import/) · [docs/freebox-vm.md](docs/freebox-vm.md) · amonts : [docs/upstreams-uncensoring.md](docs/upstreams-uncensoring.md).
 
@@ -107,9 +106,9 @@ Sur ce dépôt, les 5 DNS ont été **capturés une fois** depuis le LAN (DHCP W
 
 | Variable | Valeur | Identité |
 | --- | --- | --- |
-| FREEBOX_DNS_1 | 91.239.100.100 | UncensoredDNS (anti-censure) |
-| FREEBOX_DNS_2 | 185.95.218.42 | Digitale Gesellschaft (CH) |
-| FREEBOX_DNS_3 | 9.9.9.10 | Quad9 unblocked (+ ECS) |
+| FREEBOX_DNS_1 | 9.9.9.10 | Quad9 Unsecured (SOS UDP) |
+| FREEBOX_DNS_2 | 194.242.2.2 | Mullvad Unfiltered |
+| FREEBOX_DNS_3 | 94.140.14.140 | AdGuard Non-filtering |
 | FREEBOX_DNS_4 | 45.90.28.0 | NextDNS anycast |
 | FREEBOX_DNS_5 | 192.168.1.254 | Passerelle Freebox LAN |
 

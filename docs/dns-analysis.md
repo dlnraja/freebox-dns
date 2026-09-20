@@ -10,11 +10,13 @@ Verdict court : **garder 1–2–3–5 comme filet de secours LAN** ; **ne plus 
 
 | # | IP | Identité | Avantages | Inconvénients | Rôle dans ce projet |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `91.239.100.100` | **UncensoredDNS** | Anti-censure explicite, DoT/DoH, indépendant des opérateurs FR | Moins d’anycast mondial que Cloudflare/Google → latence variable | ✅ Amont DoT + fallback |
-| 2 | `185.95.218.42` | **Digitale Gesellschaft** (CH) | Privacy suisse, pas de filtre politique, DoT solide | Serveurs EU/CH ; moins « proche » hors Europe | ✅ Amont DoT prioritaire |
-| 3 | `9.9.9.10` | **Quad9 unblocked** (+ ECS) | Très rapide (anycast), **sans** blocklist Quad9 (contrairement à `9.9.9.9`) | ECS peut exposer un préfixe réseau ; pas « zéro log » absolu | ✅ Bootstrap + fallback rapide |
-| 4 | `45.90.28.0` | **NextDNS** anycast | Souvent déjà poussé par Freebox/apps | Sans ID de profil : comportement flou ; avec profil : filtres possibles ≠ « libre » | ⚠️ **Fallback dernier recours seulement** |
-| 5 | `192.168.1.254` | **Passerelle Freebox** | Toujours joignable sur le LAN si Internet amont tombe | Résolveur opérateur / politiques Free possibles (« DNS menteur ») | ⚠️ **Repli LAN ultime uniquement** |
+| 1 | `9.9.9.10` | **Quad9 Unsecured** | Anycast rapide, **sans** blocklist Quad9 | ECS peut exposer un préfixe | ✅ DHCP SOS #1 + bootstrap |
+| 2 | `194.242.2.2` | **Mullvad Unfiltered** | Privacy, DoT/DoH, plain UDP OK sur Free | Moins d’anycast que Quad9 | ✅ DHCP SOS #2 + DoT |
+| 3 | `94.140.14.140` | **AdGuard Non-filtering** | Plain UDP OK, unfiltered | Ne pas confondre avec AdGuard filtré | ✅ DHCP SOS #3 |
+| 4 | `45.90.28.0` | **NextDNS** anycast | Souvent déjà poussé par Freebox/apps | Sans ID de profil : comportement flou | ⚠️ **Fallback dernier recours seulement** |
+| 5 | `192.168.1.254` | **Passerelle Freebox** | Toujours joignable sur le LAN | Résolveur opérateur possible | ⚠️ **Repli LAN ultime uniquement** |
+
+DoT-only (pas DHCP SOS) : UncensoredDNS `91.239.100.100`, Digitale Gesellschaft `185.95.218.42`.
 
 ### Référence opérateur (ne pas utiliser en primaire)
 
@@ -30,9 +32,9 @@ Objectif : **non censure + DoT + diversité géographique/juridique**, compléme
 | --- | --- | --- |
 | **Mullvad DNS** | `dns.mullvad.net` | Zéro filtre, zéro log revendiqué, DoT/DoH mature |
 | **dns0.eu** | `dns0.eu` | EU, orientation privacy / anti-malware optionnelle — on utilise la variante **plain** non « kids » |
-| Digitale Gesellschaft | `dns.digitale-gesellschaft.ch` | Déjà excellent (pin #2) |
-| UncensoredDNS | `anycast.uncensoreddns.org` | Déjà excellent (pin #1) |
-| Quad9 unblocked | `dns.quad9.net` via `9.9.9.10` | Bootstrap rapide seulement |
+| Digitale Gesellschaft | `dns.digitale-gesellschaft.ch` | DoT catalogue (UDP/53 souvent filtré sur Free) |
+| UncensoredDNS | `anycast.uncensoreddns.org` | DoT catalogue (UDP/53 souvent filtré sur Free) |
+| Quad9 unblocked | `dns10.quad9.net` via `9.9.9.10` | SOS #1 + bootstrap |
 
 **Exclus volontairement comme amonts primaires :** Google `8.8.8.8`, Cloudflare `1.1.1.1` (centralisation + politiques commerciales), DNS Free, NextDNS profilé, Quad9 `9.9.9.9` (filtre malware distant — on filtre **en local** sur dns-secure).
 

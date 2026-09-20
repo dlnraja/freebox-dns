@@ -1,4 +1,4 @@
-﻿# Freebox OS — rubrique VM (entière) + import QCOW2
+# Freebox OS — rubrique VM (entière) + import QCOW2
 
 Deux façons d’avoir **freebox-dns** sur Freebox Delta / Ultra :
 
@@ -27,7 +27,7 @@ Freebox OS accepte une **image disque `.qcow2`** (pas d’OVA).
 3. Freebox OS → **VM** → **Ajouter** → **image de disque existante** → `freebox-dns.qcow2`.
 4. **2 vCPU** · **2048 Mo** · **LAN** · OS **debian**.
 5. Monter **`freebox-dns-cidata.iso`** en **CD-ROM virtuel** (cloud-init 1er boot).
-6. Démarrer → IP LAN → DHCP DNS1 = IP · DNS2 = `91.239.100.100`.
+6. Démarrer → IP LAN → DHCP DNS1 = IP · DNS2 = `9.9.9.10`.
 
 Détail : [`packaging/freebox-os-import/IMPORT-FREEBOX-OS.md`](../packaging/freebox-os-import/IMPORT-FREEBOX-OS.md).
 

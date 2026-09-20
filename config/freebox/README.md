@@ -12,7 +12,7 @@
 | Champ | Valeur |
 | --- | --- |
 | DNS primaire | `HOST_IP` (dns-libre :53) |
-| DNS secondaire | `91.239.100.100` (UncensoredDNS) |
+| DNS secondaire | `9.9.9.10` (Quad9 Unsecured SOS) |
 
 Fallbacks max : `config/upstreams/uncensoring-catalog.json` → `plain_fallback_order`.
 

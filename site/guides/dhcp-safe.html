@@ -46,11 +46,11 @@
         <table>
           <thead><tr><th>Priorité</th><th>IP</th><th>Service</th></tr></thead>
           <tbody>
-            <tr><td>DNS1</td><td><code>91.239.100.100</code></td><td>UncensoredDNS (anti-censure)</td></tr>
+            <tr><td>DNS1</td><td><code>9.9.9.10</code></td><td>Quad9 Unsecured (SOS UDP)</td></tr>
             <tr><td>DNS2</td><td><code>HOST_IP</code></td><td>VM / Pi freebox-dns</td></tr>
           </tbody>
         </table>
-        <p>Si la VM tombe, le LAN continue via UncensoredDNS. Si la VM répond, elle sert dns-libre en primaire pour les clients qui l'interrogent en secondaire — ou inverse selon votre ordre, mais <strong>toujours deux entrées</strong>.</p>
+        <p>Si la VM tombe, le LAN continue via Quad9 Unsecured. Si la VM répond, elle sert dns-libre en DNS2 — <strong>toujours deux entrées</strong>.</p>
       </div>
     </div>
 
@@ -69,9 +69,9 @@
     <table>
       <thead><tr><th>Priorité</th><th>IP</th><th>Nom</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td><code>91.239.100.100</code></td><td>UncensoredDNS</td></tr>
-        <tr><td>2</td><td><code>185.95.218.42</code></td><td>Digitale Gesellschaft</td></tr>
-        <tr><td>3</td><td><code>9.9.9.10</code></td><td>Quad9 Unsecured</td></tr>
+        <tr><td>1</td><td><code>9.9.9.10</code></td><td>Quad9 Unsecured</td></tr>
+        <tr><td>2</td><td><code>194.242.2.2</code></td><td>Mullvad Unfiltered</td></tr>
+        <tr><td>3</td><td><code>94.140.14.140</code></td><td>AdGuard Non-filtering</td></tr>
       </tbody>
     </table>
 
@@ -125,7 +125,7 @@ bash scripts/health-check.sh</code></pre>
         <div class="step-num">5</div>
         <div class="step-content">
           <h3>DHCP — seulement après health</h3>
-          <p>DNS1 = <code>91.239.100.100</code> · DNS2 = IP VM. Double-check avant d'appliquer.</p>
+          <p>DNS1 = <code>9.9.9.10</code> · DNS2 = IP VM. Double-check avant d'appliquer.</p>
         </div>
       </article>
     </div>
@@ -145,9 +145,9 @@ bash scripts/health-check.sh</code></pre>
     <table>
       <thead><tr><th>Pin</th><th>IP</th><th>Rôle</th></tr></thead>
       <tbody>
-        <tr><td>FREEBOX_DNS_1</td><td><code>91.239.100.100</code></td><td>UncensoredDNS — SOS + lexique dns-libre</td></tr>
-        <tr><td>FREEBOX_DNS_2</td><td><code>185.95.218.42</code></td><td>Digitale Gesellschaft (CH)</td></tr>
-        <tr><td>FREEBOX_DNS_3</td><td><code>9.9.9.10</code></td><td>Quad9 Unsecured</td></tr>
+        <tr><td>FREEBOX_DNS_1</td><td><code>9.9.9.10</code></td><td>Quad9 Unsecured — SOS UDP</td></tr>
+        <tr><td>FREEBOX_DNS_2</td><td><code>194.242.2.2</code></td><td>Mullvad Unfiltered</td></tr>
+        <tr><td>FREEBOX_DNS_3</td><td><code>94.140.14.140</code></td><td>AdGuard Non-filtering</td></tr>
         <tr><td>FREEBOX_DNS_4</td><td><code>45.90.28.0</code></td><td>NextDNS — lexique dns-secure seulement</td></tr>
         <tr><td>FREEBOX_DNS_5</td><td><code>192.168.1.254</code></td><td>Passerelle Freebox LAN (exemple — adaptez à votre réseau)</td></tr>
       </tbody>
@@ -156,9 +156,10 @@ bash scripts/health-check.sh</code></pre>
     <section class="sources-section">
       <h2>Sources &amp; crédits</h2>
       <ul>
-        <li><a href="https://blog.uncensoreddns.org/">UncensoredDNS</a> — pin SOS #1</li>
-        <li><a href="https://www.digitale-gesellschaft.ch/dns/">Digitale Gesellschaft</a></li>
-        <li><a href="https://quad9.net/">Quad9</a> — Unsecured <code>9.9.9.10</code></li>
+        <li><a href="https://quad9.net/">Quad9</a> — Unsecured <code>9.9.9.10</code> (SOS #1)</li>
+        <li><a href="https://mullvad.net/help/dns-over-https-and-dns-over-tls">Mullvad DNS</a> — Unfiltered</li>
+        <li><a href="https://adguard-dns.io/kb/general/dns-providers/">AdGuard DNS</a> — Non-filtering</li>
+        <li><a href="https://blog.uncensoreddns.org/">UncensoredDNS</a> — DoT catalogue (pas DHCP SOS)</li>
         <li><a href="https://dev.freebox.fr/">Freebox OS API v8</a></li>
       </ul>
       <p class="doc-link">Équivalents Markdown : <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/safe-freebox-deploy.md">safe-freebox-deploy.md</a> · <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/dns-pins.md">dns-pins.md</a> · <a href="https://github.com/dlnraja/freebox-dns/blob/main/docs/freebox.md">freebox.md</a></p>

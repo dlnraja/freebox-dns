@@ -2,9 +2,9 @@
 
 ## État de sécurité constaté
 
-- Le **PC Wi‑Fi** utilise déjà les pins UncensoredDNS / DG / Quad9 / NextDNS — **pas** la stack Docker locale en DNS système.
-- Donc déployer une VM Freebox **ne doit pas** toucher au DHCP tant qu’elle n’est pas saine.
-- **DHCP Freebox n’a pas été modifié** par les scripts (règle dure).
+- Le **PC Wi‑Fi** utilise les pins SOS plain (Quad9 / Mullvad / AdGuard) — **pas** la stack Docker locale en DNS système.
+- Déployer une VM Freebox **ne doit pas** toucher au DHCP tant qu’elle n’est pas saine.
+- **UncensoredDNS / Digitale Gesellschaft** : DoT `:853` OK depuis la Freebox, mais **UDP/53 souvent timeout / refused** → interdits en DHCP SOS.
 
 ## Filet SOS (si panne DNS)
 
@@ -12,9 +12,9 @@ Freebox OS → DHCP → DNS personnalisés :
 
 | Priorité | IP | Nom |
 | --- | --- | --- |
-| 1 | `91.239.100.100` | UncensoredDNS |
-| 2 | `185.95.218.42` | Digitale Gesellschaft |
-| 3 | `9.9.9.10` | Quad9 Unsecured |
+| 1 | `9.9.9.10` | Quad9 Unsecured |
+| 2 | `194.242.2.2` | Mullvad Unfiltered |
+| 3 | `94.140.14.140` | AdGuard Non-filtering |
 
 ```bash
 python scripts/safe-freebox-vm-deploy.py sos
@@ -29,11 +29,12 @@ python scripts/safe-freebox-vm-deploy.py dhcp-sos   # après auth API
 4. **FTP** — copier vers `/VMs/` sur le disque Freebox (mot de passe Freebox OS).
 5. **VM** — Freebox OS → VM → image disque existante → monter ISO CD → démarrer.
 6. **health** — `dig @IP_VM example.com` OK.
-7. **DHCP (seulement après health)** — DNS1 = pin UncensoredDNS, DNS2 = IP_VM **ou** l’inverse seulement si double check OK.
+7. **DHCP (seulement après health)** — DNS1 = `9.9.9.10`, DNS2 = IP_VM.
 
 ## Interdit
 
 - Remplacer le DHCP par la seule IP VM sans secondaire.
+- Mettre UncensoredDNS / DG en DNS1 DHCP (plain UDP souvent mort sur Free).
 - Couper la stack Docker locale pendant un dépannage DNS PC (elle n’est de toute façon pas le DNS système Wi‑Fi ici).
 - Committer `.freebox-token.json` / UID Freebox.
 

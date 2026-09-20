@@ -36,13 +36,13 @@
     }
   },
   "sos_plain": [
-    "91.239.100.100",
-    "185.95.218.42",
-    "9.9.9.10"
+    "9.9.9.10",
+    "194.242.2.2",
+    "94.140.14.140"
   ],
   "cert": "certs/server.crt (self-signed \u2014 install/trust on clients for DoH/DoT)",
   "freebox_os": {
-    "dhcp_dns1_sos": "91.239.100.100",
+    "dhcp_dns1_sos": "9.9.9.10",
     "dhcp_dns2_vm_uncensored": "192.168.1.15",
     "modes_doc": "docs/modes.md"
   }

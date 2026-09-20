@@ -1,6 +1,6 @@
 {
-  "captured_at": "2026-09-19T21:05:00Z",
-  "source": "Windows DHCP (WiFi) + Freebox OS api_version (LAN)",
+  "captured_at": "2026-09-20T05:40:00Z",
+  "source": "Windows DHCP (WiFi) + Freebox OS api_version (LAN) + UDP/53 probe from Freebox VM",
   "gateway": "192.168.1.254",
   "freebox": {
     "box_model_name": "Freebox v9 (r1)",
@@ -10,43 +10,43 @@
     "note": "No box UID / remote api_domain / location stored (privacy)."
   },
   "dhcp_dns_advertised": [
-    "91.239.100.100",
-    "185.95.218.42",
     "9.9.9.10",
+    "194.242.2.2",
+    "94.140.14.140",
     "45.90.28.0",
     "192.168.1.254"
   ],
   "pinned_fallback": {
-    "FREEBOX_DNS_1": "91.239.100.100",
-    "FREEBOX_DNS_2": "185.95.218.42",
-    "FREEBOX_DNS_3": "9.9.9.10",
+    "FREEBOX_DNS_1": "9.9.9.10",
+    "FREEBOX_DNS_2": "194.242.2.2",
+    "FREEBOX_DNS_3": "94.140.14.140",
     "FREEBOX_DNS_4": "45.90.28.0",
     "FREEBOX_DNS_5": "192.168.1.254"
   },
   "pinned_identity": {
     "FREEBOX_DNS_1": {
-      "name": "UncensoredDNS",
-      "bit": "uncensoring",
-      "ip": "91.239.100.100",
-      "lexicon": ["uncensored", "censurfri", "anycast", "no political filter", "DoT", "DoH"],
-      "official": "https://blog.uncensoreddns.org/",
-      "role": "Primary uncensoring fallback + DoT upstream"
-    },
-    "FREEBOX_DNS_2": {
-      "name": "Digitale Gesellschaft",
-      "bit": "privacy-no-sperrliste",
-      "ip": "185.95.218.42",
-      "lexicon": ["Privatsphäre", "kein Logging", "keine Sperrlisten", "freier Zugang", "DNSSEC", "best-effort", "transparency"],
-      "official": "https://www.digitale-gesellschaft.ch/dns/",
-      "role": "Privacy DoT upstream + fallback"
-    },
-    "FREEBOX_DNS_3": {
       "name": "Quad9 Unsecured",
       "bit": "unblocked-ecs",
       "ip": "9.9.9.10",
       "lexicon": ["Unsecured", "unblocked", "ECS", "DNSSEC", "anycast", "not Secured 9.9.9.9"],
       "official": "https://www.quad9.net/service/service-addresses-and-features/",
-      "role": "Fast unblocked bootstrap / fallback (not Quad9 Secured)"
+      "role": "DHCP SOS #1 + plain UDP bootstrap (reachable on FR Free ISP)"
+    },
+    "FREEBOX_DNS_2": {
+      "name": "Mullvad Unfiltered",
+      "bit": "uncensoring-privacy",
+      "ip": "194.242.2.2",
+      "lexicon": ["unfiltered", "no ads", "no family", "privacy", "DoT", "DoH"],
+      "official": "https://mullvad.net/en/help/dns-over-https-and-dns-over-tls",
+      "role": "DHCP SOS #2 + DoT uncensoring"
+    },
+    "FREEBOX_DNS_3": {
+      "name": "AdGuard Non-filtering",
+      "bit": "unfiltered",
+      "ip": "94.140.14.140",
+      "lexicon": ["non-filtering", "unfiltered", "DoT", "DoH", "not dns.adguard.com"],
+      "official": "https://adguard-dns.io/kb/general/dns-providers/#adguard-dns",
+      "role": "DHCP SOS #3 — unfiltered only (not AdGuard default filter)"
     },
     "FREEBOX_DNS_4": {
       "name": "NextDNS anycast",
@@ -66,6 +66,12 @@
       "role": "Ultimate LAN fallback + local-only bind inspiration"
     }
   },
+  "dot_only_pins_fr_isp": {
+    "note": "UDP/TCP 53 often fail from Freebox LAN; DoT :853 works — Unbound catalog only, never DHCP SOS.",
+    "UncensoredDNS": "91.239.100.100",
+    "UncensoredDNS_unicast": "89.233.43.71",
+    "Digitale_Gesellschaft": ["185.95.218.42", "185.95.218.43"]
+  },
   "local_lexicon": {
     "dns_libre": {
       "service": "dns-libre",
@@ -73,7 +79,7 @@
       "bit": "uncensored",
       "inspired_by": ["FREEBOX_DNS_1", "FREEBOX_DNS_2", "FREEBOX_DNS_3"],
       "tagline_fr": "Résolution complète, sans Sperrliste ni censure politique",
-      "tagline_en": "Full answers — uncensoring path (UncensoredDNS + DG + Quad9 Unsecured)",
+      "tagline_en": "Full answers — uncensoring path (Quad9 Unsecured + Mullvad + AdGuard NF + DoT catalog)",
       "filtering": "none"
     },
     "dns_secure": {
@@ -115,7 +121,7 @@
     "radeksprta": "dns.radeksprta.eu",
     "controld_uncensored": "uncensored.freedns.controld.com",
     "adguard_unfiltered": "dns-unfiltered.adguard.com",
-    "note": "Max free uncensoring DoT; Freebox pins remain LAN fallbacks."
+    "note": "Max free uncensoring DoT; SOS plain pins = FREEBOX_DNS_1..3."
   },
   "local_stack": {
     "dns_libre": "uncensored (unbound + dnsproxy)",

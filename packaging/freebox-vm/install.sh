@@ -37,6 +37,6 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 echo ""
 echo "Installed. HOST_IP=${IP:-unknown}"
-echo "Freebox DHCP → DNS1=${IP:-HOST_IP}  DNS2=91.239.100.100"
+echo "Freebox DHCP → DNS1=${IP:-HOST_IP}  DNS2=9.9.9.10"
 echo "Docs: docs/freebox-vm.md"
 bash scripts/health-check.sh || true
