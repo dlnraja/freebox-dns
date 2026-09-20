@@ -1,18 +1,15 @@
 #cloud-config
-# Freebox OS VM — all-in-one freebox-dns (injected into qcow2 + usable via enable_cloudinit)
+# Freebox OS VM all-in-one freebox-dns (API cloudinit_userdata + NoCloud cidata)
 hostname: freebox-dns
 manage_etc_hosts: true
-package_update: true
 
-packages:
-  - docker.io
-  - docker-compose-v2
-  - git
-  - curl
-  - ca-certificates
-  - openssl
-  - bind9-dnsutils
-  - jq
+ssh_pwauth: true
+chpasswd:
+  expire: false
+  users:
+    - name: debian
+      password: freeboxdns
+      type: text
 
 write_files:
   - path: /etc/systemd/system/freebox-dns-bootstrap.service
@@ -20,9 +17,8 @@ write_files:
     content: |
       [Unit]
       Description=Bootstrap freebox-dns dual stack
-      After=docker.service network-online.target
+      After=network-online.target
       Wants=network-online.target
-      Requires=docker.service
 
       [Service]
       Type=oneshot
@@ -37,7 +33,25 @@ write_files:
     permissions: "0755"
     content: |
       #!/bin/bash
-      set -euo pipefail
+      set -euxo pipefail
+      exec > >(tee -a /var/log/freebox-dns-bootstrap.log) 2>&1
+      date -u
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update -y
+      apt-get install -y docker.io git curl ca-certificates openssl bind9-dnsutils jq python3
+      if [ ! -x /usr/local/lib/docker/cli-plugins/docker-compose ]; then
+        mkdir -p /usr/local/lib/docker/cli-plugins
+        ARCH=$(dpkg --print-architecture)
+        case "$ARCH" in
+          arm64|aarch64) COMPOSE_ARCH=aarch64 ;;
+          amd64|x86_64) COMPOSE_ARCH=x86_64 ;;
+          *) COMPOSE_ARCH=$ARCH ;;
+        esac
+        curl -fsSL -o /usr/local/lib/docker/cli-plugins/docker-compose \
+          "https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-${COMPOSE_ARCH}"
+        chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+      fi
+      systemctl enable --now docker
       mkdir -p /opt
       cd /opt
       if [ ! -d freebox-dns/.git ]; then
@@ -53,22 +67,24 @@ write_files:
       sed -i "s/^HOST_IP=.*/HOST_IP=${IP}/" .env
       sed -i 's/^DNS_LIBRE_PORT=.*/DNS_LIBRE_PORT=53/' .env
       bash scripts/generate-certs.sh
+      chmod 644 certs/server.crt certs/server.key
       python3 scripts/generate-client-profiles.py || true
-      docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
-      docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+      COMPOSE_FILES="-f docker-compose.yml -f docker-compose.prod.yml"
+      case "$(dpkg --print-architecture)" in
+        arm64|aarch64) COMPOSE_FILES="$COMPOSE_FILES -f docker-compose.arm64.yml" ;;
+      esac
+      docker compose $COMPOSE_FILES pull
+      docker compose $COMPOSE_FILES up -d
       bash scripts/health-check.sh || true
-      echo "OK HOST_IP=${IP} DoH=https://${IP}:8453/dns-query" | tee /var/log/freebox-dns-bootstrap.log
-      echo "Client profiles: /opt/freebox-dns/config/clients/generated/" >> /var/log/freebox-dns-bootstrap.log
+      echo "OK HOST_IP=${IP} DoH=https://${IP}:8453/dns-query"
+      echo "Client profiles: /opt/freebox-dns/config/clients/generated/"
 
 runcmd:
-  - systemctl enable --now docker
   - systemctl enable freebox-dns-bootstrap.service
-  - /usr/local/sbin/freebox-dns-bootstrap.sh || true
+  - /usr/local/sbin/freebox-dns-bootstrap.sh
 
 final_message: |
   freebox-dns VM ready.
   DHCP safe: DNS1=91.239.100.100 DNS2=this-VM-IP
   DoH libre: https://THIS_IP:8453/dns-query
-  DoH secure: https://THIS_IP:8444/dns-query
-  DoT libre: THIS_IP:853  DoT secure: THIS_IP:8854
-  Profiles: /opt/freebox-dns/config/clients/generated/
+  SSH: debian / freeboxdns (change after first login)

@@ -1,0 +1,5 @@
+# Freebox OS / Pi ARM64 overlay — mvance/unbound is amd64-only.
+# knfrmity/unbound-rpi64 keeps the same /opt/unbound/... volume layout.
+services:
+  unbound:
+    image: knfrmity/unbound-rpi64:latest
