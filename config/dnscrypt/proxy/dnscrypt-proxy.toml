@@ -1,0 +1,49 @@
+# dnscrypt-proxy — DNSCrypt client path (Quad9 No Threat Blocking)
+#
+# Listens for plain DNS on container :53 and talks DNSCrypt to Quad9 .10 stamps.
+# Exposed on HOST as DNSCRYPT_PROXY_PORT (lab default 5359) — optional path,
+# does NOT replace dhcp DNS1/DNS2 and never binds :53 in prod.
+#
+# Docs: docs/encrypted-dns.md · docs/quad9.md
+
+listen_addresses = ['0.0.0.0:53']
+
+server_names = ['quad9-dnscrypt-ip4-nofilter-pri', 'quad9-dnscrypt-ip4-nofilter-alt']
+
+# Prefer DNSCrypt protocol toward Quad9 (not DoH/DoT here)
+dnscrypt_servers = true
+doh_servers = false
+odoh_servers = false
+require_dnssec = false
+require_nolog = true
+require_nofilter = true
+
+ipv4_servers = true
+ipv6_servers = false
+
+# Same SOS pins as the rest of the stack (bootstrap only)
+bootstrap_resolvers = ['9.9.9.10:53', '194.242.2.2:53', '94.140.14.140:53']
+netprobe_address = '9.9.9.10:53'
+
+block_ipv6 = false
+cache = true
+cache_size = 4096
+cache_min_ttl = 60
+cache_max_ttl = 86400
+
+[sources.quad9-resolvers]
+  urls = [
+    'https://quad9.net/dnscrypt/quad9-resolvers.md',
+    'https://raw.githubusercontent.com/Quad9DNS/dnscrypt-settings/main/dnscrypt/quad9-resolvers.md',
+  ]
+  minisign_key = 'RWTp2E4t64BrL651lEiDLNon+DqzPG4jhZ97pfdNkcq1VDdocLKvl5FW'
+  cache_file = 'quad9-resolvers.md'
+  refresh_delay = 72
+  prefix = 'quad9-'
+
+# Static fallback if source download fails (Quad9 nofilter = 9.9.9.10)
+[static.'quad9-dnscrypt-ip4-nofilter-pri']
+  stamp = 'sdns://AQYAAAAAAAAADTkuOS45LjEwOjg0NDMgZ8hHuMh1jNEgJFVDvnVnRt803x2EwAuMRwNo34Idhj4ZMi5kbnNjcnlwdC1jZXJ0LnF1YWQ5Lm5ldA'
+
+[static.'quad9-dnscrypt-ip4-nofilter-alt']
+  stamp = 'sdns://AQYAAAAAAAAAEzE0OS4xMTIuMTEyLjEwOjg0NDMgZ8hHuMh1jNEgJFVDvnVnRt803x2EwAuMRwNo34Idhj4ZMi5kbnNjcnlwdC1jZXJ0LnF1YWQ5Lm5ldA'

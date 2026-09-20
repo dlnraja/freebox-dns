@@ -2,7 +2,7 @@
   "policies": {
     "DNSOverHTTPS": {
       "Enabled": true,
-      "ProviderURL": "https://192.168.1.71:8444/dns-query",
+      "ProviderURL": "https://192.168.1.15:8444/dns-query",
       "Locked": false,
       "Fallback": true
     }

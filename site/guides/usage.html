@@ -77,16 +77,18 @@
       </article>
     </div>
 
-    <h2>Clients DoH / DoT</h2>
+    <h2>Clients Do53 / DoH / DoT / DoQ / DNSCrypt</h2>
     <img src="../assets/ports-map.svg" width="320" height="200" alt="Ports DoH et DoT">
 
     <table>
       <thead><tr><th>Transport</th><th>Libre</th><th>Secure</th><th>Client typique</th></tr></thead>
       <tbody>
-        <tr><td>Plain DNS</td><td>:5356 lab / :53 prod</td><td>:5354</td><td>DHCP, IoT</td></tr>
+        <tr><td><strong>Do53</strong></td><td>:5356 lab / :53 prod</td><td>:5354</td><td>DHCP, IoT</td></tr>
         <tr><td><strong>DoH</strong></td><td><code>:8453/dns-query</code></td><td><code>:8444/dns-query</code></td><td>Firefox, Chrome, iOS</td></tr>
         <tr><td><strong>DoT</strong></td><td>:8853 lab / :853 prod</td><td>:8854</td><td>Android apps</td></tr>
         <tr><td><strong>DoQ</strong></td><td>:8853/udp</td><td>—</td><td>dnsproxy clients</td></tr>
+        <tr><td><strong>DNSCrypt</strong> proxy</td><td>:5359 → Quad9</td><td>—</td><td>tests / fallback</td></tr>
+        <tr><td><strong>DNSCrypt</strong> server</td><td>:8443 <code>sdns://</code></td><td>—</td><td>Nebulo, dnscrypt-proxy</td></tr>
       </tbody>
     </table>
 
@@ -115,6 +117,7 @@ https://HOST_IP:8444/dns-query</code></pre>
             <li><strong>Firefox</strong> : policies JSON dans <code>config/clients/generated/</code></li>
             <li><strong>Android</strong> : Private DNS = hostname seulement → utiliser Nebulo/Intra avec DoH, ou DoT :853 en prod</li>
             <li><strong>Windows</strong> : <code>windows-doh.ps1</code> généré</li>
+            <li><strong>DNSCrypt</strong> : <code>dig @HOST_IP -p 5359</code> ou stamp après <code>scripts/dnscrypt-server-init.sh</code></li>
           </ul>
         </div>
       </article>

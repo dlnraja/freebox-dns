@@ -168,8 +168,24 @@
     "doh": true,
     "dot": true,
     "doq": true,
-    "doc": "docs/encrypted-dns.md"
+    "dnscrypt": true,
+    "doc": "docs/encrypted-dns.md",
+    "dnscrypt_proxy_port": 5359,
+    "dnscrypt_server_port": 8443,
+    "dnscrypt_config": "config/dnscrypt/"
   },
+  "dnscrypt_uncensoring": [
+    {
+      "id": "quad9_nofilter_pri",
+      "stamp": "sdns://AQYAAAAAAAAADTkuOS45LjEwOjg0NDMgZ8hHuMh1jNEgJFVDvnVnRt803x2EwAuMRwNo34Idhj4ZMi5kbnNjcnlwdC1jZXJ0LnF1YWQ5Lm5ldA",
+      "note": "Quad9 DNSCrypt No Threat Blocking — same spirit as SOS 9.9.9.10"
+    },
+    {
+      "id": "quad9_nofilter_alt",
+      "stamp": "sdns://AQYAAAAAAAAAEzE0OS4xMTIuMTEyLjEwOjg0NDMgZ8hHuMh1jNEgJFVDvnVnRt803x2EwAuMRwNo34Idhj4ZMi5kbnNjcnlwdC1jZXJ0LnF1YWQ5Lm5ldA",
+      "note": "Secondary 149.112.112.10"
+    }
+  ],
   "plain_fallback_order": [
     "9.9.9.10",
     "149.112.112.10",

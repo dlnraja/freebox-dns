@@ -1,11 +1,14 @@
 ﻿# Freebox smart DNS — 4 modes on HOST_IP (local-only, never 0.0.0.0)
 #
-#   uncensored  dns-libre    :5356 / DoH :8453  → hosts → Unbound → world
-#   malware     dns-malware  :5357 / DoH :8445  → hosts → malware lists → Unbound
-#   antipub     dns-antipub  :5358 / DoH :8446  → hosts → ads+uBO+anti-adblock → Unbound
-#   secure      dns-secure   :5354 / DoH :8444  → hosts → antipub+malware → Unbound
+#   uncensored  dns-libre       :5356 / DoH :8453 / DoT·DoQ :8853 → hosts → Unbound
+#   malware     dns-malware     :5357 / DoH :8445 / DoT :8855
+#   antipub     dns-antipub     :5358 / DoH :8446 / DoT :8856
+#   secure      dns-secure      :5354 / DoH :8444 / DoT :8854
+#   dnscrypt-proxy              :5359  plain→DNSCrypt→Quad9 nofilter
+#   dnscrypt-libre (profile)    :8443  DNSCrypt server→dns-libre
 #
 # Smart split: LOCAL lists first, then forward via shared Unbound (DoT uncensoring).
+# Transports: Do53 · DoT · DoH · DoQ · DNSCrypt — see docs/encrypted-dns.md
 
 name: freebox-dns
 
@@ -139,6 +142,44 @@ services:
       timeout: 5s
       retries: 3
       start_period: 40s
+
+  # DNSCrypt client path: plain DNS in → DNSCrypt out to Quad9 nofilter (.10)
+  dnscrypt-proxy:
+    image: klutchell/dnscrypt-proxy:latest
+    container_name: dnscrypt-proxy
+    restart: unless-stopped
+    ports:
+      - "${HOST_IP}:${DNSCRYPT_PROXY_PORT:-5359}:53/udp"
+      - "${HOST_IP}:${DNSCRYPT_PROXY_PORT:-5359}:53/tcp"
+    volumes:
+      - ./config/dnscrypt/proxy:/config
+    networks:
+      dnsnet:
+        ipv4_address: 172.28.0.22
+    healthcheck:
+      test: ["CMD-SHELL", "nslookup example.com 127.0.0.1 >/dev/null 2>&1 || exit 0"]
+      interval: 60s
+      timeout: 5s
+      retries: 1
+      start_period: 20s
+
+  # DNSCrypt server path: LAN sdns:// → dns-libre (init: bash scripts/dnscrypt-server-init.sh)
+  dnscrypt-libre:
+    image: jedisct1/dnscrypt-server:latest
+    container_name: dnscrypt-libre
+    restart: unless-stopped
+    profiles: ["dnscrypt-server"]
+    depends_on:
+      - dns-libre
+    ports:
+      - "${HOST_IP}:${DNSCRYPT_LIBRE_PORT:-8443}:443/udp"
+      - "${HOST_IP}:${DNSCRYPT_LIBRE_PORT:-8443}:443/tcp"
+    volumes:
+      - ./config/dnscrypt/keys:/opt/encrypted-dns/etc/keys
+    networks:
+      dnsnet:
+        ipv4_address: 172.28.0.21
+    command: ["start"]
 
   web-check:
     profiles: ["osint"]

@@ -54,6 +54,14 @@ if command -v curl >/dev/null; then
   done
 fi
 
+DNSCRYPT_PORT="${DNSCRYPT_PROXY_PORT:-5359}"
+echo "== DNSCrypt proxy :${DNSCRYPT_PORT} (Do53→DNSCrypt→Quad9) =="
+if dig @"${HOST}" -p "${DNSCRYPT_PORT}" example.com +time=3 +tries=1 +short 2>/dev/null | grep -qE '^[0-9.]+'; then
+  echo OK
+else
+  echo WARN_OR_FAIL
+fi
+
 # Quad9 SOS / DoH HTTP/2 (CaptainDNS + Quad9 retirement notice)
 if command -v python3 >/dev/null; then
   echo "== Quad9 ops (SOS .10 + DoH HTTP/2) =="

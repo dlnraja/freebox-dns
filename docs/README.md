@@ -20,6 +20,7 @@
 | Analyse pins DNS | [dns-analysis.md](dns-analysis.md) |
 | OSINT Web-Check / Korben | [osint-toolkit.md](osint-toolkit.md) |
 | DoH / DoT / DoQ | [encrypted-dns.md](encrypted-dns.md) |
+| DNSCrypt | [encrypted-dns.md](encrypted-dns.md) · [config/dnscrypt/](../config/dnscrypt/) |
 | Pins FREEBOX_DNS_1..5 | [dns-pins.md](dns-pins.md) |
 | Lexique | [dns-lexicon.md](dns-lexicon.md) |
 | Amonts uncensoring | [upstreams-uncensoring.md](upstreams-uncensoring.md) |

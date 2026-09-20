@@ -81,7 +81,7 @@ bash scripts/health-check.sh
 | [docs/README.md](docs/README.md) | Index |
 | [docs/resilience.md](docs/resilience.md) | Local-first Unbound |
 | [docs/anti-lie-dns.md](docs/anti-lie-dns.md) | Anti–DNS menteur |
-| [docs/encrypted-dns.md](docs/encrypted-dns.md) | DoH / DoT / DoQ |
+| [docs/encrypted-dns.md](docs/encrypted-dns.md) | Do53 / DoH / DoT / DoQ / DNSCrypt |
 | [docs/ci.md](docs/ci.md) | GitHub Actions automation |
 | [docs/anti-degradation.md](docs/anti-degradation.md) | Bitrot / regression watchdog |
 | [docs/quad9.md](docs/quad9.md) | Pourquoi SOS = Quad9 `9.9.9.10` |

@@ -115,7 +115,12 @@ jobs:
           set -euo pipefail
           grep -q 'DOH_LIBRE_PORT=8453' .env.example
           grep -q 'DOH_SECURE_PORT=8444' .env.example
+          grep -q 'DNSCRYPT_PROXY_PORT=5359' .env.example
           grep -q '8453' docs/freebox.md
           grep -q 'HOST_IP' docker-compose.yml
+          grep -q 'dnscrypt-proxy' docker-compose.yml
+          test -f config/dnscrypt/proxy/dnscrypt-proxy.toml
+          test -f config/dnscrypt/quad9-nofilter.stamps
+          grep -q '"dnscrypt": true' config/upstreams/uncensoring-catalog.json
           grep -q 'open.dns0.eu' config/unbound/forward-records.conf
           grep -q 'querylog' docker-compose.yml

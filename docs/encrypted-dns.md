@@ -1,63 +1,77 @@
-# DNS chiffré local — DoH / DoT / DoQ (+ fallbacks)
+# DNS chiffré local — Do53 / DoT / DoH / DoQ / DNSCrypt
 
-Voir aussi : [filtering.md](filtering.md) · [anti-lie-dns.md](anti-lie-dns.md) · profils clients générés : [`config/clients/generated/`](../config/clients/generated/).
+Voir aussi : [filtering.md](filtering.md) · [quad9.md](quad9.md) · [`config/dnscrypt/`](../config/dnscrypt/) · profils : [`config/clients/generated/`](../config/clients/generated/).
 
-## Transports exposés (LAN only, `HOST_IP`)
+## Matrice des transports (LAN, bind `HOST_IP`)
 
-| Transport | Libre (uncensor) | Secure (Pi-hole/uBO) | Client typique |
+| Transport | Libre (uncensor) | Secure | Client typique |
 | --- | --- | --- | --- |
-| Plain DNS | `:5356` lab / `:53` prod | `:5354` | DHCP Freebox, IoT |
-| **DoH** (HTTPS) | `:8453` → `/dns-query` | `:8444` → `/dns-query` | Firefox, Chrome, iOS profile, apps |
-| **DoT** (TLS) | `:8853` lab / `:853` prod | `:8854` | Android apps, Stuby, dig +tls |
-| **DoQ** (QUIC) | `:8853/udp` lab / `:853/udp` prod | — | AdGuard, dnsproxy clients |
+| **Do53** (classique) | `:5356` lab / `:53` prod | `:5354` | DHCP Freebox, IoT |
+| **DoH** (HTTPS) | `:8453` `/dns-query` | `:8444` | Firefox, Chrome, iOS |
+| **DoT** (TLS :853) | `:8853` lab / `:853` prod | `:8854` | Android apps, Stuby |
+| **DoQ** (QUIC) | `:8853/udp` lab / `:853/udp` prod | — | AdGuard / dnsproxy |
+| **DNSCrypt** proxy | `:5359` → Quad9 nofilter | — | Tests / fallback chiffré |
+| **DNSCrypt** server | `:8443` `sdns://` (profile) | — | Nebulo, dnscrypt-proxy |
 
-Certificats : `scripts/generate-certs.sh` (SAN = `freebox-dns.local` + `HOST_IP`).
+DHCP Freebox reste **Do53 only** : DNS1=`9.9.9.10`, DNS2=VM — le chiffrement se fait vers la VM (DoH/DoT/DoQ/DNSCrypt), pas dans le DHCP.
 
 ```bash
-bash scripts/generate-certs.sh          # FORCE_REGEN_CERTS=1 si IP change
+bash scripts/generate-certs.sh
 python3 scripts/generate-client-profiles.py
-docker compose up -d --force-recreate dns-libre dns-secure
+docker compose up -d
+# DNSCrypt proxy (Quad9 via DNSCrypt) inclus dans `up -d`
+# DNSCrypt server LAN (optionnel) :
+bash scripts/dnscrypt-server-init.sh
+docker compose --profile dnscrypt-server up -d dnscrypt-libre
 ```
 
 ## Freebox OS / app mobile
 
-1. **DHCP** (après health VM) — filet SOS :
-   - DNS1 = `9.9.9.10` (Quad9 No Threat Blocking, sans ECS)
+1. **DHCP** (après health VM) — filet SOS Do53 :
+   - DNS1 = `9.9.9.10` (Quad9 No Threat Blocking)
    - DNS2 = IP de la VM freebox-dns
-2. **Navigateurs / apps** qui parlent DoH : URL générée
-   - Libre : `https://HOST_IP:8453/dns-query`
-   - Secure : `https://HOST_IP:8444/dns-query`
-3. **iOS / macOS** : installer `apple-doh-*.mobileconfig`
-4. **Firefox** : policies JSON dans `config/clients/generated/`
-5. **Android** : stock Private DNS = hostname seulement → utiliser Nebulo/Intra avec DoH, ou DoT `:853` en prod + nom local
+2. **DoH** : `https://HOST_IP:8453/dns-query` (libre) · `:8444` (secure)
+3. **DoT** : `tls://HOST_IP:853` (prod) / `:8853` (lab)
+4. **DoQ** : `quic://HOST_IP:853` (prod, libre only)
+5. **DNSCrypt** :
+   - Proxy : `dig @HOST_IP -p 5359 example.com` (trafic sortant en DNSCrypt vers Quad9)
+   - Server : stamp dans `config/clients/generated/dnscrypt-stamp.txt` après init
+6. iOS / Firefox / Windows : profils générés (DoH)
 
-La Freebox app elle-même suit le DNS DHCP ; le DoH est pour navigateurs / apps OS qui l’exposent.
+## Architecture
 
-## Fallbacks chiffrés (amont)
-
-Si Unbound est down, dns-libre tente d’abord des amonts **DoH/DoT** (Mullvad, DG, Quad9 No Threat / `dns10.quad9.net`, UncensoredDNS…) avant le plain — voir `config/dnsproxy/dns-libre.yaml`.
-
-### Quad9 amont : DoH = HTTP/2 minimum
-
-Depuis le **15/12/2025**, Quad9 refuse DoH en HTTP/1.1 ([annonce](https://quad9.net/news/blog/doh-http-1-1-retirement/)).  
-dnsproxy négocie HTTP/2+ ; en cas de doute (routeur MikroTik DoH legacy), utiliser **DoT** `tls://dns10.quad9.net`. Tests : `python3 scripts/quad9-ops-check.py` · [quad9.md](quad9.md).
-
-## Test rapide
-
-```bash
-# DoH local
-curl -sk "https://$HOST_IP:8453/dns-query?name=example.com&type=A"
-curl -sk "https://$HOST_IP:8444/dns-query?name=example.com&type=A"
-
-# Quad9 ops (SOS .10 + HTTP/2 DoH)
-python3 scripts/quad9-ops-check.py
-
-# Protocole réel si le poste pointe déjà vers Quad9
-dig +short txt proto.on.quad9.net.
+```text
+Do53 / DoH / DoT / DoQ  →  dns-libre / Blocky  →  Unbound (DoT catalogue)
+DNSCrypt :5359          →  dnscrypt-proxy      →  Quad9 DNSCrypt nofilter
+DNSCrypt :8443 (opt.)   →  dnscrypt-libre      →  dns-libre → Unbound
 ```
 
----
+## Fallbacks chiffrés (amont dns-libre)
 
-## Sources & crédits
+Si Unbound est down : DoH/DoT Mullvad, `dns10.quad9.net`, AdGuard NF, etc. — `config/dnsproxy/dns-libre.yaml`.
 
-Projets, listes et méthodes cités : **[CREDITS.md](CREDITS.md)** · site guides : [dlnraja.github.io/freebox-dns](https://dlnraja.github.io/freebox-dns/).
+### Quad9 DoH = HTTP/2 minimum
+
+Depuis 2025-12-15 ([annonce](https://quad9.net/news/blog/doh-http-1-1-retirement/)).  
+Fallback : DoT ou **DNSCrypt** Quad9 nofilter (`config/dnscrypt/quad9-nofilter.stamps`).
+
+## Tests
+
+```bash
+# Do53
+dig @$HOST_IP -p 5356 example.com +short
+
+# DoH
+curl -sk "https://$HOST_IP:8453/dns-query?name=example.com&type=A"
+
+# DNSCrypt proxy (→ Quad9 via DNSCrypt)
+dig @$HOST_IP -p 5359 example.com +short
+
+# Suite health (inclut DNSCrypt proxy si up)
+bash scripts/health-check.sh
+python3 scripts/quad9-ops-check.py
+```
+
+## Sources
+
+[CREDITS.md](CREDITS.md) · [CaptainDNS Quad9](https://www.captaindns.com/fr/blog/dns-9999-quad9) · [Quad9 DNSCrypt](https://quad9.net/dnscrypt/) · [dnscrypt-server](https://github.com/DNSCrypt/dnscrypt-server-docker)

@@ -9,6 +9,7 @@ Checklist of product goals delivered since the start of the project.
 - [x] Max **uncensoring** DoT catalogue + plain SOS reachable on Free ISP
 - [x] **Pi-hole-like** gravity via Blocky (+ uBlock DNS + anti–anti-adblock)
 - [x] DoH / DoT / DoQ (libre) · DoH / DoT (Blocky modes)
+- [x] DNSCrypt proxy (→ Quad9 nofilter) + optional LAN DNSCrypt server
 - [x] Freebox OS **VM ARM64** QCOW2 + cloud-init all-in-one
 - [x] Safe DHCP: SOS `9.9.9.10` + DNS2 = VM (never PC as LAN resolver)
 - [x] Anti–DNS menteur (OONI-like) + web-connectivity lite

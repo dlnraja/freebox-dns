@@ -49,6 +49,8 @@
     "dot_libre": "HOST_IP:853 (prod) / 8853 (lab)",
     "dot_secure": "HOST_IP:8854",
     "doq_libre": "HOST_IP:853/udp (prod) / 8853/udp (lab)",
+    "dnscrypt_proxy": "HOST_IP:5359 (→ Quad9 DNSCrypt nofilter)",
+    "dnscrypt_server": "HOST_IP:8443 (profile dnscrypt-server)",
     "blocky_ui": "HOST_IP:3080",
     "client_profiles": "config/clients/generated/"
   },

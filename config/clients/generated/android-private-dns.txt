@@ -1,13 +1,13 @@
 # Android / custom DoH apps (Nebulo, Intra, RethinkDNS)
-# Host VM: 192.168.1.71
+# Host VM: 192.168.1.15
 
-# uncensored (uncensored): https://192.168.1.71:8453/dns-query
-#   plain 192.168.1.71:5356  DoT 192.168.1.71:8853
-# malware (malware-free): https://192.168.1.71:8445/dns-query
-#   plain 192.168.1.71:5357  DoT 192.168.1.71:8855
-# antipub (ads-free): https://192.168.1.71:8446/dns-query
-#   plain 192.168.1.71:5358  DoT 192.168.1.71:8856
-# secure (threat-local): https://192.168.1.71:8444/dns-query
-#   plain 192.168.1.71:5354  DoT 192.168.1.71:8854
+# uncensored (uncensored): https://192.168.1.15:8453/dns-query
+#   plain 192.168.1.15:5356  DoT 192.168.1.15:8853
+# malware (malware-free): https://192.168.1.15:8445/dns-query
+#   plain 192.168.1.15:5357  DoT 192.168.1.15:8855
+# antipub (ads-free): https://192.168.1.15:8446/dns-query
+#   plain 192.168.1.15:5358  DoT 192.168.1.15:8856
+# secure (threat-local): https://192.168.1.15:8444/dns-query
+#   plain 192.168.1.15:5354  DoT 192.168.1.15:8854
 
 # Stock Android Private DNS needs a hostname — prefer custom DoH apps on LAN.

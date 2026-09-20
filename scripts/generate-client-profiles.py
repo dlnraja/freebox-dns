@@ -144,8 +144,22 @@ def main() -> int:
         "host_ip": host,
         "smart_split": "local_hosts → mode_filter → unbound_forward → world",
         "personalities": personalities,
+        "transports": {
+            "do53": True,
+            "doh": True,
+            "dot": True,
+            "doq": "uncensored only",
+            "dnscrypt_proxy": f"{host}:{env_int('DNSCRYPT_PROXY_PORT', 5359)}",
+            "dnscrypt_server": f"{host}:{env_int('DNSCRYPT_LIBRE_PORT', 8443)} (profile dnscrypt-server)",
+        },
         "sos_plain": ["9.9.9.10", "194.242.2.2", "94.140.14.140"],
         "cert": "certs/server.crt (self-signed — install/trust on clients for DoH/DoT)",
+        "dnscrypt": {
+            "proxy": f"{host}:{env_int('DNSCRYPT_PROXY_PORT', 5359)}",
+            "quad9_nofilter_stamps": "config/dnscrypt/quad9-nofilter.stamps",
+            "local_stamp_file": "config/clients/generated/dnscrypt-stamp.txt",
+            "init": "bash scripts/dnscrypt-server-init.sh",
+        },
         "freebox_os": {
             "dhcp_dns1_sos": "9.9.9.10",
             "dhcp_dns2_vm_uncensored": host,
@@ -193,15 +207,23 @@ Add-DnsClientDohServerAddress -ServerAddress '{host}' -DohTemplate $doh -AllowFa
 """
     (OUT / "windows-doh.ps1").write_text(win, encoding="utf-8")
 
-    rows = ["| Mode | Plain | DoH | DoT |", "| --- | --- | --- | --- |"]
+    rows = ["| Mode | Plain (Do53) | DoH | DoT |", "| --- | --- | --- | --- |"]
     for name, p in personalities.items():
         rows.append(f"| **{name}** | `{p['plain']}` | `{p['doh']}` | `{p['dot']}` |")
+    dnscrypt_port = env_int("DNSCRYPT_PROXY_PORT", 5359)
+    server_port = env_int("DNSCRYPT_LIBRE_PORT", 8443)
     readme = f"""# Client encrypted DNS profiles (generated)
 
 Host: `{host}`  
-Smart split: **local hosts → mode filter → Unbound → world** — see [docs/modes.md](../../../docs/modes.md)
+Transports: **Do53 · DoH · DoT · DoQ · DNSCrypt** — [docs/encrypted-dns.md](../../../docs/encrypted-dns.md)
 
 {chr(10).join(rows)}
+
+| Extra | Endpoint |
+| --- | --- |
+| **DoQ** (uncensored) | `quic://{host}:{personalities['uncensored'].get('doq','').split(':')[-1] if personalities['uncensored'].get('doq') else '8853'}` |
+| **DNSCrypt proxy** | `{host}:{dnscrypt_port}` (Do53→DNSCrypt→Quad9 nofilter) |
+| **DNSCrypt server** | `{host}:{server_port}` / `dnscrypt-stamp.txt` (after `scripts/dnscrypt-server-init.sh`) |
 
 ## Freebox OS / Wi-Fi
 
@@ -210,6 +232,7 @@ Smart split: **local hosts → mode filter → Unbound → world** — see [docs
 3. iOS/macOS : `apple-doh-<mode>.mobileconfig`.
 4. Firefox : `firefox-policies-<mode>.json`.
 5. Trust `certs/server.crt` (auto-signé LAN).
+6. DNSCrypt : voir [config/dnscrypt/README.md](../../dnscrypt/README.md).
 
 Host `{host}` = IP de la **VM freebox-dns** sur Freebox OS.  
 Wi‑Fi : voir docs/wifi-lan.md
@@ -217,6 +240,13 @@ Wi‑Fi : voir docs/wifi-lan.md
 Regenerate: `HOST_IP=<vm> python3 scripts/generate-client-profiles.py`
 """
     (OUT / "README.md").write_text(readme, encoding="utf-8")
+
+    # Copy Quad9 nofilter stamps next to generated profiles for clients
+    stamps_src = ROOT / "config" / "dnscrypt" / "quad9-nofilter.stamps"
+    if stamps_src.is_file():
+        (OUT / "quad9-dnscrypt-nofilter.stamps").write_text(
+            stamps_src.read_text(encoding="utf-8"), encoding="utf-8"
+        )
     print(f"wrote profiles -> {OUT}")
     for name, p in personalities.items():
         print(f"  {name:12} {p['doh']}")

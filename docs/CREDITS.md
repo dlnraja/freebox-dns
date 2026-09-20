@@ -16,6 +16,8 @@ Les composants tiers conservent **leurs propres licences** — vérifiez-les ava
 | **mvance/unbound** | Image Docker Unbound (amd64) | Matthew Vance | [hub.docker.com/r/mvance/unbound](https://hub.docker.com/r/mvance/unbound) | voir image |
 | **knfrmity/unbound-rpi64** | Image Unbound ARM64 (Freebox / Pi) | knfrmity (fork mvance) | [hub.docker.com/r/knfrmity/unbound-rpi64](https://hub.docker.com/r/knfrmity/unbound-rpi64) | voir image |
 | **dnsproxy** | dns-libre (DoH / DoT / DoQ) | AdGuard | [github.com/AdguardTeam/dnsproxy](https://github.com/AdguardTeam/dnsproxy) | Apache-2.0 |
+| **dnscrypt-proxy** | DNSCrypt → Quad9 nofilter | DNSCrypt project / klutchell image | [github.com/DNSCrypt/dnscrypt-proxy](https://github.com/DNSCrypt/dnscrypt-proxy) | ISC |
+| **dnscrypt-server** | LAN DNSCrypt server (profile) | jedisct1 | [github.com/DNSCrypt/dnscrypt-server-docker](https://github.com/DNSCrypt/dnscrypt-server-docker) | ISC / BSD |
 | **Blocky** | dns-secure (filtrage + UI) | 0xERR0R | [github.com/0xERR0R/blocky](https://github.com/0xERR0R/blocky) | Apache-2.0 |
 | **Docker / Compose** | Orchestration | Docker Inc. / Moby | [docs.docker.com/compose](https://docs.docker.com/compose/) | Apache-2.0 |
 | **Debian cloud** | Base QCOW2 Freebox VM | Debian Project | [cloud.debian.org](https://cloud.debian.org/) | DFSG |
@@ -107,6 +109,7 @@ Scripts locaux (pas d’upload OONI) : `scripts/ooni-like-anti-lie.py`, `scripts
 | RFC 7858 | DNS over TLS (DoT) |
 | RFC 8484 | DNS over HTTPS (DoH) |
 | RFC 9250 | DNS over QUIC (DoQ) |
+| DNSCrypt | Protocol encrypted DNS (dnscrypt.info) |
 | RFC 8767 | Serve-stale (résilience Unbound) |
 | RFC 7816 | QNAME minimization (récursion) |
 

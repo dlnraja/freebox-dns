@@ -35,8 +35,10 @@
     "dns_secure": 5354,
     "doh_libre": 8453,
     "doh_secure": 8444,
+    "dnscrypt_proxy": 5359,
+    "dnscrypt_server": 8443,
     "blocky_ui": 3080,
-    "note": "Sur Windows, 5353 est souvent pris (mDNS). En lab Freebox DHCP ne pousse que le port 53 — utiliser overlay prod ou forwarder."
+    "note": "Sur Windows, 5353 est souvent pris (mDNS). En lab Freebox DHCP ne pousse que le port 53 — utiliser overlay prod ou forwarder. DNSCrypt :5359 = proxy→Quad9 ; :8443 = serveur LAN (profile)."
   },
   "prod_recommended": {
     "dhcp_dns_primary": "9.9.9.10",
@@ -69,6 +71,14 @@
   "doq_clients": {
     "libre": "quic://${HOST_IP}:8853",
     "libre_prod": "quic://${HOST_IP}:853"
+  },
+  "dnscrypt_clients": {
+    "proxy_plain": "${HOST_IP}:5359",
+    "proxy_note": "Do53 in → DNSCrypt out to Quad9 nofilter",
+    "server_port": 8443,
+    "server_stamp_file": "config/clients/generated/dnscrypt-stamp.txt",
+    "quad9_nofilter_stamps": "config/dnscrypt/quad9-nofilter.stamps",
+    "doc": "docs/encrypted-dns.md · config/dnscrypt/README.md"
   },
   "freebox_os_path": [
     "Paramètres de la Freebox",

@@ -1,0 +1,24 @@
+####################################################
+# Encrypted DNS Server — LAN DNSCrypt for freebox-dns
+# Upstream = dns-libre (hosts → Unbound), never DHCP :53
+# Keys live in Docker volume dnscrypt-keys (generated on init)
+####################################################
+
+listen_addrs = [
+    { local = "0.0.0.0:443", external = "HOST_IP_PLACEHOLDER:DNSCRYPT_PORT_PLACEHOLDER" }
+]
+
+# Preserve local hosts + Blocky-free uncensored path
+upstream_addrs = ["172.28.0.20:53"]
+
+state_file = "encrypted-dns.state"
+udp_timeout = 10
+tcp_timeout = 10
+udp_max_active_connections = 1000
+tcp_max_active_connections = 250
+cache_capacity = 4096
+cache_ttl_min = 60
+cache_ttl_max = 86400
+
+[dnscrypt]
+provider_name = "2.dnscrypt-cert.freebox-dns.local"
