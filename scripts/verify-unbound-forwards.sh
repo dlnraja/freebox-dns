@@ -36,8 +36,8 @@ grep -q 'unbound-cache:' "$COMPOSE" \
   && pass "compose has unbound-cache volume" \
   || bad "compose missing unbound-cache"
 
-grep -q 'serve-expired: yes' "$ROOT/config/unbound/a-records.conf" \
-  && pass "serve-expired: yes in a-records.conf" \
+grep -q 'serve-expired: yes' "$ROOT/config/unbound/unbound.conf" \
+  && pass "serve-expired: yes in unbound.conf (server:)" \
   || bad "serve-expired missing"
 
 grep -q 'local-zone:.*static' "$ROOT/config/unbound/a-records.critical.conf" \

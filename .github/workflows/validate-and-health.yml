@@ -111,8 +111,8 @@ jobs:
           do test -f "$f" || (echo "missing $f"; exit 1); done
           grep -q 'forward-first: yes' config/unbound/forward-records.conf
           grep -q 'a-records.critical.conf' config/unbound/a-records.conf
-          grep -q 'serve-expired: yes' config/unbound/a-records.conf
-          grep -q 'serve-expired-client-timeout: 0' config/unbound/a-records.conf
+          grep -q 'serve-expired: yes' config/unbound/unbound.conf
+          grep -q 'serve-expired-client-timeout: 0' config/unbound/unbound.conf
           grep -q 'unbound-cache' docker-compose.yml
           grep -q 'unbound.conf:/opt/unbound/etc/unbound/unbound.conf' docker-compose.yml
           grep -qE '^[[:space:]]*include:[[:space:]]+/opt/unbound/etc/unbound/forward-records\.conf' config/unbound/unbound.conf

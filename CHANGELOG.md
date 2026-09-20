@@ -12,6 +12,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/).
 - CI: static job `permissions` (dynamic `&&`/`||` expressions rejected by Actions)
 - CI: strip accidental UTF-8 BOM; valid ULA IPv6 example (`fd00:fb0d::/64`)
 - CI: Quad9 DoH check accepts HTTP/2 even when JSON GET returns 400
+- Unbound: include local-data **before** `forward-zone:`; move serve-expired into `unbound.conf` `server:` (fixes smoke syntax error)
 
 ## [1.3.0] — 2026-09-20
 

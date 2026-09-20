@@ -98,7 +98,8 @@ Après chaque warm / OONI : recreator Unbound pour aligner `a-records*` sur les 
 | `config/uncensor/hosts.*` | LOCAL FIRST edge |
 | `config/unbound/unbound.conf` | Conf montée — **include DoT actif** |
 | `config/unbound/a-records.critical.conf` | Seeds Unbound static (toujours monté) |
-| `config/unbound/a-records.conf` | serve-expired + anti-lie static + include critical |
+| `config/unbound/a-records.conf` | anti-lie static + include critical (included before forward-zone) |
+| `config/unbound/unbound.conf` | serve-expired + prefetch in `server:` then local includes then DoT forwards |
 | `config/unbound/forward-records.conf` | DoT après le local (`forward-first`) |
 | `config/unbound/srv-records.conf` | Placeholder SRV (include requis) |
 | `docker volume unbound-cache` | Cache persistant entre recreates |
