@@ -1,16 +1,351 @@
 {
   "lies_corrected": [
     {
-      "domain": "francais.rt.com",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "domain": "example.com",
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
-        "89.191.237.196"
+        "104.20.23.154",
+        "172.66.147.243"
+      ],
+      "control_aaaa": [
+        "2606:4700:10::ac42:93f3",
+        "2606:4700:10::6814:179a"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "wikipedia.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "208.80.153.224"
+      ],
+      "control_aaaa": [
+        "2620:0:860:ed1a::1"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "fr.wikipedia.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "208.80.153.224"
+      ],
+      "control_aaaa": [
+        "2620:0:861:ed1a::1"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "mullvad.net",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "45.83.223.209"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "digitale-gesellschaft.ch",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "89.45.227.53"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "ooni.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "76.76.21.21"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "explorer.ooni.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "216.150.1.193",
+        "216.150.16.193"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "github.com",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "140.82.114.4"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "raw.githubusercontent.com",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "185.199.110.133",
+        "185.199.109.133",
+        "185.199.108.133",
+        "185.199.111.133"
+      ],
+      "control_aaaa": [
+        "2606:50c0:8003::154",
+        "2606:50c0:8001::154",
+        "2606:50c0:8002::154",
+        "2606:50c0:8000::154"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "ghcr.io",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "140.82.114.33"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "mediapart.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "151.101.2.132",
+        "151.101.194.132",
+        "151.101.130.132",
+        "151.101.66.132"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.mediapart.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "151.101.2.132",
+        "151.101.130.132",
+        "151.101.194.132",
+        "151.101.66.132"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "laquadrature.net",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "185.34.33.4"
+      ],
+      "control_aaaa": [
+        "2a00:99a0:0:1000::4"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.laquadrature.net",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "185.34.33.4"
+      ],
+      "control_aaaa": [
+        "2a00:99a0:0:1000::4"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "forbiddenstories.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "185.34.35.77"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.humanite.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "192.0.66.211"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "nantes.indymedia.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "204.13.164.186"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "grenoble.indymedia.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "204.13.164.87"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "francais.rt.com",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "91.215.41.7"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.arabnews.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "172.67.73.34",
+        "104.26.11.33",
+        "104.26.10.33"
+      ],
+      "control_aaaa": [
+        "2606:4700:20::ac43:4922",
+        "2606:4700:20::681a:b21",
+        "2606:4700:20::681a:a21"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "osintfr.com",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "54.36.91.62"
+      ],
+      "control_aaaa": [
+        "2001:41d0:301::27"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.root-me.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "212.129.28.16"
+      ],
+      "control_aaaa": [
+        "2001:bc8:35b0:27::100"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "planning-familial.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "51.159.141.197"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.planning-familial.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "51.159.141.197"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "ivg-contraception-sexualites.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "109.234.164.218"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.sos-homophobie.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "104.20.7.50",
+        "104.20.6.50"
+      ],
+      "control_aaaa": [
+        "2606:4700:10::6814:732",
+        "2606:4700:10::6814:632"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "le-refuge.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "162.19.124.254"
+      ],
+      "control_aaaa": [
+        "2001:41d0:304:300::1c95"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.calem.eu",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "146.88.232.72"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.beit-haverim.com",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "5.135.23.164"
+      ],
+      "control_aaaa": [
+        "2001:41d0:301::100"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "chretiensinclusifs.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "213.186.33.16"
+      ],
+      "control_aaaa": [
+        "2001:41d0:1:1b00:213:186:33:16"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "www.ligue-cancer.net",
@@ -18,6 +353,16 @@
       "liar_nx": true,
       "control_a": [
         "185.74.9.4"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.santepubliquefrance.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "137.74.140.241"
       ],
       "control_aaaa": [],
       "liar_looks_like": "nxdomain_or_empty"
@@ -37,8 +382,8 @@
       "liar_a": [],
       "liar_nx": true,
       "control_a": [
-        "104.18.16.192",
-        "104.18.17.192"
+        "104.18.17.192",
+        "104.18.16.192"
       ],
       "control_aaaa": [
         "2606:4700::6812:10c0",
@@ -47,182 +392,622 @@
       "liar_looks_like": "nxdomain_or_empty"
     },
     {
-      "domain": "sci-hub.st",
-      "liar_a": [
-        "127.0.0.1"
+      "domain": "www.bnf.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "194.199.8.10"
       ],
-      "liar_nx": false,
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.oecd.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "104.18.1.146",
+        "104.18.0.146"
+      ],
+      "control_aaaa": [
+        "2606:4700::6812:192",
+        "2606:4700::6812:92"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "www.mahj.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "37.59.251.196"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "dioceseparis.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "185.16.44.219"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "islam-france.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "212.1.212.203"
+      ],
+      "control_aaaa": [
+        "2a02:4780:21:35cd:4696:ec40:3095:1a9c"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "fondationdelislamdefrance.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "172.67.177.53",
+        "104.21.59.122"
+      ],
+      "control_aaaa": [
+        "2606:4700:3034::6815:3b7a",
+        "2606:4700:3030::ac43:b135"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "sci-hub.st",
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "186.2.163.201"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "sci-hub.ee",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "172.67.212.102",
         "104.21.69.194"
       ],
       "control_aaaa": [
-        "2606:4700:3033::6815:45c2",
-        "2606:4700:3037::ac43:d466"
+        "2606:4700:3037::ac43:d466",
+        "2606:4700:3033::6815:45c2"
       ],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "yggtorrent.lol",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
-        "172.67.211.234",
-        "104.21.77.219"
+        "104.21.77.219",
+        "172.67.211.234"
       ],
       "control_aaaa": [
-        "2606:4700:3036::ac43:d3ea",
-        "2606:4700:3033::6815:4ddb"
+        "2606:4700:3033::6815:4ddb",
+        "2606:4700:3036::ac43:d3ea"
       ],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "www.ygg.re",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "103.224.182.253"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
-      "domain": "libgen.is",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "domain": "libgen.rs",
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "193.218.118.42"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "libgen.is",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "193.218.118.42"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "archive.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "207.241.224.2"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "web.archive.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "207.241.237.3"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "torrentfreak.com",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "172.67.73.7",
+        "104.26.9.68",
+        "104.26.8.68"
+      ],
+      "control_aaaa": [
+        "2606:4700:20::681a:944",
+        "2606:4700:20::681a:844",
+        "2606:4700:20::ac43:4907"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "proton.me",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "185.70.42.45"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "signal.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "104.18.10.47",
+        "104.18.11.47"
+      ],
+      "control_aaaa": [
+        "2606:4700::6812:b2f",
+        "2606:4700::6812:a2f"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "torproject.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "116.202.120.165",
+        "204.8.99.144",
+        "204.8.99.146",
+        "116.202.120.166"
+      ],
+      "control_aaaa": [
+        "2620:7:6002:0:466:39ff:fe32:e3dd",
+        "2620:7:6002:0:466:39ff:fe7f:1826",
+        "2a01:4f8:fff0:4f:266:37ff:fe2c:5d19",
+        "2a01:4f9:c010:19eb::1"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "eff.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "173.239.79.200"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "amnesty.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "141.193.213.20",
+        "141.193.213.21"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "rsf.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "104.25.93.108",
+        "104.25.94.108",
+        "172.67.66.183"
+      ],
+      "control_aaaa": [
+        "2606:4700:20::6819:5d6c",
+        "2606:4700:20::6819:5e6c",
+        "2606:4700:20::ac43:42b7"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "censxres.fr",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "163.172.32.209"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "api.github.com",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "140.82.114.5"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "registry-1.docker.io",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "52.45.63.121",
+        "34.238.55.159",
+        "18.215.8.255",
+        "100.61.84.91"
+      ],
+      "control_aaaa": [
+        "2600:1f18:2148:bc02:9df:9945:3a32:6ed9",
+        "2600:1f18:2148:bc01:8977:b3ec:6701:a75a",
+        "2600:1f18:2148:bc00:4bdf:ac16:37c8:5dd1",
+        "2600:1f18:2148:bc02:8f88:baa4:474:e0d4"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "auth.docker.io",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "172.64.144.78",
+        "104.18.43.178"
+      ],
+      "control_aaaa": [
+        "2606:4700:4403::ac40:904e",
+        "2a06:98c1:3104::6812:2bb2"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "production.cloudflare.docker.com",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "104.16.101.215",
+        "104.16.99.215",
+        "104.16.97.215",
+        "104.16.98.215"
+      ],
+      "control_aaaa": [
+        "2606:4700::6810:64d7",
+        "2606:4700::6810:65d7",
+        "2606:4700::6810:61d7",
+        "2606:4700::6810:63d7"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "cloud.debian.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "194.71.11.173",
+        "194.71.11.163"
+      ],
+      "control_aaaa": [
+        "2001:6b0:19::163",
+        "2001:6b0:19::173"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "dns.mullvad.net",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "194.242.2.2"
+      ],
+      "control_aaaa": [
+        "2a07:e340::2"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "dns.digitale-gesellschaft.ch",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "185.95.218.42",
+        "185.95.218.43"
+      ],
+      "control_aaaa": [
+        "2a05:fc84::42",
+        "2a05:fc84::43"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "anycast.uncensoreddns.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "91.239.100.100"
+      ],
+      "control_aaaa": [
+        "2001:67c:28a4::"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "dns10.quad9.net",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "9.9.9.10",
+        "149.112.112.10"
+      ],
+      "control_aaaa": [
+        "2620:fe::10",
+        "2620:fe::fe:10"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "one.one.one.one",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "control_aaaa": [
+        "2606:4700:4700::1001",
+        "2606:4700:4700::1111"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "fr.wiktionary.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "208.80.154.224"
+      ],
+      "control_aaaa": [
+        "2620:0:861:ed1a::1"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "pl.wikipedia.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "208.80.153.224"
+      ],
+      "control_aaaa": [
+        "2620:0:861:ed1a::1"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "fr.m.wikipedia.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "208.80.154.224"
+      ],
+      "control_aaaa": [
+        "2620:0:861:ed1a::1"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "fr.wikisource.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "208.80.154.224"
+      ],
+      "control_aaaa": [
+        "2620:0:860:ed1a::1"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "fr.m.wikisource.org",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "208.80.154.224"
+      ],
+      "control_aaaa": [
+        "2620:0:861:ed1a::1"
+      ],
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "actualidad.rt.com",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
-        "185.79.236.175",
-        "91.215.41.5"
+        "91.215.41.5",
+        "89.191.237.193"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "arabic.rt.com",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "91.215.41.8"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "russian.rt.com",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
-        "89.191.237.194"
+        "91.215.41.9"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "de.rt.com",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
-        "185.79.236.191",
-        "89.191.237.195"
+        "91.215.41.6"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "a-russia.ru",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "87.236.16.142"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "rtde.site",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "89.191.237.195",
+        "185.79.236.191"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "rg.ru",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "185.65.148.114"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "sarabic.ae",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "194.190.139.27"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "lat.rt.rs",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "91.215.41.13"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "tsargrad.tv",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "91.206.127.185"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "ivran.ru",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "212.109.196.149"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "katehon.com",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "93.88.76.65"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "iz.ru",
-      "liar_a": [
-        "127.0.0.1"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "185.178.208.4"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
     },
     {
       "domain": "makrea.com",
-      "liar_a": [
-        "146.59.230.139"
-      ],
-      "liar_nx": false,
+      "liar_a": [],
+      "liar_nx": true,
       "control_a": [
         "62.210.50.235"
       ],
       "control_aaaa": [],
-      "liar_looks_like": "sinkhole_or_gov_blockpage"
+      "liar_looks_like": "nxdomain_or_empty"
+    },
+    {
+      "domain": "global.ajplus.net",
+      "liar_a": [],
+      "liar_nx": true,
+      "control_a": [
+        "198.49.23.144",
+        "198.185.159.144",
+        "198.185.159.145",
+        "198.49.23.145"
+      ],
+      "control_aaaa": [],
+      "liar_looks_like": "nxdomain_or_empty"
     }
   ],
   "verified_stored": [
@@ -236,27 +1021,27 @@
         "2606:4700:10::ac42:93f3",
         "2606:4700:10::6814:179a"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "wikipedia.org",
       "a": [
-        "185.15.58.224"
+        "208.80.153.224"
       ],
       "aaaa": [
-        "2a02:ec80:600:ed1a::1"
+        "2620:0:860:ed1a::1"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "fr.wikipedia.org",
       "a": [
-        "185.15.58.224"
+        "208.80.153.224"
       ],
       "aaaa": [
-        "2a02:ec80:600:ed1a::1"
+        "2620:0:861:ed1a::1"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "mullvad.net",
@@ -264,7 +1049,7 @@
         "45.83.223.209"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "digitale-gesellschaft.ch",
@@ -272,7 +1057,7 @@
         "89.45.227.53"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "ooni.org",
@@ -280,72 +1065,70 @@
         "76.76.21.21"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "explorer.ooni.org",
       "a": [
-        "216.150.1.1",
-        "216.150.16.1",
         "216.150.1.193",
         "216.150.16.193"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "github.com",
       "a": [
-        "140.82.121.3"
+        "140.82.114.4"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "raw.githubusercontent.com",
       "a": [
-        "185.199.108.133",
-        "185.199.111.133",
+        "185.199.110.133",
         "185.199.109.133",
-        "185.199.110.133"
+        "185.199.108.133",
+        "185.199.111.133"
       ],
       "aaaa": [
+        "2606:50c0:8003::154",
         "2606:50c0:8001::154",
         "2606:50c0:8002::154",
-        "2606:50c0:8003::154",
         "2606:50c0:8000::154"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "ghcr.io",
       "a": [
-        "140.82.121.33"
+        "140.82.114.33"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "mediapart.fr",
       "a": [
-        "151.101.130.132",
-        "151.101.66.132",
         "151.101.2.132",
-        "151.101.194.132"
+        "151.101.194.132",
+        "151.101.130.132",
+        "151.101.66.132"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.mediapart.fr",
       "a": [
         "151.101.2.132",
-        "151.101.66.132",
         "151.101.130.132",
-        "151.101.194.132"
+        "151.101.194.132",
+        "151.101.66.132"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "laquadrature.net",
@@ -355,7 +1138,7 @@
       "aaaa": [
         "2a00:99a0:0:1000::4"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.laquadrature.net",
@@ -365,7 +1148,7 @@
       "aaaa": [
         "2a00:99a0:0:1000::4"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "forbiddenstories.org",
@@ -373,7 +1156,7 @@
         "185.34.35.77"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.humanite.fr",
@@ -381,7 +1164,7 @@
         "192.0.66.211"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "nantes.indymedia.org",
@@ -389,7 +1172,7 @@
         "204.13.164.186"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "grenoble.indymedia.org",
@@ -397,12 +1180,12 @@
         "204.13.164.87"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "francais.rt.com",
       "a": [
-        "89.191.237.196"
+        "91.215.41.7"
       ],
       "aaaa": [],
       "liar_lied": true
@@ -415,11 +1198,11 @@
         "104.26.10.33"
       ],
       "aaaa": [
+        "2606:4700:20::ac43:4922",
         "2606:4700:20::681a:b21",
-        "2606:4700:20::681a:a21",
-        "2606:4700:20::ac43:4922"
+        "2606:4700:20::681a:a21"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "osintfr.com",
@@ -429,7 +1212,7 @@
       "aaaa": [
         "2001:41d0:301::27"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.root-me.org",
@@ -439,7 +1222,7 @@
       "aaaa": [
         "2001:bc8:35b0:27::100"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "planning-familial.org",
@@ -447,7 +1230,7 @@
         "51.159.141.197"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.planning-familial.org",
@@ -455,7 +1238,7 @@
         "51.159.141.197"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "ivg-contraception-sexualites.org",
@@ -463,19 +1246,19 @@
         "109.234.164.218"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.sos-homophobie.org",
       "a": [
-        "104.20.6.50",
-        "104.20.7.50"
+        "104.20.7.50",
+        "104.20.6.50"
       ],
       "aaaa": [
         "2606:4700:10::6814:732",
         "2606:4700:10::6814:632"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "le-refuge.org",
@@ -485,7 +1268,7 @@
       "aaaa": [
         "2001:41d0:304:300::1c95"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.calem.eu",
@@ -493,7 +1276,7 @@
         "146.88.232.72"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.beit-haverim.com",
@@ -503,7 +1286,7 @@
       "aaaa": [
         "2001:41d0:301::100"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "chretiensinclusifs.org",
@@ -513,7 +1296,7 @@
       "aaaa": [
         "2001:41d0:1:1b00:213:186:33:16"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.ligue-cancer.net",
@@ -529,7 +1312,7 @@
         "137.74.140.241"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.secourspopulaire.fr",
@@ -542,8 +1325,8 @@
     {
       "domain": "www.handicap-international.fr",
       "a": [
-        "104.18.16.192",
-        "104.18.17.192"
+        "104.18.17.192",
+        "104.18.16.192"
       ],
       "aaaa": [
         "2606:4700::6812:10c0",
@@ -557,7 +1340,7 @@
         "194.199.8.10"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.oecd.org",
@@ -569,7 +1352,7 @@
         "2606:4700::6812:192",
         "2606:4700::6812:92"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "www.mahj.org",
@@ -577,7 +1360,7 @@
         "37.59.251.196"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "dioceseparis.fr",
@@ -585,29 +1368,29 @@
         "185.16.44.219"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "islam-france.fr",
       "a": [
-        "193.58.105.135"
+        "212.1.212.203"
       ],
       "aaaa": [
-        "2a02:4780:2a:d39f:4657:f1b2:951e:3f73"
+        "2a02:4780:21:35cd:4696:ec40:3095:1a9c"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "fondationdelislamdefrance.fr",
       "a": [
-        "104.21.59.122",
-        "172.67.177.53"
+        "172.67.177.53",
+        "104.21.59.122"
       ],
       "aaaa": [
-        "2606:4700:3030::ac43:b135",
-        "2606:4700:3034::6815:3b7a"
+        "2606:4700:3034::6815:3b7a",
+        "2606:4700:3030::ac43:b135"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "sci-hub.st",
@@ -624,20 +1407,20 @@
         "104.21.69.194"
       ],
       "aaaa": [
-        "2606:4700:3033::6815:45c2",
-        "2606:4700:3037::ac43:d466"
+        "2606:4700:3037::ac43:d466",
+        "2606:4700:3033::6815:45c2"
       ],
       "liar_lied": true
     },
     {
       "domain": "yggtorrent.lol",
       "a": [
-        "172.67.211.234",
-        "104.21.77.219"
+        "104.21.77.219",
+        "172.67.211.234"
       ],
       "aaaa": [
-        "2606:4700:3036::ac43:d3ea",
-        "2606:4700:3033::6815:4ddb"
+        "2606:4700:3033::6815:4ddb",
+        "2606:4700:3036::ac43:d3ea"
       ],
       "liar_lied": true
     },
@@ -645,6 +1428,14 @@
       "domain": "www.ygg.re",
       "a": [
         "103.224.182.253"
+      ],
+      "aaaa": [],
+      "liar_lied": true
+    },
+    {
+      "domain": "libgen.rs",
+      "a": [
+        "193.218.118.42"
       ],
       "aaaa": [],
       "liar_lied": true
@@ -663,7 +1454,7 @@
         "207.241.224.2"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "web.archive.org",
@@ -671,21 +1462,21 @@
         "207.241.237.3"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "torrentfreak.com",
       "a": [
-        "104.26.8.68",
+        "172.67.73.7",
         "104.26.9.68",
-        "172.67.73.7"
+        "104.26.8.68"
       ],
       "aaaa": [
         "2606:4700:20::681a:944",
-        "2606:4700:20::ac43:4907",
-        "2606:4700:20::681a:844"
+        "2606:4700:20::681a:844",
+        "2606:4700:20::ac43:4907"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "proton.me",
@@ -693,7 +1484,7 @@
         "185.70.42.45"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "signal.org",
@@ -702,26 +1493,26 @@
         "104.18.11.47"
       ],
       "aaaa": [
-        "2606:4700::6812:a2f",
-        "2606:4700::6812:b2f"
+        "2606:4700::6812:b2f",
+        "2606:4700::6812:a2f"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "torproject.org",
       "a": [
         "116.202.120.165",
+        "204.8.99.144",
         "204.8.99.146",
-        "95.216.163.36",
-        "204.8.99.144"
+        "116.202.120.166"
       ],
       "aaaa": [
-        "2a01:4f9:c010:19eb::1",
         "2620:7:6002:0:466:39ff:fe32:e3dd",
+        "2620:7:6002:0:466:39ff:fe7f:1826",
         "2a01:4f8:fff0:4f:266:37ff:fe2c:5d19",
-        "2a01:4f8:fff0:4f:266:37ff:feae:3bbc"
+        "2a01:4f9:c010:19eb::1"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "eff.org",
@@ -729,30 +1520,30 @@
         "173.239.79.200"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "amnesty.org",
       "a": [
-        "141.193.213.21",
-        "141.193.213.20"
+        "141.193.213.20",
+        "141.193.213.21"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "rsf.org",
       "a": [
         "104.25.93.108",
-        "172.67.66.183",
-        "104.25.94.108"
+        "104.25.94.108",
+        "172.67.66.183"
       ],
       "aaaa": [
         "2606:4700:20::6819:5d6c",
         "2606:4700:20::6819:5e6c",
         "2606:4700:20::ac43:42b7"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "censxres.fr",
@@ -760,31 +1551,31 @@
         "163.172.32.209"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "api.github.com",
       "a": [
-        "140.82.121.5"
+        "140.82.114.5"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "registry-1.docker.io",
       "a": [
+        "52.45.63.121",
+        "34.238.55.159",
         "18.215.8.255",
-        "3.88.92.19",
-        "98.95.133.188",
-        "3.225.102.148"
+        "100.61.84.91"
       ],
       "aaaa": [
-        "2600:1f18:2148:bc02:5a9b:6d18:d9d9:d25d",
-        "2600:1f18:2148:bc00:6e80:3b47:3e23:5c4c",
-        "2600:1f18:2148:bc01:7e86:f654:ddc:132c",
-        "2600:1f18:2148:bc02:b5bc:25bf:5576:af3f"
+        "2600:1f18:2148:bc02:9df:9945:3a32:6ed9",
+        "2600:1f18:2148:bc01:8977:b3ec:6701:a75a",
+        "2600:1f18:2148:bc00:4bdf:ac16:37c8:5dd1",
+        "2600:1f18:2148:bc02:8f88:baa4:474:e0d4"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "auth.docker.io",
@@ -796,37 +1587,35 @@
         "2606:4700:4403::ac40:904e",
         "2a06:98c1:3104::6812:2bb2"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "production.cloudflare.docker.com",
       "a": [
-        "104.16.97.215",
         "104.16.101.215",
-        "104.16.100.215",
-        "104.16.99.215"
+        "104.16.99.215",
+        "104.16.97.215",
+        "104.16.98.215"
       ],
       "aaaa": [
-        "2606:4700::6810:62d7",
+        "2606:4700::6810:64d7",
         "2606:4700::6810:65d7",
-        "2606:4700::6810:63d7",
-        "2606:4700::6810:61d7"
+        "2606:4700::6810:61d7",
+        "2606:4700::6810:63d7"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "cloud.debian.org",
       "a": [
-        "194.71.11.165",
         "194.71.11.173",
         "194.71.11.163"
       ],
       "aaaa": [
-        "2001:6b0:19::173",
-        "2001:6b0:19::165",
-        "2001:6b0:19::163"
+        "2001:6b0:19::163",
+        "2001:6b0:19::173"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "dns.mullvad.net",
@@ -836,7 +1625,7 @@
       "aaaa": [
         "2a07:e340::2"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "dns.digitale-gesellschaft.ch",
@@ -848,7 +1637,7 @@
         "2a05:fc84::42",
         "2a05:fc84::43"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "anycast.uncensoreddns.org",
@@ -858,7 +1647,7 @@
       "aaaa": [
         "2001:67c:28a4::"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "dns10.quad9.net",
@@ -870,75 +1659,75 @@
         "2620:fe::10",
         "2620:fe::fe:10"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "one.one.one.one",
       "a": [
-        "1.0.0.1",
-        "1.1.1.1"
+        "1.1.1.1",
+        "1.0.0.1"
       ],
       "aaaa": [
         "2606:4700:4700::1001",
         "2606:4700:4700::1111"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "fr.wiktionary.org",
       "a": [
-        "185.15.58.224"
+        "208.80.154.224"
       ],
       "aaaa": [
-        "2a02:ec80:600:ed1a::1"
+        "2620:0:861:ed1a::1"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "pl.wikipedia.org",
       "a": [
-        "185.15.58.224"
+        "208.80.153.224"
       ],
       "aaaa": [
-        "2a02:ec80:600:ed1a::1"
+        "2620:0:861:ed1a::1"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "fr.m.wikipedia.org",
       "a": [
-        "185.15.58.224"
+        "208.80.154.224"
       ],
       "aaaa": [
-        "2a02:ec80:600:ed1a::1"
+        "2620:0:861:ed1a::1"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "fr.wikisource.org",
       "a": [
-        "185.15.58.224"
+        "208.80.154.224"
       ],
       "aaaa": [
-        "2a02:ec80:600:ed1a::1"
+        "2620:0:860:ed1a::1"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "fr.m.wikisource.org",
       "a": [
-        "185.15.58.224"
+        "208.80.154.224"
       ],
       "aaaa": [
-        "2a02:ec80:600:ed1a::1"
+        "2620:0:861:ed1a::1"
       ],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "actualidad.rt.com",
       "a": [
-        "185.79.236.175",
-        "91.215.41.5"
+        "91.215.41.5",
+        "89.191.237.193"
       ],
       "aaaa": [],
       "liar_lied": true
@@ -954,7 +1743,7 @@
     {
       "domain": "russian.rt.com",
       "a": [
-        "89.191.237.194"
+        "91.215.41.9"
       ],
       "aaaa": [],
       "liar_lied": true
@@ -962,8 +1751,7 @@
     {
       "domain": "de.rt.com",
       "a": [
-        "185.79.236.191",
-        "89.191.237.195"
+        "91.215.41.6"
       ],
       "aaaa": [],
       "liar_lied": true
@@ -974,16 +1762,16 @@
         "87.236.16.142"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "rtde.site",
       "a": [
-        "185.79.236.191",
-        "89.191.237.195"
+        "89.191.237.195",
+        "185.79.236.191"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "rg.ru",
@@ -999,7 +1787,7 @@
         "194.190.139.27"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "lat.rt.rs",
@@ -1023,7 +1811,7 @@
         "212.109.196.149"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "katehon.com",
@@ -1031,7 +1819,7 @@
         "93.88.76.65"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     },
     {
       "domain": "iz.ru",
@@ -1052,13 +1840,13 @@
     {
       "domain": "global.ajplus.net",
       "a": [
-        "198.185.159.145",
+        "198.49.23.144",
         "198.185.159.144",
-        "198.49.23.145",
-        "198.49.23.144"
+        "198.185.159.145",
+        "198.49.23.145"
       ],
       "aaaa": [],
-      "liar_lied": false
+      "liar_lied": true
     }
   ],
   "rejected_blockpage": [],
@@ -1073,10 +1861,6 @@
     },
     {
       "domain": "annas-archive.org",
-      "reason": "no_clean_control_answer"
-    },
-    {
-      "domain": "libgen.rs",
       "reason": "no_clean_control_answer"
     },
     {
