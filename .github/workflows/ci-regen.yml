@@ -35,6 +35,7 @@ jobs:
           python3 scripts/ci-assert-product.py
       - name: Open PR if generators drifted
         uses: peter-evans/create-pull-request@v6
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: regenerate Blocky modes and client profiles"
