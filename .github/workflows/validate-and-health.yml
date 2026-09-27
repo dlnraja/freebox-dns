@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Copy env
         run: cp .env.example .env
       - name: Validate compose files
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Anti-degradation invariants (no network)
         run: ANTI_DEGRADATION_INVARIANTS_ONLY=1 python3 scripts/anti-degradation-check.py
       - name: Validate Freebox snapshot + inventory
@@ -133,7 +133,7 @@ jobs:
     timeout-minutes: 10
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check SOS dig + DoT hostnames
         run: |
           set -euo pipefail
@@ -167,7 +167,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Probe blocklist URLs
         run: |
           set -euo pipefail
@@ -219,7 +219,7 @@ jobs:
     timeout-minutes: 20
     needs: [compose-config, freebox-conf, conf-lint]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Prepare lab env
         run: |
           set -euo pipefail
