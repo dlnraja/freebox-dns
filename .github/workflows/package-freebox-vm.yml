@@ -94,7 +94,7 @@ jobs:
           (cd "$STAGE" && zip -9 "../freebox-dns-freeboxos-kit-${GITHUB_SHA::7}.zip" ./*)
           ls -lh dist/
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: freebox-dns-vm
           path: |
