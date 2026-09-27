@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install PyYAML
         run: python3 -m pip install --user pyyaml
       - name: Conf lint (JSON/YAML/Blocky/product/lan-only)
