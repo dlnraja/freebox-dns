@@ -1,3 +1,3 @@
 # OBSOLETE — do not wire into Blocky.
 # Runtime uses hostsFile → hosts.critical / hosts.local / hosts.generated
-# (see config/blocky/*.yml). Regenerated as a stub by scripts/ooni-like-anti-lie.py.
+# (see config/blocky/*.yml). Mapping count at last OONI run: 86
