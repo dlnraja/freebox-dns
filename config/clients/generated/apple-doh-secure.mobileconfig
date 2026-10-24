@@ -25,7 +25,7 @@
 			<key>PayloadType</key>
 			<string>com.apple.dnsSettings.managed</string>
 			<key>PayloadUUID</key>
-			<string>86AFA074-35B7-432D-AA28-6DA0BDCE11E0</string>
+			<string>B6A10F0E-5B30-48B8-AC5F-99485451C32F</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 			<key>ProhibitDisablement</key>
@@ -43,7 +43,7 @@
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>DC0922A3-2543-4FBD-ADF6-E70ADD0FEB0E</string>
+	<string>AD5564AE-A290-46F1-856A-075185A3693C</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>
